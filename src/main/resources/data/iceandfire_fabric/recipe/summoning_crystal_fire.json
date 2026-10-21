@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "iceandfire_fabric:fire_dragon_blood",
+    "minecraft:ender_pearl",
+    "#c:gems/diamond",
+    "#c:gems/emerald"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:summoning_crystal_fire"
+  }
+}

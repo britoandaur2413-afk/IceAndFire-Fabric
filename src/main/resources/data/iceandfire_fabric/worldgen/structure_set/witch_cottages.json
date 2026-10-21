@@ -1,0 +1,19 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:witch_cottage",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 16,
+    "separation": 6,
+    "salt": 1530987451,
+    "spread_type": "linear",
+    "exclusion_zone": {
+      "other_set": "minecraft:villages",
+      "chunk_count": 5
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "attributes": {
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:spore_blossom_air"
+          },
+          "probability": 0.006
+        },
+        {
+          "particle": {
+            "type": "minecraft:cherry_leaves"
+          },
+          "probability": 0.002
+        }
+      ],
+      "modifier": "append"
+    },
+    "minecraft:visual/fog_color": "#fbe6ff",
+    "minecraft:visual/sky_color": "#d9b8ff"
+  },
+  "carvers": [],
+  "downfall": 0.4,
+  "effects": {
+    "water_color": "#9fd8ff"
+  },
+  "features": [],
+  "has_precipitation": false,
+  "temperature": 0.7
+}

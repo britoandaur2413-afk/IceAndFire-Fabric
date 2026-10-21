@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "iceandfire_fabric:ectoplasm",
+    "count": 6
+  },
+  "gives": {
+    "id": "minecraft:emerald"
+  },
+  "max_uses": 7,
+  "xp": 3,
+  "reputation_discount": 0.05
+}

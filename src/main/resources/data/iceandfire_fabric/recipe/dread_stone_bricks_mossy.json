@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "iceandfire_fabric:dread_stone_bricks",
+    "minecraft:vine"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dread_stone_bricks_mossy"
+  }
+}

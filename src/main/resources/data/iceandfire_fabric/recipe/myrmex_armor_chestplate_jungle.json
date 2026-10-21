@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C C",
+    "CCC",
+    "CCC"
+  ],
+  "key": {
+    "C": "iceandfire_fabric:myrmex_jungle_chitin"
+  },
+  "result": {
+    "id": "iceandfire_fabric:myrmex_jungle_chestplate"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:dragon_horn"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragon_horn.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragon_horn.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragon_egg",
+  "criteria": {
+    "bestiary": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "iceandfire_fabric:dragon_horn"
+          }
+        ]
+      }
+    }
+  }
+}

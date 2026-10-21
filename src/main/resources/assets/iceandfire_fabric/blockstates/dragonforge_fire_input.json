@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=true": {
+      "model": "iceandfire_fabric:block/dragonforge_fire_input_active"
+    },
+    "active=false": {
+      "model": "iceandfire_fabric:block/dragonforge_fire_input"
+    }
+  }
+}

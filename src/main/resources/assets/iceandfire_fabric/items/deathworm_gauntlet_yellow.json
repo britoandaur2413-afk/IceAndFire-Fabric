@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/deathworm_gauntlet_yellow",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "deathworm_gauntlet"
+    }
+  }
+}

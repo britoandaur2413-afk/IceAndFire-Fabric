@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": [
+    "iceandfire_fabric:silver_pickaxe",
+    "iceandfire_fabric:silver_shovel",
+    "iceandfire_fabric:silver_axe",
+    "iceandfire_fabric:silver_hoe",
+    "iceandfire_fabric:silver_sword",
+    "iceandfire_fabric:armor_silver_metal_helmet",
+    "iceandfire_fabric:armor_silver_metal_chestplate",
+    "iceandfire_fabric:armor_silver_metal_leggings",
+    "iceandfire_fabric:armor_silver_metal_boots"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:silver_nugget"
+  },
+  "experience": 0.1,
+  "cookingtime": 100
+}

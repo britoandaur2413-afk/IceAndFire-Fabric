@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DXD",
+    " D "
+  ],
+  "key": {
+    "D": "iceandfire_fabric:pixie_dust",
+    "X": "minecraft:amethyst_shard"
+  },
+  "result": {
+    "id": "iceandfire_fabric:pixie_orb_magic",
+    "count": 1
+  }
+}

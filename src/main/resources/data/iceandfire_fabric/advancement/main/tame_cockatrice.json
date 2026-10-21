@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:cockatrice_eye"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.tame_cockatrice.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.tame_cockatrice.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/rotten_egg",
+  "criteria": {
+    "tame_rat": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "iceandfire_fabric:cockatrice"
+          }
+        }
+      }
+    }
+  }
+}

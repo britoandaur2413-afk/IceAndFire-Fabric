@@ -1,0 +1,25 @@
+{
+	"required": true,
+	"package": "com.iafabric.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"CameraMixin",
+		"HudFitMixin",
+		"LivingEntityRendererMixin",
+		"LocalPlayerMixin",
+		"MemoryHandsMixin",
+		"MemoryInputMixin",
+		"MemoryKeysMixin",
+		"MemoryLookMixin",
+		"MemoryToastsMixin",
+		"MinecraftAttackMixin",
+		"MusicManagerMixin",
+		"RenderTypeAccessor",
+		"RenderSetupAccessor",
+		"ScreenPanoramaMixin",
+		"TitleScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

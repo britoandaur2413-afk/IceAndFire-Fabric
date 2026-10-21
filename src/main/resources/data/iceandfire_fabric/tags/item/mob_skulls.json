@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "#iceandfire_fabric:dragon_skulls",
+    "iceandfire_fabric:hippogryph_skull",
+    "iceandfire_fabric:cyclops_skull",
+    "iceandfire_fabric:cockatrice_skull",
+    "iceandfire_fabric:stymphalian_skull",
+    "iceandfire_fabric:troll_skull",
+    "iceandfire_fabric:amphithere_skull",
+    "iceandfire_fabric:seaserpent_skull",
+    "iceandfire_fabric:hydra_skull"
+  ]
+}

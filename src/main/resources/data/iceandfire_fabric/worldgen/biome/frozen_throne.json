@@ -1,0 +1,31 @@
+{
+  "attributes": {
+    "minecraft:visual/ambient_particles": {
+      "argument": [
+        {
+          "particle": {
+            "type": "minecraft:snowflake"
+          },
+          "probability": 0.02
+        },
+        {
+          "particle": {
+            "type": "minecraft:white_ash"
+          },
+          "probability": 0.03
+        }
+      ],
+      "modifier": "append"
+    },
+    "minecraft:visual/fog_color": "#1a2a44",
+    "minecraft:visual/sky_color": "#050a18"
+  },
+  "carvers": [],
+  "downfall": 0.5,
+  "effects": {
+    "water_color": "#3d57d6"
+  },
+  "features": [],
+  "has_precipitation": false,
+  "temperature": -0.7
+}

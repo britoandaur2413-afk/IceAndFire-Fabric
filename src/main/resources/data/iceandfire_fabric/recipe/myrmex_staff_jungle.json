@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "VCC",
+    " BC",
+    " B "
+  ],
+  "key": {
+    "V": "iceandfire_fabric:myrmex_stinger",
+    "C": "iceandfire_fabric:myrmex_jungle_chitin",
+    "B": "#c:bones/wither"
+  },
+  "result": {
+    "id": "iceandfire_fabric:myrmex_jungle_staff"
+  }
+}

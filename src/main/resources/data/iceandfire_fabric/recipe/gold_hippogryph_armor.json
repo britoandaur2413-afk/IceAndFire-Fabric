@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "FDF",
+    "   "
+  ],
+  "key": {
+    "F": "#c:feathers",
+    "D": "minecraft:golden_horse_armor"
+  },
+  "result": {
+    "id": "iceandfire_fabric:gold_hippogryph_armor"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/pixie_house",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "pixie_house"
+    }
+  }
+}

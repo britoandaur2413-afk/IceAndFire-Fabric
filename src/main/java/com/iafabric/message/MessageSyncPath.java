@@ -1,0 +1,87 @@
+package com.iafabric.message;
+
+import com.iafabric.pathfinding.raycoms.MNode;
+import com.iafabric.pathfinding.raycoms.Pathfinding;
+import net.minecraft.network.FriendlyByteBuf;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Message to sync some path over to the client.
+ */
+public class MessageSyncPath
+{
+    /**
+     * Set of visited nodes.
+     */
+    public Set<MNode> lastDebugNodesVisited = new HashSet<>();
+
+    /**
+     * Set of not visited nodes.
+     */
+    public Set<MNode> lastDebugNodesNotVisited = new HashSet<>();
+
+    /**
+     * Set of chosen nodes for the path.
+     */
+    public Set<MNode> lastDebugNodesPath = new HashSet<>();
+
+    /**
+     * Create a new path message with the filled pathpoints.
+     */
+    public MessageSyncPath(final Set<MNode> lastDebugNodesVisited, final Set<MNode> lastDebugNodesNotVisited, final Set<MNode> lastDebugNodesPath) {
+        super();
+        this.lastDebugNodesVisited = lastDebugNodesVisited;
+        this.lastDebugNodesNotVisited = lastDebugNodesNotVisited;
+        this.lastDebugNodesPath = lastDebugNodesPath;
+    }
+
+    public void write(final FriendlyByteBuf buf) {
+        buf.writeInt(lastDebugNodesVisited.size());
+        for (final MNode MNode : lastDebugNodesVisited) {
+            MNode.serializeToBuf(buf);
+        }
+
+        buf.writeInt(lastDebugNodesNotVisited.size());
+        for (final MNode MNode : lastDebugNodesNotVisited) {
+            MNode.serializeToBuf(buf);
+        }
+
+        buf.writeInt(lastDebugNodesPath.size());
+        for (final MNode MNode : lastDebugNodesPath) {
+            MNode.serializeToBuf(buf);
+        }
+    }
+
+    public static MessageSyncPath read(final FriendlyByteBuf buf) {
+        int size = buf.readInt();
+
+        Set<MNode> lastDebugNodesVisited = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            lastDebugNodesVisited.add(new MNode(buf));
+        }
+
+        size = buf.readInt();
+        Set<MNode> lastDebugNodesNotVisited = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            lastDebugNodesNotVisited.add(new MNode(buf));
+        }
+
+        size = buf.readInt();
+        Set<MNode> lastDebugNodesPath = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            lastDebugNodesPath.add(new MNode(buf));
+        }
+
+        return new MessageSyncPath(lastDebugNodesVisited, lastDebugNodesNotVisited, lastDebugNodesPath);
+    }
+
+    /** On the client: show the path the server computed (debug rendering). */
+    public void handleClient() {
+        Pathfinding.lastDebugNodesVisited = lastDebugNodesVisited;
+        Pathfinding.lastDebugNodesNotVisited = lastDebugNodesNotVisited;
+        Pathfinding.lastDebugNodesPath = lastDebugNodesPath;
+    }
+
+}

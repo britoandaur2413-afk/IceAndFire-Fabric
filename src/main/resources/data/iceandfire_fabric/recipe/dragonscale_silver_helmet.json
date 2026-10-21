@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "S S"
+  ],
+  "key": {
+    "S": "iceandfire_fabric:dragonscales_silver"
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_silver_helmet"
+  }
+}

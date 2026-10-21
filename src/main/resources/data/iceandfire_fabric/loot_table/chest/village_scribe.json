@@ -1,0 +1,123 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 10
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:book",
+          "weight": 1,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:emerald",
+          "weight": 5,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:paper",
+          "weight": 20,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 2
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:manuscript",
+          "weight": 70,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 3
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:dragonbone",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:pixie_dust",
+          "weight": 2,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cobweb",
+          "weight": 10,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 6
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:rotten_egg",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:shiny_scales",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:troll_tusk",
+          "weight": 2
+        }
+      ]
+    }
+  ]
+}

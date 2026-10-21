@@ -1,0 +1,30 @@
+{
+  "type": "iceandfire_fabric:frozen_throne",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "iceandfire_fabric:frozen_throne",
+      "features": false,
+      "lakes": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        },
+        {
+          "block": "minecraft:packed_ice",
+          "height": 50
+        },
+        {
+          "block": "iceandfire_fabric:dread_stone",
+          "height": 12
+        },
+        {
+          "block": "minecraft:snow_block",
+          "height": 1
+        }
+      ],
+      "structure_overrides": []
+    }
+  }
+}

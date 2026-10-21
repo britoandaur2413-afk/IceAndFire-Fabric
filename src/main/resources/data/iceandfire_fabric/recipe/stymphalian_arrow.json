@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "#",
+    "Y"
+  ],
+  "key": {
+    "#": "#c:rods/wooden",
+    "X": "minecraft:flint",
+    "Y": "iceandfire_fabric:stymphalian_bird_feather"
+  },
+  "result": {
+    "id": "iceandfire_fabric:stymphalian_arrow",
+    "count": 4
+  }
+}

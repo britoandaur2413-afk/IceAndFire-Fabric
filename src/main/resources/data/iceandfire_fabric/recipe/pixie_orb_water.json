@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DXD",
+    " D "
+  ],
+  "key": {
+    "D": "iceandfire_fabric:pixie_dust",
+    "X": "minecraft:prismarine_crystals"
+  },
+  "result": {
+    "id": "iceandfire_fabric:pixie_orb_water",
+    "count": 1
+  }
+}

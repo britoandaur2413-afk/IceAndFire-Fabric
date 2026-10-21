@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/troll_weapon",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "troll_weapon"
+    }
+  }
+}

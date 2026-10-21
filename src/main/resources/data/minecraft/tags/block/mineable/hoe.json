@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:myrmex_desert_biolight",
+    "iceandfire_fabric:myrmex_jungle_biolight",
+    "iceandfire_fabric:pixie_house_mushroom_red",
+    "iceandfire_fabric:pixie_house_mushroom_brown"
+  ]
+}

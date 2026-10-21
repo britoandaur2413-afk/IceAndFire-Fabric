@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/dread_portal",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "dread_portal"
+    }
+  }
+}

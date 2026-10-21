@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "iceandfire_fabric:has_dragon",
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "iceandfire_fabric:item/summoning_crystal_fire"
+    },
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "iceandfire_fabric:item/summoning_crystal_fire_active"
+    }
+  }
+}

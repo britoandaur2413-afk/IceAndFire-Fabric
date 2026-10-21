@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block",
+    "#iceandfire_fabric:charred_block"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:ash"
+  }
+}

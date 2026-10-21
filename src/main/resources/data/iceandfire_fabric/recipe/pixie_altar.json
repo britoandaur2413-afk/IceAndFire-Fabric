@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "DAD",
+    "SSS"
+  ],
+  "key": {
+    "D": "iceandfire_fabric:pixie_dust",
+    "A": "minecraft:amethyst_block",
+    "S": "minecraft:polished_andesite"
+  },
+  "result": {
+    "id": "iceandfire_fabric:pixie_altar",
+    "count": 1
+  }
+}

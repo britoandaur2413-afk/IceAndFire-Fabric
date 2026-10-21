@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "D D"
+  ],
+  "key": {
+    "D": "#c:ingots/dragonsteel_ice"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_ice_helmet"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/ghost_chest",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "ghost_chest"
+    }
+  }
+}

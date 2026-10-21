@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "iceandfire_fabric:manuscript",
+    "iceandfire_fabric:manuscript",
+    "iceandfire_fabric:manuscript"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:bestiary"
+  }
+}

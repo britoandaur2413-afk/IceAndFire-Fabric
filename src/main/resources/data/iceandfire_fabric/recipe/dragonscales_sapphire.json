@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "iceandfire_fabric:dragonscale_sapphire"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonscales_sapphire",
+    "count": 9
+  }
+}

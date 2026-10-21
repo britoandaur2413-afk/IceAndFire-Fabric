@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire",
+    "#c:ingots/dragonsteel_fire"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_fire_block"
+  }
+}

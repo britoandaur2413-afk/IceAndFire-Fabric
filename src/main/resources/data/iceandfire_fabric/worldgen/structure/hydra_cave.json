@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire_fabric:hydra_cave",
+  "biomes": "#iceandfire_fabric:has_structure/hydra_cave",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

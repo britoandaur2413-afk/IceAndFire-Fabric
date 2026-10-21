@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "iceandfire_fabric:silver_ingot",
+    "count": 5
+  },
+  "gives": {
+    "id": "minecraft:emerald"
+  },
+  "max_uses": 3,
+  "xp": 5,
+  "reputation_discount": 0.05
+}

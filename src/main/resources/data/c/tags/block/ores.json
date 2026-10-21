@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:silver_ore",
+    "iceandfire_fabric:sapphire_ore",
+    "minecraft:copper_ore",
+    "iceandfire_fabric:amythest_ore"
+  ]
+}

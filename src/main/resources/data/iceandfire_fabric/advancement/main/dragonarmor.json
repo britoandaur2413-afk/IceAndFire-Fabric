@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:dragonarmor_iron_body"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragonarmor.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragonarmor.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragon_egg",
+  "criteria": {
+    "iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#iceandfire_fabric:dragon_armors"
+          }
+        ]
+      }
+    }
+  }
+}

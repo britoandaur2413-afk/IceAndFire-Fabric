@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "D"
+  ],
+  "key": {
+    "D": "iceandfire_fabric:dread_stone_slab"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dread_stone_bricks_chiseled"
+  }
+}

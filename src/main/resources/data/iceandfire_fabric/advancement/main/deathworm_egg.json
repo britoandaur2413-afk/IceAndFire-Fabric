@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:deathworm_egg"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.deathworm_egg.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.deathworm_egg.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/kill_deathworm",
+  "criteria": {
+    "egg": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "iceandfire_fabric:deathworm_egg"
+          }
+        ]
+      }
+    }
+  }
+}

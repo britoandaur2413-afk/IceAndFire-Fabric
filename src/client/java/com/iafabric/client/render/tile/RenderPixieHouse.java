@@ -1,0 +1,138 @@
+package com.iafabric.client.render.tile;
+
+import com.mojang.math.Axis;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.iafabric.client.render.BufferSource;
+import com.iafabric.block.BlockPixieHouse;
+import com.iafabric.client.model.ModelPixie;
+import com.iafabric.client.model.ModelPixieHouse;
+import com.iafabric.entity.tile.TileEntityPixieHouse;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
+import org.jetbrains.annotations.NotNull;
+
+public class RenderPixieHouse<T extends TileEntityPixieHouse> extends IafBlockEntityRenderer<T> {
+
+    private static final ModelPixieHouse MODEL = new ModelPixieHouse();
+    private static ModelPixie MODEL_PIXIE;
+    private static final RenderType TEXTURE_0 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_0.png"));
+    private static final RenderType TEXTURE_1 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_1.png"));
+    private static final RenderType TEXTURE_2 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_2.png"));
+    private static final RenderType TEXTURE_3 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_3.png"));
+    private static final RenderType TEXTURE_4 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_4.png"));
+    private static final RenderType TEXTURE_5 = RenderTypes.entityCutout(Identifier.parse("iceandfire_fabric:textures/models/pixie/house/pixie_house_5.png"));
+    public BlockItem metaOverride;
+
+    public RenderPixieHouse(BlockEntityRendererProvider.Context context) {
+
+    }
+
+    @Override
+    public void render(T entity, float partialTicks, PoseStack matrixStackIn, BufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        int rotation = 0;
+        int meta = 0;
+        if (MODEL_PIXIE == null) {
+            MODEL_PIXIE = new ModelPixie();
+        }
+        if (entity != null && entity.getLevel() != null && entity.getLevel().getBlockState(entity.getBlockPos()).getBlock() instanceof BlockPixieHouse) {
+            meta = TileEntityPixieHouse.getHouseTypeFromBlock(entity.getLevel().getBlockState(entity.getBlockPos()).getBlock());
+            // Apparently with Optifine/other optimizations mods, this code path can get run before the block
+            // has been destroyed/possibly created, causing the BlockState to be an air block,
+            // which is missing the below property, causing a crash. If this property is missing,
+            // let's just silently fail.
+            if (!entity.getLevel().getBlockState(entity.getBlockPos()).hasProperty(BlockPixieHouse.FACING)) {
+                return;
+            }
+            Direction facing = entity.getLevel().getBlockState(entity.getBlockPos()).getValue(BlockPixieHouse.FACING);
+            if (facing == Direction.NORTH) {
+                rotation = 180;
+            }
+            else if (facing == Direction.EAST) {
+                rotation = -90;
+            } else if (facing == Direction.WEST) {
+                rotation = 90;
+            }
+
+        }
+        if (entity == null) {
+            meta = TileEntityPixieHouse.getHouseTypeFromBlock(metaOverride.getBlock());
+        }
+        matrixStackIn.pushPose();
+        matrixStackIn.translate(0.5F, 1.501F, 0.5F);
+        matrixStackIn.pushPose();
+        matrixStackIn.rotateDegrees(com.mojang.math.Axis.XP, (180));
+        matrixStackIn.rotateDegrees(com.mojang.math.Axis.YP, (rotation));
+        if (entity != null && entity.getLevel() != null && entity.hasPixie) {
+            matrixStackIn.pushPose();
+            matrixStackIn.translate(0F, 0.95F, 0F);
+            matrixStackIn.scale(0.55F, 0.55F, 0.55F);
+            matrixStackIn.pushPose();
+            //GL11.glRotatef(MathHelper.clampAngle(entity.ticksExisted * 3), 0, 1, 0);
+            RenderType type = RenderJar.TEXTURE_0;
+            RenderType type2 = RenderJar.TEXTURE_0_GLO;
+            switch (entity.pixieType) {
+                default:
+                    type = RenderJar.TEXTURE_0;
+                    type2 = RenderJar.TEXTURE_0_GLO;
+                    break;
+                case 1:
+                    type = RenderJar.TEXTURE_1;
+                    type2 = RenderJar.TEXTURE_1_GLO;
+                    break;
+                case 2:
+                    type = RenderJar.TEXTURE_2;
+                    type2 = RenderJar.TEXTURE_2_GLO;
+                    break;
+                case 3:
+                    type = RenderJar.TEXTURE_3;
+                    type2 = RenderJar.TEXTURE_3_GLO;
+                    break;
+                case 4:
+                    type = RenderJar.TEXTURE_4;
+                    type2 = RenderJar.TEXTURE_4_GLO;
+                    break;
+                case 5:
+                    type = RenderJar.TEXTURE_5;
+                    type2 = RenderJar.TEXTURE_5_GLO;
+                    break;
+            }
+            matrixStackIn.pushPose();
+            MODEL_PIXIE.animateInHouse(entity);
+            MODEL_PIXIE.renderToBuffer(matrixStackIn, bufferIn.getBuffer(type), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+            MODEL_PIXIE.renderToBuffer(matrixStackIn, bufferIn.getBuffer(type2), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
+            matrixStackIn.popPose();
+        }
+        RenderType pixieType = TEXTURE_0;
+        switch (meta) {
+            case 0:
+                pixieType = TEXTURE_0;
+                break;
+            case 1:
+                pixieType = TEXTURE_1;
+                break;
+            case 2:
+                pixieType = TEXTURE_2;
+                break;
+            case 3:
+                pixieType = TEXTURE_3;
+                break;
+            case 4:
+                pixieType = TEXTURE_4;
+                break;
+            case 5:
+                pixieType = TEXTURE_5;
+                break;
+        }
+        matrixStackIn.pushPose();
+        MODEL.renderToBuffer(matrixStackIn, bufferIn.getBuffer(pixieType), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
+        matrixStackIn.popPose();
+    }
+}

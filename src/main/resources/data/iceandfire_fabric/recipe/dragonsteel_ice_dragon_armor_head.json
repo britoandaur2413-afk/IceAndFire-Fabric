@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " DD",
+    "DDD"
+  ],
+  "key": {
+    "D": "#c:storage_blocks/dragonsteel_ice"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonarmor_dragonsteel_ice_head"
+  }
+}

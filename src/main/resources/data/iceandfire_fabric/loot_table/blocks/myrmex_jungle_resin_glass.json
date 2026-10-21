@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:myrmex_jungle_resin_glass"
+        }
+      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
+    }
+  ]
+}

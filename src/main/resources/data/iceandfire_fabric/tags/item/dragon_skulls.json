@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragon_skull_fire",
+    "iceandfire_fabric:dragon_skull_ice",
+    "iceandfire_fabric:dragon_skull_lightning"
+  ]
+}

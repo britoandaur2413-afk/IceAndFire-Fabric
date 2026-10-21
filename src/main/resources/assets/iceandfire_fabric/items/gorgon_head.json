@@ -1,0 +1,10 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire_fabric:item/gorgon_head",
+    "model": {
+      "type": "iceandfire_fabric:special",
+      "kind": "gorgon_head"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "S S",
+    "H H"
+  ],
+  "key": {
+    "S": "iceandfire_fabric:sea_serpent_scales_teal",
+    "H": "iceandfire_fabric:shiny_scales"
+  },
+  "result": {
+    "id": "iceandfire_fabric:tide_teal_leggings"
+  }
+}

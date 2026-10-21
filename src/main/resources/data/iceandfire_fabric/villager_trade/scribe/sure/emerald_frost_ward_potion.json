@@ -1,0 +1,16 @@
+{
+  "given_item_modifier": {
+    "type": "minecraft:set_potion",
+    "id": "iceandfire_fabric:frost_ward"
+  },
+  "gives": {
+    "id": "minecraft:potion"
+  },
+  "max_uses": 16,
+  "reputation_discount": 0.05,
+  "wants": {
+    "count": 2,
+    "id": "minecraft:emerald"
+  },
+  "xp": 2
+}

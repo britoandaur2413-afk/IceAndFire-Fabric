@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:dread_stone_bricks_mossy"
+        }
+      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
+    }
+  ]
+}

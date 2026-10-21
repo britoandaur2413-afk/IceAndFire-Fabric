@@ -1,0 +1,41 @@
+{
+  "additional_wants": {
+    "id": "minecraft:compass"
+  },
+  "given_item_modifier": [
+    {
+      "type": "minecraft:set_name",
+      "name": {
+        "translate": "filled_map.iceandfire_fabric.throne"
+      },
+      "target": "item_name"
+    },
+    {
+      "type": "minecraft:exploration_map",
+      "decoration": "minecraft:red_x",
+      "destination": "#iceandfire_fabric:on_throne_maps",
+      "search_radius": 100
+    },
+    {
+      "type": "minecraft:filtered",
+      "item_filter": {
+        "predicates": {
+          "minecraft:map_id": {}
+        }
+      },
+      "on_fail": {
+        "type": "minecraft:discard"
+      }
+    }
+  ],
+  "gives": {
+    "id": "minecraft:filled_map"
+  },
+  "max_uses": 3,
+  "reputation_discount": 0.2,
+  "wants": {
+    "count": 16,
+    "id": "minecraft:emerald"
+  },
+  "xp": 10
+}

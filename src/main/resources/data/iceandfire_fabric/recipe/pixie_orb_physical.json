@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " D ",
+    "DXD",
+    " D "
+  ],
+  "key": {
+    "D": "iceandfire_fabric:pixie_dust",
+    "X": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "iceandfire_fabric:pixie_orb_physical",
+    "count": 1
+  }
+}

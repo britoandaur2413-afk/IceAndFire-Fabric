@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "iceandfire_fabric:dragonbone_sword",
+    "iceandfire_fabric:ghost_ingot"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:ghost_sword"
+  }
+}

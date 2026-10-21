@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:pixie_cavern",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 36,
+    "separation": 18,
+    "salt": 556120973,
+    "spread_type": "linear"
+  }
+}

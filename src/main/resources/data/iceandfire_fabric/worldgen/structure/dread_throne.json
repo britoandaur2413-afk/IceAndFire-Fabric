@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire_fabric:dread_throne",
+  "biomes": "#iceandfire_fabric:has_structure/dread_throne",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

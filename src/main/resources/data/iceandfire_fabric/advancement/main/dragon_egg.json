@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:dragonegg_red"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragon_egg.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragon_egg.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/kill_if_dragon",
+  "criteria": {
+    "egg": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonegg_red",
+              "iceandfire_fabric:dragonegg_green",
+              "iceandfire_fabric:dragonegg_bronze",
+              "iceandfire_fabric:dragonegg_gray",
+              "iceandfire_fabric:dragonegg_white",
+              "iceandfire_fabric:dragonegg_blue",
+              "iceandfire_fabric:dragonegg_sapphire",
+              "iceandfire_fabric:dragonegg_silver",
+              "iceandfire_fabric:dragonegg_electric",
+              "iceandfire_fabric:dragonegg_amythest",
+              "iceandfire_fabric:dragonegg_copper",
+              "iceandfire_fabric:dragonegg_black"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

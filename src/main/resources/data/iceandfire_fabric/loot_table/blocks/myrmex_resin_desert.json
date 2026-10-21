@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:myrmex_resin_desert"
+        }
+      ],
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      }
+    }
+  ]
+}

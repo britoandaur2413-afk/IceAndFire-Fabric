@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": "iceandfire_fabric:dragonscales_electric"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonscale_electric"
+  }
+}

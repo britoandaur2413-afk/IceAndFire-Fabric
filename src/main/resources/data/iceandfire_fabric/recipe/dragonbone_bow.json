@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " DS",
+    "W S",
+    " DS"
+  ],
+  "key": {
+    "W": "#c:bones/wither",
+    "D": "iceandfire_fabric:dragonbone",
+    "S": "minecraft:string"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonbone_bow"
+  }
+}

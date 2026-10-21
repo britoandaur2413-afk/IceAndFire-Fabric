@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D D",
+    "DDD",
+    "DDD"
+  ],
+  "key": {
+    "D": "#c:ingots/dragonsteel_lightning"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_lightning_chestplate"
+  }
+}

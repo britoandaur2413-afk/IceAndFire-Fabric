@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "iceandfire_fabric:sheep"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "iceandfire_fabric:sheep"
+      }
+    ]
+  }
+}

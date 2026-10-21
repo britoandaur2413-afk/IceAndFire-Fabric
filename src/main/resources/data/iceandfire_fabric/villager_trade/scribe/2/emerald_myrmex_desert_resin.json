@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 2
+  },
+  "gives": {
+    "id": "iceandfire_fabric:myrmex_desert_resin"
+  },
+  "max_uses": 40,
+  "xp": 2,
+  "reputation_discount": 0.05
+}

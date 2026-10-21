@@ -1,0 +1,30 @@
+{
+	"required": true,
+	"package": "com.iafabric.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"EntityMixin",
+		"EntityThunderMixin",
+		"LivingEntityMixin",
+		"MobMixin",
+		"ProjectileMixin",
+		"StructureTemplatePoolAccessor",
+		"DamageSourceMixin",
+		"WorldGenRegionMixin",
+		"ServerPlayerMixin",
+		"PlayerDismountMixin",
+		"WardenMixin",
+		"VillagerScribeMixin",
+		"ServerExplosionMixin",
+		"BlockItemWardMixin",
+		"JigsawStructureAccessor",
+		"LivingEntityTotemInvoker",
+		"InteractionInvoker",
+		"StructureRoomMixin",
+		"RangedAttributeMixin",
+		"RegistryAliasMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

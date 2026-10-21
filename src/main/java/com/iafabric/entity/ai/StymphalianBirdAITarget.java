@@ -1,0 +1,40 @@
+package com.iafabric.entity.ai;
+
+import com.iafabric.IafConfig;
+import com.iafabric.entity.EntityGorgon;
+import com.iafabric.entity.EntityStymphalianBird;
+import com.google.common.base.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.golem.AbstractGolem;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+
+import org.jspecify.annotations.Nullable;
+
+public class StymphalianBirdAITarget extends NearestAttackableTargetGoal<LivingEntity> {
+    private final EntityStymphalianBird bird;
+
+    public StymphalianBirdAITarget(EntityStymphalianBird entityIn, Class<LivingEntity> classTarget, boolean checkSight) {
+        super(entityIn, classTarget, 0, checkSight, false, (entity, level) -> !EntityGorgon.isStoneMob(entity) && (entity instanceof Player && !((Player) entity).isCreative() || entity instanceof AbstractVillager || entity instanceof AbstractGolem || entity instanceof Animal && IafConfig.stympahlianBirdAttackAnimals));
+        this.bird = entityIn;
+    }
+
+
+    @Override
+    public boolean canUse() {
+        boolean supe = super.canUse();
+        if (target != null && bird.getVictor() != null && bird.getVictor().getUUID().equals(target.getUUID())) {
+            return false;
+        }
+        return supe && target != null && !target.getClass().equals(this.bird.getClass());
+    }
+
+    @Override
+    protected AABB getTargetSearchArea(double targetDistance) {
+        return this.bird.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
+    }
+}

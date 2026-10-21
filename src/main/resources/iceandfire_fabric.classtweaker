@@ -1,0 +1,24 @@
+classTweaker	v1	official
+# fields the original mod reached into
+accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+# the tide trident is a trident of its own type
+accessible field net/minecraft/world/entity/projectile/arrow/ThrownTrident ID_LOYALTY Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/arrow/ThrownTrident ID_FOIL Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/arrow/ThrownTrident dealtDamage Z
+accessible method net/minecraft/world/entity/projectile/arrow/ThrownTrident getLoyaltyFromItem (Lnet/minecraft/world/item/ItemStack;)B
+accessible method net/minecraft/world/damagesource/CombatTracker getMostSignificantFall ()Lnet/minecraft/world/damagesource/CombatEntry;
+# effects made of display entities (Vfx): their shape, how fast it changes, their light
+accessible method net/minecraft/world/entity/Display setTransformation (Lcom/mojang/math/Transformation;)V
+accessible method net/minecraft/world/entity/Display setTransformationInterpolationDuration (I)V
+accessible method net/minecraft/world/entity/Display setTransformationInterpolationDelay (I)V
+accessible method net/minecraft/world/entity/Display setPosRotInterpolationDuration (I)V
+accessible method net/minecraft/world/entity/Display setBrightnessOverride (Lnet/minecraft/util/Brightness;)V
+accessible method net/minecraft/world/entity/Display setViewRange (F)V
+accessible method net/minecraft/world/entity/Display setShadowRadius (F)V
+accessible method net/minecraft/world/entity/Display$BlockDisplay setBlockState (Lnet/minecraft/world/level/block/state/BlockState;)V
+# the scribe's sure trades (VillagerScribeMixin)
+accessible method net/minecraft/world/entity/npc/villager/AbstractVillager addOffersFromTradeSet (Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/trading/MerchantOffers;Lnet/minecraft/resources/ResourceKey;)V
+# Cryona's weapons floating to the player (item displays)
+accessible method net/minecraft/world/entity/Display$ItemDisplay setItemStack (Lnet/minecraft/world/item/ItemStack;)V
+accessible method net/minecraft/world/entity/Display$ItemDisplay setItemTransform (Lnet/minecraft/world/item/ItemDisplayContext;)V

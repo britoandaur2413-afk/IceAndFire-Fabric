@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "H H",
+    "SSS",
+    "S S"
+  ],
+  "key": {
+    "S": "iceandfire_fabric:sea_serpent_scales_blue",
+    "H": "iceandfire_fabric:shiny_scales"
+  },
+  "result": {
+    "id": "iceandfire_fabric:tide_blue_helmet"
+  }
+}

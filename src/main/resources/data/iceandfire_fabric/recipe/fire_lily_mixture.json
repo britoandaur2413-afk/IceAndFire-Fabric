@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:blaze_rod",
+    "iceandfire_fabric:fire_lily",
+    "minecraft:bowl"
+  ],
+  "result": {
+    "id": "iceandfire_fabric:fire_stew"
+  }
+}

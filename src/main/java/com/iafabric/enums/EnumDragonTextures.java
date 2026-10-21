@@ -1,0 +1,648 @@
+package com.iafabric.enums;
+
+import com.iafabric.entity.EntityDragonBase;
+import com.iafabric.entity.EntityDragonSkull;
+import com.iafabric.entity.EntityIceDragon;
+import com.iafabric.entity.EntityLightningDragon;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
+
+public enum EnumDragonTextures {
+    VARIANT1("red_", "blue_", "electric_"),
+    VARIANT2("green_", "white_", "amythest_"),
+    VARIANT3("bronze_", "sapphire_", "copper_"),
+    VARIANT4("gray_", "silver_", "black_");
+
+    public final Identifier FIRESTAGE1TEXTURE;
+    public final Identifier FIRESTAGE2TEXTURE;
+    public final Identifier FIRESTAGE3TEXTURE;
+    public final Identifier FIRESTAGE4TEXTURE;
+    public final Identifier FIRESTAGE5TEXTURE;
+    public final Identifier ICESTAGE1TEXTURE;
+    public final Identifier ICESTAGE2TEXTURE;
+    public final Identifier ICESTAGE3TEXTURE;
+    public final Identifier ICESTAGE4TEXTURE;
+    public final Identifier ICESTAGE5TEXTURE;
+    public final Identifier FIRESTAGE1SLEEPINGTEXTURE;
+    public final Identifier FIRESTAGE2SLEEPINGTEXTURE;
+    public final Identifier FIRESTAGE3SLEEPINGTEXTURE;
+    public final Identifier FIRESTAGE4SLEEPINGTEXTURE;
+    public final Identifier FIRESTAGE5SLEEPINGTEXTURE;
+    public final Identifier ICESTAGE1SLEEPINGTEXTURE;
+    public final Identifier ICESTAGE2SLEEPINGTEXTURE;
+    public final Identifier ICESTAGE3SLEEPINGTEXTURE;
+    public final Identifier ICESTAGE4SLEEPINGTEXTURE;
+    public final Identifier ICESTAGE5SLEEPINGTEXTURE;
+    public final Identifier FIRESTAGE1EYESTEXTURE;
+    public final Identifier FIRESTAGE2EYESTEXTURE;
+    public final Identifier FIRESTAGE3EYESTEXTURE;
+    public final Identifier FIRESTAGE4EYESTEXTURE;
+    public final Identifier FIRESTAGE5EYESTEXTURE;
+    public final Identifier ICESTAGE1EYESTEXTURE;
+    public final Identifier ICESTAGE2EYESTEXTURE;
+    public final Identifier ICESTAGE3EYESTEXTURE;
+    public final Identifier ICESTAGE4EYESTEXTURE;
+    public final Identifier ICESTAGE5EYESTEXTURE;
+    public final Identifier FIRESTAGE1SKELETONTEXTURE;
+    public final Identifier FIRESTAGE2SKELETONTEXTURE;
+    public final Identifier FIRESTAGE3SKELETONTEXTURE;
+    public final Identifier FIRESTAGE4SKELETONTEXTURE;
+    public final Identifier FIRESTAGE5SKELETONTEXTURE;
+    public final Identifier ICESTAGE1SKELETONTEXTURE;
+    public final Identifier ICESTAGE2SKELETONTEXTURE;
+    public final Identifier ICESTAGE3SKELETONTEXTURE;
+    public final Identifier ICESTAGE4SKELETONTEXTURE;
+    public final Identifier ICESTAGE5SKELETONTEXTURE;
+    public final Identifier FIRE_MALE_OVERLAY;
+    public final Identifier ICE_MALE_OVERLAY;
+
+    public final Identifier LIGHTNINGSTAGE1TEXTURE;
+    public final Identifier LIGHTNINGSTAGE2TEXTURE;
+    public final Identifier LIGHTNINGSTAGE3TEXTURE;
+    public final Identifier LIGHTNINGSTAGE4TEXTURE;
+    public final Identifier LIGHTNINGSTAGE5TEXTURE;
+    public final Identifier LIGHTNINGSTAGE1SLEEPINGTEXTURE;
+    public final Identifier LIGHTNINGSTAGE2SLEEPINGTEXTURE;
+    public final Identifier LIGHTNINGSTAGE3SLEEPINGTEXTURE;
+    public final Identifier LIGHTNINGSTAGE4SLEEPINGTEXTURE;
+    public final Identifier LIGHTNINGSTAGE5SLEEPINGTEXTURE;
+    public final Identifier LIGHTNINGSTAGE1EYESTEXTURE;
+    public final Identifier LIGHTNINGSTAGE2EYESTEXTURE;
+    public final Identifier LIGHTNINGSTAGE3EYESTEXTURE;
+    public final Identifier LIGHTNINGSTAGE4EYESTEXTURE;
+    public final Identifier LIGHTNINGSTAGE5EYESTEXTURE;
+    public final Identifier LIGHTNINGSTAGE1SKELETONTEXTURE;
+    public final Identifier LIGHTNINGSTAGE2SKELETONTEXTURE;
+    public final Identifier LIGHTNINGSTAGE3SKELETONTEXTURE;
+    public final Identifier LIGHTNINGSTAGE4SKELETONTEXTURE;
+    public final Identifier LIGHTNINGSTAGE5SKELETONTEXTURE;
+
+    public final Identifier LIGHTNING_MALE_OVERLAY;
+
+    EnumDragonTextures(String fireVariant, String iceVariant, String lightningVariant) {
+        FIRESTAGE1TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "1.png");
+        FIRESTAGE2TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "2.png");
+        FIRESTAGE3TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "3.png");
+        FIRESTAGE4TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "4.png");
+        FIRESTAGE5TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "5.png");
+        FIRESTAGE1SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "1_sleeping.png");
+        FIRESTAGE2SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "2_sleeping.png");
+        FIRESTAGE3SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "3_sleeping.png");
+        FIRESTAGE4SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "4_sleeping.png");
+        FIRESTAGE5SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "5_sleeping.png");
+        FIRESTAGE1EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "1_eyes.png");
+        FIRESTAGE2EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "2_eyes.png");
+        FIRESTAGE3EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "3_eyes.png");
+        FIRESTAGE4EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "4_eyes.png");
+        FIRESTAGE5EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + fireVariant + "5_eyes.png");
+        FIRESTAGE1SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/fire_skeleton_1.png");
+        FIRESTAGE2SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/fire_skeleton_2.png");
+        FIRESTAGE3SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/fire_skeleton_3.png");
+        FIRESTAGE4SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/fire_skeleton_4.png");
+        FIRESTAGE5SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/fire_skeleton_5.png");
+        ICESTAGE1TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "1.png");
+        ICESTAGE2TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "2.png");
+        ICESTAGE3TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "3.png");
+        ICESTAGE4TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "4.png");
+        ICESTAGE5TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "5.png");
+        ICESTAGE1SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "1_sleeping.png");
+        ICESTAGE2SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "2_sleeping.png");
+        ICESTAGE3SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "3_sleeping.png");
+        ICESTAGE4SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "4_sleeping.png");
+        ICESTAGE5SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "5_sleeping.png");
+        ICESTAGE1EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "1_eyes.png");
+        ICESTAGE2EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "2_eyes.png");
+        ICESTAGE3EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "3_eyes.png");
+        ICESTAGE4EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "4_eyes.png");
+        ICESTAGE5EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + iceVariant + "5_eyes.png");
+        ICESTAGE1SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/ice_skeleton_1.png");
+        ICESTAGE2SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/ice_skeleton_2.png");
+        ICESTAGE3SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/ice_skeleton_3.png");
+        ICESTAGE4SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/ice_skeleton_4.png");
+        ICESTAGE5SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/ice_skeleton_5.png");
+        FIRE_MALE_OVERLAY = Identifier.parse("iceandfire_fabric:textures/models/firedragon/male_" + fireVariant.substring(0, fireVariant.length() - 1) + ".png");
+        ICE_MALE_OVERLAY = Identifier.parse("iceandfire_fabric:textures/models/icedragon/male_" + iceVariant.substring(0, iceVariant.length() - 1) + ".png");
+
+        LIGHTNINGSTAGE1TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "1.png");
+        LIGHTNINGSTAGE2TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "2.png");
+        LIGHTNINGSTAGE3TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "3.png");
+        LIGHTNINGSTAGE4TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "4.png");
+        LIGHTNINGSTAGE5TEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "5.png");
+        LIGHTNINGSTAGE1SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "1_sleeping.png");
+        LIGHTNINGSTAGE2SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "2_sleeping.png");
+        LIGHTNINGSTAGE3SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "3_sleeping.png");
+        LIGHTNINGSTAGE4SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "4_sleeping.png");
+        LIGHTNINGSTAGE5SLEEPINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "5_sleeping.png");
+        LIGHTNINGSTAGE1EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "1_eyes.png");
+        LIGHTNINGSTAGE2EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "2_eyes.png");
+        LIGHTNINGSTAGE3EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "3_eyes.png");
+        LIGHTNINGSTAGE4EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "4_eyes.png");
+        LIGHTNINGSTAGE5EYESTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + lightningVariant + "5_eyes.png");
+        LIGHTNINGSTAGE1SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/lightning_skeleton_1.png");
+        LIGHTNINGSTAGE2SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/lightning_skeleton_2.png");
+        LIGHTNINGSTAGE3SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/lightning_skeleton_3.png");
+        LIGHTNINGSTAGE4SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/lightning_skeleton_4.png");
+        LIGHTNINGSTAGE5SKELETONTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/lightning_skeleton_5.png");
+        LIGHTNING_MALE_OVERLAY = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/male_" + lightningVariant.substring(0, lightningVariant.length() - 1) + ".png");
+
+    }
+
+
+    public static Identifier getTextureFromDragon(EntityDragonBase dragon) {
+        if (dragon instanceof EntityIceDragon) {
+            return getIceDragonTextures(dragon);
+        } else if (dragon instanceof EntityLightningDragon) {
+            return getLightningDragonTextures(dragon);
+        } else {
+            return getFireDragonTextures(dragon);
+        }
+    }
+
+
+    public static final Identifier DREAD_EYES = Identifier.parse("iceandfire_fabric:textures/models/dread/black_frost_eyes.png");
+    /** The dread's undead dragons: green soul fire in their eyes (Black Frost's are ice). */
+    public static final Identifier DREAD_DRAGON_EYES = Identifier.parse("iceandfire_fabric:textures/models/dread/dread_dragon_eyes.png");
+
+    public static Identifier getEyeTextureFromDragon(EntityDragonBase dragon) {
+        if (dragon.getDreadLook() == 1) {
+            return DREAD_DRAGON_EYES;
+        }
+        if (dragon.getDreadLook() > 0) {
+            return DREAD_EYES;
+        }
+        EnumDragonTextures textures = getDragonEnum(dragon);
+        if (dragon instanceof EntityIceDragon) {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.ICESTAGE1EYESTEXTURE;
+                case 2:
+                    return textures.ICESTAGE2EYESTEXTURE;
+                case 3:
+                    return textures.ICESTAGE3EYESTEXTURE;
+                case 4:
+                    return textures.ICESTAGE4EYESTEXTURE;
+                case 5:
+                    return textures.ICESTAGE5EYESTEXTURE;
+                default:
+                    return textures.ICESTAGE4EYESTEXTURE;
+            }
+        } else if (dragon instanceof EntityLightningDragon) {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.LIGHTNINGSTAGE1EYESTEXTURE;
+                case 2:
+                    return textures.LIGHTNINGSTAGE2EYESTEXTURE;
+                case 3:
+                    return textures.LIGHTNINGSTAGE3EYESTEXTURE;
+                case 4:
+                    return textures.LIGHTNINGSTAGE4EYESTEXTURE;
+                case 5:
+                    return textures.LIGHTNINGSTAGE5EYESTEXTURE;
+                default:
+                    return textures.LIGHTNINGSTAGE4EYESTEXTURE;
+            }
+        } else {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.FIRESTAGE1EYESTEXTURE;
+                case 2:
+                    return textures.FIRESTAGE2EYESTEXTURE;
+                case 3:
+                    return textures.FIRESTAGE3EYESTEXTURE;
+                case 4:
+                    return textures.FIRESTAGE4EYESTEXTURE;
+                case 5:
+                    return textures.FIRESTAGE5EYESTEXTURE;
+                default:
+                    return textures.FIRESTAGE4EYESTEXTURE;
+            }
+        }
+    }
+
+    private static Identifier getFireDragonTextures(EntityDragonBase dragon) {
+        EnumDragonTextures textures = getDragonEnum(dragon);
+        if (dragon.isModelDead()) {
+            if (dragon.getDeathStage() >= (dragon.getAgeInDays() / 5) / 2) {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.FIRESTAGE1SKELETONTEXTURE;
+                    case 2:
+                        return textures.FIRESTAGE2SKELETONTEXTURE;
+                    case 3:
+                        return textures.FIRESTAGE3SKELETONTEXTURE;
+                    case 4:
+                        return textures.FIRESTAGE4SKELETONTEXTURE;
+                    case 5:
+                        return textures.FIRESTAGE5SKELETONTEXTURE;
+                    default:
+                        return textures.FIRESTAGE4SKELETONTEXTURE;
+                }
+            } else {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.FIRESTAGE1SLEEPINGTEXTURE;
+                    case 2:
+                        return textures.FIRESTAGE2SLEEPINGTEXTURE;
+                    case 3:
+                        return textures.FIRESTAGE3SLEEPINGTEXTURE;
+                    case 4:
+                        return textures.FIRESTAGE4SLEEPINGTEXTURE;
+                    case 5:
+                        return textures.FIRESTAGE5SLEEPINGTEXTURE;
+                    default:
+                        return textures.FIRESTAGE4SLEEPINGTEXTURE;
+                }
+            }
+        }
+        if (dragon.isSleeping() || dragon.isBlinking()) {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.FIRESTAGE1SLEEPINGTEXTURE;
+                case 2:
+                    return textures.FIRESTAGE2SLEEPINGTEXTURE;
+                case 3:
+                    return textures.FIRESTAGE3SLEEPINGTEXTURE;
+                case 4:
+                    return textures.FIRESTAGE4SLEEPINGTEXTURE;
+                case 5:
+                    return textures.FIRESTAGE5SLEEPINGTEXTURE;
+                default:
+                    return textures.FIRESTAGE4SLEEPINGTEXTURE;
+            }
+        } else {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.FIRESTAGE1TEXTURE;
+                case 2:
+                    return textures.FIRESTAGE2TEXTURE;
+                case 3:
+                    return textures.FIRESTAGE3TEXTURE;
+                case 4:
+                    return textures.FIRESTAGE4TEXTURE;
+                case 5:
+                    return textures.FIRESTAGE5TEXTURE;
+                default:
+                    return textures.FIRESTAGE4TEXTURE;
+            }
+        }
+    }
+
+    private static Identifier getIceDragonTextures(EntityDragonBase dragon) {
+        EnumDragonTextures textures = getDragonEnum(dragon);
+        if (dragon.isModelDead()) {
+            if (dragon.getDeathStage() >= (dragon.getAgeInDays() / 5) / 2) {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.ICESTAGE1SKELETONTEXTURE;
+                    case 2:
+                        return textures.ICESTAGE2SKELETONTEXTURE;
+                    case 3:
+                        return textures.ICESTAGE3SKELETONTEXTURE;
+                    case 4:
+                        return textures.ICESTAGE4SKELETONTEXTURE;
+                    case 5:
+                        return textures.ICESTAGE5SKELETONTEXTURE;
+                    default:
+                        return textures.ICESTAGE4SKELETONTEXTURE;
+                }
+            } else {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.ICESTAGE1SLEEPINGTEXTURE;
+                    case 2:
+                        return textures.ICESTAGE2SLEEPINGTEXTURE;
+                    case 3:
+                        return textures.ICESTAGE3SLEEPINGTEXTURE;
+                    case 4:
+                        return textures.ICESTAGE4SLEEPINGTEXTURE;
+                    case 5:
+                        return textures.ICESTAGE5SLEEPINGTEXTURE;
+                    default:
+                        return textures.ICESTAGE4SLEEPINGTEXTURE;
+                }
+            }
+        }
+        if (dragon.isSleeping() || dragon.isBlinking()) {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.ICESTAGE1SLEEPINGTEXTURE;
+                case 2:
+                    return textures.ICESTAGE2SLEEPINGTEXTURE;
+                case 3:
+                    return textures.ICESTAGE3SLEEPINGTEXTURE;
+                case 4:
+                    return textures.ICESTAGE4SLEEPINGTEXTURE;
+                case 5:
+                    return textures.ICESTAGE5SLEEPINGTEXTURE;
+                default:
+                    return textures.ICESTAGE4SLEEPINGTEXTURE;
+            }
+        } else {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.ICESTAGE1TEXTURE;
+                case 2:
+                    return textures.ICESTAGE2TEXTURE;
+                case 3:
+                    return textures.ICESTAGE3TEXTURE;
+                case 4:
+                    return textures.ICESTAGE4TEXTURE;
+                case 5:
+                    return textures.ICESTAGE5TEXTURE;
+                default:
+                    return textures.ICESTAGE4TEXTURE;
+            }
+        }
+    }
+
+    private static Identifier getLightningDragonTextures(EntityDragonBase dragon) {
+        EnumDragonTextures textures = getDragonEnum(dragon);
+        if (dragon.isModelDead()) {
+            if (dragon.getDeathStage() >= (dragon.getAgeInDays() / 5) / 2) {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.LIGHTNINGSTAGE1SKELETONTEXTURE;
+                    case 2:
+                        return textures.LIGHTNINGSTAGE2SKELETONTEXTURE;
+                    case 3:
+                        return textures.LIGHTNINGSTAGE3SKELETONTEXTURE;
+                    case 4:
+                        return textures.LIGHTNINGSTAGE4SKELETONTEXTURE;
+                    case 5:
+                        return textures.LIGHTNINGSTAGE5SKELETONTEXTURE;
+                    default:
+                        return textures.LIGHTNINGSTAGE4SKELETONTEXTURE;
+                }
+            } else {
+                switch (dragon.getDragonStage()) {
+                    case 1:
+                        return textures.LIGHTNINGSTAGE1SLEEPINGTEXTURE;
+                    case 2:
+                        return textures.LIGHTNINGSTAGE2SLEEPINGTEXTURE;
+                    case 3:
+                        return textures.LIGHTNINGSTAGE3SLEEPINGTEXTURE;
+                    case 4:
+                        return textures.LIGHTNINGSTAGE4SLEEPINGTEXTURE;
+                    case 5:
+                        return textures.LIGHTNINGSTAGE5SLEEPINGTEXTURE;
+                    default:
+                        return textures.LIGHTNINGSTAGE4SLEEPINGTEXTURE;
+                }
+            }
+        }
+        if (dragon.isSleeping() || dragon.isBlinking()) {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.LIGHTNINGSTAGE1SLEEPINGTEXTURE;
+                case 2:
+                    return textures.LIGHTNINGSTAGE2SLEEPINGTEXTURE;
+                case 3:
+                    return textures.LIGHTNINGSTAGE3SLEEPINGTEXTURE;
+                case 4:
+                    return textures.LIGHTNINGSTAGE4SLEEPINGTEXTURE;
+                case 5:
+                    return textures.LIGHTNINGSTAGE5SLEEPINGTEXTURE;
+                default:
+                    return textures.LIGHTNINGSTAGE4SLEEPINGTEXTURE;
+            }
+        } else {
+            switch (dragon.getDragonStage()) {
+                case 1:
+                    return textures.LIGHTNINGSTAGE1TEXTURE;
+                case 2:
+                    return textures.LIGHTNINGSTAGE2TEXTURE;
+                case 3:
+                    return textures.LIGHTNINGSTAGE3TEXTURE;
+                case 4:
+                    return textures.LIGHTNINGSTAGE4TEXTURE;
+                case 5:
+                    return textures.LIGHTNINGSTAGE5TEXTURE;
+                default:
+                    return textures.LIGHTNINGSTAGE4TEXTURE;
+            }
+        }
+    }
+
+
+    public static EnumDragonTextures getDragonEnum(EntityDragonBase dragon) {
+        switch (dragon.getVariant()) {
+            default:
+                return VARIANT1;
+            case 1:
+                return VARIANT2;
+            case 2:
+                return VARIANT3;
+            case 3:
+                return VARIANT4;
+        }
+    }
+
+    public static Identifier getFireDragonSkullTextures(EntityDragonSkull skull) {
+        switch (skull.getDragonStage()) {
+            case 1:
+                return VARIANT1.FIRESTAGE1SKELETONTEXTURE;
+            case 2:
+                return VARIANT1.FIRESTAGE2SKELETONTEXTURE;
+            case 3:
+                return VARIANT1.FIRESTAGE3SKELETONTEXTURE;
+            case 4:
+                return VARIANT1.FIRESTAGE4SKELETONTEXTURE;
+            case 5:
+                return VARIANT1.FIRESTAGE5SKELETONTEXTURE;
+            default:
+                return VARIANT1.FIRESTAGE4SKELETONTEXTURE;
+        }
+    }
+
+    public static Identifier getIceDragonSkullTextures(EntityDragonSkull skull) {
+        switch (skull.getDragonStage()) {
+            case 1:
+                return VARIANT1.ICESTAGE1SKELETONTEXTURE;
+            case 2:
+                return VARIANT1.ICESTAGE2SKELETONTEXTURE;
+            case 3:
+                return VARIANT1.ICESTAGE3SKELETONTEXTURE;
+            case 4:
+                return VARIANT1.ICESTAGE4SKELETONTEXTURE;
+            case 5:
+                return VARIANT1.ICESTAGE5SKELETONTEXTURE;
+            default:
+                return VARIANT1.ICESTAGE4SKELETONTEXTURE;
+        }
+    }
+
+    public static Identifier getLightningDragonSkullTextures(EntityDragonSkull skull) {
+        switch (skull.getDragonStage()) {
+            case 1:
+                return VARIANT1.LIGHTNINGSTAGE1SKELETONTEXTURE;
+            case 2:
+                return VARIANT1.LIGHTNINGSTAGE2SKELETONTEXTURE;
+            case 3:
+                return VARIANT1.LIGHTNINGSTAGE3SKELETONTEXTURE;
+            case 4:
+                return VARIANT1.LIGHTNINGSTAGE4SKELETONTEXTURE;
+            case 5:
+                return VARIANT1.LIGHTNINGSTAGE5SKELETONTEXTURE;
+            default:
+                return VARIANT1.LIGHTNINGSTAGE4SKELETONTEXTURE;
+        }
+    }
+
+    public enum Armor {
+        EMPTY(""),
+        ARMORBODY1("armor_body_1"),
+        ARMORBODY2("armor_body_2"),
+        ARMORBODY3("armor_body_3"),
+        ARMORBODY4("armor_body_4"),
+        ARMORBODY5("armor_body_5"),
+        ARMORBODY6("armor_body_6"),
+        ARMORBODY7("armor_body_7"),
+        ARMORBODY8("armor_body_8"),
+        ARMORBODY9("armor_body_9"),
+        ARMORHEAD1("armor_head_1"),
+        ARMORHEAD2("armor_head_2"),
+        ARMORHEAD3("armor_head_3"),
+        ARMORHEAD4("armor_head_4"),
+        ARMORHEAD5("armor_head_5"),
+        ARMORHEAD6("armor_head_6"),
+        ARMORHEAD7("armor_head_7"),
+        ARMORHEAD8("armor_head_8"),
+        ARMORHEAD9("armor_head_9"),
+        ARMORNECK1("armor_neck_1"),
+        ARMORNECK2("armor_neck_2"),
+        ARMORNECK3("armor_neck_3"),
+        ARMORNECK4("armor_neck_4"),
+        ARMORNECK5("armor_neck_5"),
+        ARMORNECK6("armor_neck_6"),
+        ARMORNECK7("armor_neck_7"),
+        ARMORNECK8("armor_neck_8"),
+        ARMORNECK9("armor_neck_9"),
+        ARMORTAIL1("armor_tail_1"),
+        ARMORTAIL2("armor_tail_2"),
+        ARMORTAIL3("armor_tail_3"),
+        ARMORTAIL4("armor_tail_4"),
+        ARMORTAIL5("armor_tail_5"),
+        ARMORTAIL6("armor_tail_6"),
+        ARMORTAIL7("armor_tail_7"),
+        ARMORTAIL8("armor_tail_8"),
+        ARMORTAIL9("armor_tail_9");
+
+        public final Identifier FIRETEXTURE;
+        public final Identifier ICETEXTURE;
+        public final Identifier LIGHTNINGTEXTURE;
+
+        Armor(String resource) {
+            if (!resource.isEmpty()) {
+                FIRETEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/" + resource + ".png");
+                ICETEXTURE = Identifier.parse("iceandfire_fabric:textures/models/icedragon/" + resource + ".png");
+                LIGHTNINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/lightningdragon/" + resource + ".png");
+            } else {
+                FIRETEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/empty.png");
+                ICETEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/empty.png");
+                LIGHTNINGTEXTURE = Identifier.parse("iceandfire_fabric:textures/models/firedragon/empty.png");
+            }
+        }
+
+        public static Armor getArmorForDragon(EntityDragonBase dragon, EquipmentSlot slot) {
+            int armor = dragon.getArmorOrdinal(dragon.getItemBySlot(slot));
+            switch (slot) {
+                case CHEST:
+                    //neck
+                    switch (armor) {
+                        default:
+                            return EMPTY;
+                        case 1:
+                            return ARMORNECK1;
+                        case 2:
+                            return ARMORNECK2;
+                        case 3:
+                            return ARMORNECK3;
+                        case 4:
+                            return ARMORNECK4;
+                        case 5:
+                            return ARMORNECK5;
+                        case 6:
+                            return ARMORNECK6;
+                        case 7:
+                            return ARMORNECK7;
+                        case 8:
+                            return ARMORNECK8;
+                        case 9:
+                            return ARMORNECK9;
+                    }
+                case LEGS:
+                    //body
+                    switch (armor) {
+                        default:
+                            return EMPTY;
+                        case 1:
+                            return ARMORBODY1;
+                        case 2:
+                            return ARMORBODY2;
+                        case 3:
+                            return ARMORBODY3;
+                        case 4:
+                            return ARMORBODY4;
+                        case 5:
+                            return ARMORBODY5;
+                        case 6:
+                            return ARMORBODY6;
+                        case 7:
+                            return ARMORBODY7;
+                        case 8:
+                            return ARMORBODY8;
+                        case 9:
+                            return ARMORBODY9;
+                    }
+                case FEET:
+                    //tail
+                    switch (armor) {
+                        default:
+                            return EMPTY;
+                        case 1:
+                            return ARMORTAIL1;
+                        case 2:
+                            return ARMORTAIL2;
+                        case 3:
+                            return ARMORTAIL3;
+                        case 4:
+                            return ARMORTAIL4;
+                        case 5:
+                            return ARMORTAIL5;
+                        case 6:
+                            return ARMORTAIL6;
+                        case 7:
+                            return ARMORTAIL7;
+                        case 8:
+                            return ARMORTAIL8;
+                        case 9:
+                            return ARMORTAIL9;
+                    }
+                default:
+                    //head
+                    switch (armor) {
+                        default:
+                            return EMPTY;
+                        case 1:
+                            return ARMORHEAD1;
+                        case 2:
+                            return ARMORHEAD2;
+                        case 3:
+                            return ARMORHEAD3;
+                        case 4:
+                            return ARMORHEAD4;
+                        case 5:
+                            return ARMORHEAD5;
+                        case 6:
+                            return ARMORHEAD6;
+                        case 7:
+                            return ARMORHEAD7;
+                        case 8:
+                            return ARMORHEAD8;
+                        case 9:
+                            return ARMORHEAD9;
+                    }
+            }
+        }
+    }
+}

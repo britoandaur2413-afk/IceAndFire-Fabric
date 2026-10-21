@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "S S"
+  ],
+  "key": {
+    "S": "iceandfire_fabric:dragonscales_bronze"
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_bronze_boots"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D D",
+    "DDD",
+    "DDD"
+  ],
+  "key": {
+    "D": "#c:ingots/dragonsteel_fire"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_fire_chestplate"
+  }
+}

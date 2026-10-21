@@ -1,0 +1,109 @@
+{
+  "pools": [
+    {
+      "rolls": 3,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:deathworm_chitin_red",
+          "weight": 30,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 5,
+                "max": 12
+              }
+            },
+            {
+              "type": "minecraft:enchanted_count_increase",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 2
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rotten_flesh",
+          "weight": 30,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 10
+              }
+            },
+            {
+              "type": "minecraft:enchanted_count_increase",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:deathworm_egg_giant",
+          "weight": 30,
+          "modifier": [
+            {
+              "type": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": -2,
+                "max": 1
+              }
+            },
+            {
+              "type": "minecraft:enchanted_count_increase",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 1
+              },
+              "enchantment": "minecraft:looting"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:deathworm_tounge",
+          "weight": 1
+        }
+      ],
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:killed_by_player"
+          },
+          {
+            "type": "minecraft:random_chance_with_enchanted_bonus",
+            "enchantment": "minecraft:looting",
+            "unenchanted_chance": 0.025,
+            "enchanted_chance": {
+              "type": "minecraft:linear",
+              "base": 0.035,
+              "per_level_above_first": 0.01
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

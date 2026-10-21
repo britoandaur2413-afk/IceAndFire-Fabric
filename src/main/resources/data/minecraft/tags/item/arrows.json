@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:stymphalian_arrow",
+    "iceandfire_fabric:amphithere_arrow",
+    "iceandfire_fabric:sea_serpent_arrow",
+    "iceandfire_fabric:hydra_arrow"
+  ]
+}
