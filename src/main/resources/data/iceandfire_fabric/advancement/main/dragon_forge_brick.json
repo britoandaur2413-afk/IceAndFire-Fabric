@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:dragonforge_fire_brick"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragon_forge_brick.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragon_forge_brick.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/kill_if_dragon",
+  "criteria": {
+    "forge": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonforge_fire_brick",
+              "iceandfire_fabric:dragonforge_ice_brick",
+              "iceandfire_fabric:dragonforge_lightning_brick"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "forge"
+    ]
+  ]
+}

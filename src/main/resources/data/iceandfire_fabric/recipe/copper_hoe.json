@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SS",
+    " T",
+    " T"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/copper"
+    },
+    "T": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:copper_hoe"
+  }
+}

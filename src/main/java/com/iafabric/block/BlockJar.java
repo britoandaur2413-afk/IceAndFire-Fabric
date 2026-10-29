@@ -1,0 +1,151 @@
+package com.iafabric.block;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.world.ItemInteractionResult;
+
+import net.minecraft.world.level.material.MapColor;
+import com.iafabric.entity.tile.TileEntityJar;
+import com.iafabric.item.IafItemRegistry;
+import com.iafabric.misc.IafSoundRegistry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
+
+import org.jetbrains.annotations.Nullable;
+
+import static com.iafabric.entity.tile.IafTileEntityRegistry.PIXIE_JAR;
+
+public class BlockJar extends BaseEntityBlock {
+    protected static final VoxelShape AABB = Block.box(3, 0, 3, 13, 16, 13);
+    public Item itemBlock;
+    private final boolean empty;
+    private final int pixieType;
+
+    public BlockJar(int pixieType) {
+        super(
+            pixieType != -1 ?
+                IafBlockRegistry.props().mapColor(MapColor.NONE)
+                    .noOcclusion()
+                    .dynamicShape()
+                    .strength(1, 2)
+                    .sound(SoundType.GLASS)
+                    .lightLevel((state) -> {
+                        return pixieType == -1 ? 0 : 10;
+                    })
+                    .dropsLike(IafBlockRegistry.JAR_EMPTY)
+				: IafBlockRegistry.props().mapColor(MapColor.NONE)
+                .noOcclusion()
+                .dynamicShape()
+                .strength(1, 2)
+					.sound(SoundType.GLASS)
+		);
+
+        this.empty = pixieType == -1;
+        this.pixieType = pixieType;
+    }
+
+    static String name(int pixieType) {
+        if (pixieType == -1)
+            return "pixie_jar_empty";
+        return "pixie_jar_%d".formatted(pixieType);
+    }
+
+    @Override
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter worldIn, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+        return AABB;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(@NotNull BlockState state, @NotNull BlockGetter worldIn, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+        return AABB;
+    }
+
+
+
+    public void dropPixie(Level world, BlockPos pos) {
+        if (world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof TileEntityJar && ((TileEntityJar) world.getBlockEntity(pos)).hasPixie) {
+            ((TileEntityJar) world.getBlockEntity(pos)).releasePixie();
+        }
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult resultIn) {
+        if (!empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof TileEntityJar && ((TileEntityJar) world.getBlockEntity(pos)).hasPixie && ((TileEntityJar) world.getBlockEntity(pos)).hasProduced) {
+            ((TileEntityJar) world.getBlockEntity(pos)).hasProduced = false;
+            ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItemRegistry.PIXIE_DUST));
+            if (!world.isClientSide) {
+                world.addFreshEntity(item);
+            }
+            world.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSoundRegistry.PIXIE_HURT, SoundSource.NEUTRAL, 1, 1, false);
+            return ItemInteractionResult.SUCCESS;
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+
+    @Override
+    public RenderShape getRenderShape(@NotNull BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    public void setPlacedBy(Level world, @NotNull BlockPos pos, @NotNull BlockState state, LivingEntity placer, @NotNull ItemStack stack) {
+        if (world.getBlockEntity(pos) instanceof TileEntityJar) {
+            TileEntityJar jar = ((TileEntityJar) world.getBlockEntity(pos));
+            if (!empty) {
+                jar.hasPixie = true;
+                jar.pixieType = pixieType;
+            } else {
+                jar.hasPixie = false;
+            }
+            jar.setChanged();
+            // the client sees the pixie inside at once
+            world.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
+        }
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> entityType) {
+        return createTickerHelper(entityType, PIXIE_JAR, TileEntityJar::tick);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new TileEntityJar(pos, state, empty);
+    }
+
+	@Override
+	protected MapCodec<? extends BaseEntityBlock> codec() {
+		return MapCodec.unit(this);
+	}
+
+    @Override
+    protected void onRemove(BlockState state, net.minecraft.world.level.Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof com.iafabric.entity.tile.TileEntityJar tile) {
+            tile.onBroken();
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+}

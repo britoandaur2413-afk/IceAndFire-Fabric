@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:dragon_hall",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 72,
+    "separation": 36,
+    "salt": 1874122567,
+    "spread_type": "linear"
+  }
+}

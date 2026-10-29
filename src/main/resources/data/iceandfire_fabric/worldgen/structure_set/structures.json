@@ -1,0 +1,23 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:graveyard",
+      "weight": 48
+    },
+    {
+      "structure": "iceandfire_fabric:mausoleum",
+      "weight": 30
+    },
+    {
+      "structure": "iceandfire_fabric:gorgon_temple",
+      "weight": 16
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 32,
+    "separation": 16,
+    "salt": 342226450,
+    "spread_type": "linear"
+  }
+}

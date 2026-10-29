@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T T",
+    "TTT",
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "item": "iceandfire_fabric:troll_leather_forest"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:forest_troll_leather_chestplate"
+  }
+}

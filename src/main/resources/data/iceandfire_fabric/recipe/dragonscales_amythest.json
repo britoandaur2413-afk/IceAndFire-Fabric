@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "iceandfire_fabric:dragonscale_amythest"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonscales_amythest",
+    "count": 9
+  }
+}

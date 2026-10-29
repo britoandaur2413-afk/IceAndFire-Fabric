@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CC",
+    " B",
+    " B"
+  ],
+  "key": {
+    "C": {
+      "item": "iceandfire_fabric:myrmex_desert_chitin"
+    },
+    "B": {
+      "tag": "c:bones/wither"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:myrmex_desert_hoe"
+  }
+}

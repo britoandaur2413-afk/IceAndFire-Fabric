@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/silver"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_silver_metal_chestplate"
+  }
+}

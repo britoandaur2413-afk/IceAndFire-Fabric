@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:fire_lily",
+    "iceandfire_fabric:frost_lily",
+    "iceandfire_fabric:lightning_lily"
+  ]
+}

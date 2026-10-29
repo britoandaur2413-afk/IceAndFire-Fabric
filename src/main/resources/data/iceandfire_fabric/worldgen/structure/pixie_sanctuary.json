@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire_fabric:pixie_sanctuary",
+  "biomes": "#iceandfire_fabric:has_structure/pixie_sanctuary",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

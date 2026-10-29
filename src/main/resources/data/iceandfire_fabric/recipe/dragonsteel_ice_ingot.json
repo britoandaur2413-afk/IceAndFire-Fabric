@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:storage_blocks/dragonsteel_ice"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_ice_ingot",
+    "count": 9
+  }
+}

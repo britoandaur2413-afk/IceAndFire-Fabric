@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "S S"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:ingots/copper"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_copper_metal_helmet"
+  }
+}

@@ -1,0 +1,45 @@
+{
+	"schemaVersion": 1,
+	"id": "iceandfire_fabric",
+	"version": "${version}",
+	"name": "Ice and Fire Fabric",
+	"description": "Dragons and other mythological creatures. An unofficial Fabric port of Ice and Fire by Alexthe666, with art by Raptorfarian.",
+	"authors": [
+		"Alexthe666 (original mod)",
+		"Raptorfarian (original art)",
+		"TheBv (original 1.18 port)",
+		"Escobar (Fabric port)"
+	],
+	"license": "LGPL-3.0-only",
+	"icon": "assets/iceandfire_fabric/textures/logo.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.iafabric.IafMod"
+		],
+		"client": [
+			"com.iafabric.client.IafClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"mixins": [
+		"iceandfire_fabric.mixins.json",
+		{
+			"config": "iceandfire_fabric.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"accessWidener": "iceandfire_fabric.accesswidener",
+	"custom": {
+		"loom:injected_interfaces": {
+			"net/minecraft/class_2487": [
+				"com/iafabric/compat/CompoundTagCompat"
+			]
+		}
+	}
+}

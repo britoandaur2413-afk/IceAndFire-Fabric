@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DSD",
+    "DDD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:stone"
+    },
+    "S": {
+      "item": "iceandfire_fabric:dread_shard"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:dread_stone",
+    "count": 8
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "STS",
+    "SFS",
+    "SSS"
+  ],
+  "key": {
+    "T": {
+      "item": "iceandfire_fabric:siren_tear"
+    },
+    "S": {
+      "item": "iceandfire_fabric:shiny_scales"
+    },
+    "F": {
+      "item": "iceandfire_fabric:dragon_flute"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:siren_flute"
+  }
+}

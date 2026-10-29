@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": [
+    {
+      "item": "iceandfire_fabric:silver_pickaxe"
+    },
+    {
+      "item": "iceandfire_fabric:silver_shovel"
+    },
+    {
+      "item": "iceandfire_fabric:silver_axe"
+    },
+    {
+      "item": "iceandfire_fabric:silver_hoe"
+    },
+    {
+      "item": "iceandfire_fabric:silver_sword"
+    },
+    {
+      "item": "iceandfire_fabric:armor_silver_metal_helmet"
+    },
+    {
+      "item": "iceandfire_fabric:armor_silver_metal_chestplate"
+    },
+    {
+      "item": "iceandfire_fabric:armor_silver_metal_leggings"
+    },
+    {
+      "item": "iceandfire_fabric:armor_silver_metal_boots"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:silver_nugget"
+  },
+  "experience": 0.1,
+  "cookingtime": 200
+}

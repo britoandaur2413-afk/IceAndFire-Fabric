@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:hippogryph_egg",
+    "iceandfire_fabric:deathworm_egg",
+    "iceandfire_fabric:deathworm_egg_giant",
+    "iceandfire_fabric:myrmex_desert_egg",
+    "iceandfire_fabric:myrmex_jungle_egg"
+  ]
+}

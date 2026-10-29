@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "iceandfire_fabric:block/pixie_altar_top",
+    "side": "iceandfire_fabric:block/pixie_altar_side",
+    "bottom": "iceandfire_fabric:block/pixie_altar_bottom"
+  }
+}

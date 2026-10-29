@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:fire_dragon_heart",
+    "iceandfire_fabric:ice_dragon_heart",
+    "iceandfire_fabric:lightning_dragon_heart",
+    "iceandfire_fabric:hydra_heart"
+  ]
+}

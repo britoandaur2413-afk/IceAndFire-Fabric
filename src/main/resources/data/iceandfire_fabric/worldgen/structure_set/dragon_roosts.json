@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:dragon_roost",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 24,
+    "separation": 10,
+    "salt": 662091377,
+    "spread_type": "linear"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "iceandfire_fabric:ice_dragon_blood"
+    },
+    {
+      "item": "iceandfire_fabric:dragonbone_sword"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonbone_sword_ice"
+  }
+}

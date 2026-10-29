@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "iceandfire_fabric:dragon_bone_block"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:dragonbone",
+    "count": 9
+  }
+}

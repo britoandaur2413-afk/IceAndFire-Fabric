@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "H H",
+    "S S",
+    "S S"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:sea_serpent_scales_blue"
+    },
+    "H": {
+      "item": "iceandfire_fabric:shiny_scales"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:tide_blue_boots"
+  }
+}

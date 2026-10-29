@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "iceandfire_fabric:block/dreadwood_planks",
+        "side": "iceandfire_fabric:block/dreadwood_planks_lock"
+    }
+}

@@ -1,0 +1,29 @@
+{
+	"required": true,
+	"package": "com.iafabric.mixin.client",
+	"compatibilityLevel": "JAVA_21",
+	"client": [
+		"CameraMixin",
+		"DragonSeatMixin",
+		"HudFitMixin",
+		"LivingEntityRendererMixin",
+		"MemoryHandsMixin",
+		"MemoryInputMixin",
+		"MemoryKeysMixin",
+		"MemoryLookMixin",
+		"MemoryToastsMixin",
+		"MinecraftAttackMixin",
+		"MusicManagerMixin",
+		"TitleScreenMixin",
+		"CompositeRenderTypeAccessor",
+		"CompositeStateAccessor",
+		"TextureStateInvoker",
+		"GuiHudMixin",
+		"TideTridentModelMixin",
+		"TeleportSnapMixin",
+		"OwnEffectParticlesMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

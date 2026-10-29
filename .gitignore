@@ -1,0 +1,13 @@
+.gradle/
+build/
+run/
+out/
+*.log
+.idea/
+*.iml
+__pycache__/
+mcsrc/
+*.log
+fapisrc/
+tools/ref/
+publish/*.jar

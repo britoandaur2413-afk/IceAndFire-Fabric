@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "FIF",
+    " S "
+  ],
+  "key": {
+    "T": {
+      "item": "iceandfire_fabric:hippogryph_talon"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "F": {
+      "tag": "c:feathers"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:hippogryph_sword"
+  }
+}

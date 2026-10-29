@@ -1,0 +1,7 @@
+{
+    "parent": "iceandfire_fabric:block/wall_inventory",
+    "textures": {
+        "wall": "iceandfire_fabric:block/dragon_bone_block_side",
+        "top" : "iceandfire_fabric:block/dragon_bone_block"
+    }
+}

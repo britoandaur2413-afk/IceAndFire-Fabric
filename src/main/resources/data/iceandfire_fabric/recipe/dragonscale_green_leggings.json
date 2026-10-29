@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "S S",
+    "S S"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:dragonscales_green"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_green_leggings"
+  }
+}

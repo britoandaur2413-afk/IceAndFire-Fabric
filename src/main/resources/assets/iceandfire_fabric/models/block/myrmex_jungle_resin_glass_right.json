@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "iceandfire_fabric:block/myrmex_jungle_resin_glass_all",
+    "down": "iceandfire_fabric:block/myrmex_jungle_resin_glass_right",
+    "up": "iceandfire_fabric:block/myrmex_jungle_resin_glass_right",
+    "north": "iceandfire_fabric:block/myrmex_jungle_resin_glass_left",
+    "east": "iceandfire_fabric:block/myrmex_jungle_resin_glass_blank",
+    "south": "iceandfire_fabric:block/myrmex_jungle_resin_glass_right",
+    "west": "iceandfire_fabric:block/myrmex_jungle_resin_glass_blank"
+  }
+}
+

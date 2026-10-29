@@ -1,0 +1,69 @@
+package com.iafabric.entity;
+
+import com.iafabric.item.IafItemRegistry;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+
+/** A thrown tide trident: hits harder than a trident and goes through two more mobs (more with Piercing). */
+public class EntityTideTrident extends ThrownTrident {
+
+    private static final int ADDITIONALPIERCING = 2;
+    private int entitiesHit = 0;
+
+    public EntityTideTrident(EntityType<? extends ThrownTrident> type, Level worldIn) {
+        super(type, worldIn);
+        this.setPickupItemStack(new ItemStack(IafItemRegistry.TIDE_TRIDENT));
+    }
+
+    public EntityTideTrident(Level worldIn, LivingEntity thrower, ItemStack thrownStackIn) {
+        this(IafEntityRegistry.TIDE_TRIDENT, worldIn);
+        this.setPos(thrower.getX(), thrower.getEyeY() - 0.1F, thrower.getZ());
+        this.setOwner(thrower);
+        this.setPickupItemStack(thrownStackIn.copy());
+        this.entityData.set(ID_LOYALTY, this.getLoyaltyFromItem(thrownStackIn));
+        this.entityData.set(ID_FOIL, thrownStackIn.hasFoil());
+    }
+
+    @Override
+    protected ItemStack getDefaultPickupItem() {
+        return new ItemStack(IafItemRegistry.TIDE_TRIDENT);
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        Entity entity = result.getEntity();
+        float damage = 12.0F;
+        Entity owner = this.getOwner();
+        DamageSource source = this.damageSources().trident(this, owner == null ? this : owner);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            damage = EnchantmentHelper.modifyDamage(serverLevel, this.getWeaponItem(), entity, source, damage);
+        }
+        entitiesHit++;
+        if (entitiesHit >= getMaxPiercing()) {
+            this.dealtDamage = true;
+        }
+        if (entity.hurt(source, damage)) {
+            if (this.level() instanceof ServerLevel serverLevel) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, entity, source, this.getWeaponItem());
+            }
+            if (entity instanceof LivingEntity living) {
+                this.doKnockback(living, source);
+                this.doPostHurtEffects(living);
+            }
+        }
+        this.playSound(SoundEvents.TRIDENT_HIT, 1.0F, 1.0F);
+    }
+
+    private int getMaxPiercing() {
+        return ADDITIONALPIERCING + getPierceLevel();
+    }
+}

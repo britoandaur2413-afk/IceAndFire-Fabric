@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:chared_dirt",
+    "iceandfire_fabric:chared_grass",
+    "iceandfire_fabric:chared_stone",
+    "iceandfire_fabric:chared_cobblestone",
+    "iceandfire_fabric:chared_gravel",
+    "iceandfire_fabric:chared_dirt_path"
+  ]
+}

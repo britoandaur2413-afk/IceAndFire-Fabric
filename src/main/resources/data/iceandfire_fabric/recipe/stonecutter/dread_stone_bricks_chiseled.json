@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "iceandfire_fabric:dread_stone"
+  },
+  "result": {
+    "id": "iceandfire_fabric:dread_stone_bricks_chiseled"
+  }
+}

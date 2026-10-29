@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "V",
+    "C",
+    "B"
+  ],
+  "key": {
+    "V": {
+      "item": "iceandfire_fabric:myrmex_stinger"
+    },
+    "C": {
+      "item": "iceandfire_fabric:myrmex_desert_chitin"
+    },
+    "B": {
+      "tag": "c:bones/wither"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:myrmex_desert_sword_venom"
+  }
+}

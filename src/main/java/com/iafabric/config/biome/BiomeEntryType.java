@@ -1,0 +1,15 @@
+package com.iafabric.config.biome;
+
+public enum BiomeEntryType {
+    REGISTRY_NAME(false), BIOME_TAG(false), BIOME_DICT(true), BIOME_CATEGORY(false);
+
+    private boolean depreciated;
+
+    BiomeEntryType(boolean depreciated){
+        this.depreciated = depreciated;
+    }
+
+    public boolean isDepreciated() {
+        return depreciated;
+    }
+}

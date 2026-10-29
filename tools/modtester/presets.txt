@@ -1,0 +1,8 @@
+# Mod Tester presets for Ice and Fire: more versions of a creature in suites ("entity-id {nbt}").
+# Dragons: AgeTicks is the age (24000 a day); 75 days is stage 4 (adult), 125 days stage 5.
+iceandfire_fabric:fire_dragon {AgeTicks:1800000}
+iceandfire_fabric:ice_dragon {AgeTicks:1800000}
+iceandfire_fabric:lightning_dragon {AgeTicks:1800000}
+iceandfire_fabric:fire_dragon {AgeTicks:3000000}
+iceandfire_fabric:ice_dragon {AgeTicks:3000000}
+iceandfire_fabric:lightning_dragon {AgeTicks:3000000}

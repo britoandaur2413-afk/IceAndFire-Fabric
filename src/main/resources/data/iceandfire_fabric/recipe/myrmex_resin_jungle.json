@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RD",
+    "DR"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dirt"
+    },
+    "R": {
+      "item": "iceandfire_fabric:myrmex_jungle_resin"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:myrmex_resin_jungle"
+  }
+}

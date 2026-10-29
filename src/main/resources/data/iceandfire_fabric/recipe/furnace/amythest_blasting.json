@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "iceandfire_fabric:amythest_ore"
+  },
+  "result": {
+    "id": "iceandfire_fabric:amythest_gem"
+  },
+  "experience": 0.35,
+  "cookingtime": 200
+}

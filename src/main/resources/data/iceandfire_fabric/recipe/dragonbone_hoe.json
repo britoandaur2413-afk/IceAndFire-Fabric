@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SS",
+    " T",
+    " T"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:dragonbone"
+    },
+    "T": {
+      "tag": "c:bones/wither"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonbone_hoe"
+  }
+}

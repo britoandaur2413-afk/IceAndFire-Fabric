@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DD",
+    "DT",
+    " T"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:ingots/dragonsteel_lightning"
+    },
+    "T": {
+      "tag": "c:bones/wither"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:dragonsteel_lightning_axe"
+  }
+}

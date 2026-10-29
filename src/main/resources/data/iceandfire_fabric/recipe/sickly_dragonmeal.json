@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SPS",
+    "PDP",
+    "SPS"
+  ],
+  "key": {
+    "D": {
+      "item": "iceandfire_fabric:dragon_meal"
+    },
+    "P": {
+      "item": "minecraft:poisonous_potato"
+    },
+    "S": {
+      "item": "minecraft:spider_eye"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:sickly_dragon_meal"
+  }
+}

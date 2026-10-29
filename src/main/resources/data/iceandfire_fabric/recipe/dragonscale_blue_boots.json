@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "S S"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:dragonscales_blue"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:armor_blue_boots"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "#",
+    "Y"
+  ],
+  "key": {
+    "#": {
+      "tag": "c:rods/wooden"
+    },
+    "X": {
+      "item": "iceandfire_fabric:sea_serpent_fang"
+    },
+    "Y": {
+      "tag": "c:scales/sea_serpent"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:sea_serpent_arrow",
+    "count": 4
+  }
+}

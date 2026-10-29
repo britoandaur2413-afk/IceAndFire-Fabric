@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RSR",
+    "S S",
+    "RSR"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:myrmex_resin_sticky_desert"
+    },
+    "R": {
+      "item": "iceandfire_fabric:myrmex_resin_desert"
+    }
+  },
+  "result": {
+    "id": "iceandfire_fabric:desert_myrmex_cocoon"
+  }
+}

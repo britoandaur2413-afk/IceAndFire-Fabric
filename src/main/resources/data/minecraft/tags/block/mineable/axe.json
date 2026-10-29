@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:nest",
+    "iceandfire_fabric:lectern",
+    "iceandfire_fabric:pixie_house_oak",
+    "iceandfire_fabric:pixie_house_birch",
+    "iceandfire_fabric:pixie_house_spruce",
+    "iceandfire_fabric:pixie_house_dark_oak",
+    "iceandfire_fabric:podium_oak",
+    "iceandfire_fabric:podium_birch",
+    "iceandfire_fabric:podium_spruce",
+    "iceandfire_fabric:podium_jungle",
+    "iceandfire_fabric:podium_dark_oak",
+    "iceandfire_fabric:podium_acacia",
+    "iceandfire_fabric:dreadwood_planks"
+  ]
+}

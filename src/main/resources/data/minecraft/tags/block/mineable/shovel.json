@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:graveyard_soil",
+    "iceandfire_fabric:chared_dirt",
+    "iceandfire_fabric:chared_dirt_path",
+    "iceandfire_fabric:chared_grass",
+    "iceandfire_fabric:chared_gravel",
+    "iceandfire_fabric:frozen_dirt",
+    "iceandfire_fabric:frozen_dirt_path",
+    "iceandfire_fabric:frozen_grass",
+    "iceandfire_fabric:frozen_gravel",
+    "iceandfire_fabric:crackled_dirt",
+    "iceandfire_fabric:crackled_dirt_path",
+    "iceandfire_fabric:crackled_grass",
+    "iceandfire_fabric:crackled_gravel",
+    "iceandfire_fabric:ash"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "":  { "model": "iceandfire_fabric:block/dread_torch" }
+    }
+}

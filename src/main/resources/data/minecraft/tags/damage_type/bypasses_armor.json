@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:gorgon",
+    "iceandfire_fabric:pixie_bond",
+    "iceandfire_fabric:frost_doom",
+    "iceandfire_fabric:frost_breath"
+  ]
+}

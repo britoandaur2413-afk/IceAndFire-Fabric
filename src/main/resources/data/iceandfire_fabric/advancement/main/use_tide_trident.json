@@ -1,0 +1,34 @@
+{
+  "display": {
+    "icon": {
+      "id": "iceandfire_fabric:tide_trident"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.tide_trident.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.tide_trident.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/kill_sea_serpent",
+  "criteria": {
+    "shot_arrow": {
+      "trigger": "minecraft:player_hurt_entity",
+      "conditions": {
+        "damage": {
+          "type": {
+            "tags": [
+              {
+                "id": "minecraft:is_projectile",
+                "expected": true
+              }
+            ],
+            "direct_entity": {
+              "type": "iceandfire_fabric:tide_trident"
+            }
+          }
+        }
+      }
+    }
+  }
+}

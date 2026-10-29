@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "iceandfire_fabric:sea_serpent_scale_block_purple"
+    }
+  ],
+  "result": {
+    "id": "iceandfire_fabric:sea_serpent_scales_purple",
+    "count": 9
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "iceandfire_fabric:block/ghost_chest"
+    }
+  }
+}

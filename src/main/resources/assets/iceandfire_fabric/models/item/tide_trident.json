@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/trident_in_hand",
+  "textures": {
+    "particle": "iceandfire_fabric:item/tide_trident"
+  }
+}

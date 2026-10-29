@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": {
+    "item": "iceandfire_fabric:silver_ore"
+  },
+  "result": {
+    "id": "iceandfire_fabric:silver_ingot"
+  },
+  "experience": 0.35,
+  "cookingtime": 100
+}
