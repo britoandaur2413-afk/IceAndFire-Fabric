@@ -69,6 +69,8 @@ The jar is `build/libs/IceAndFire-Fabric-26.3-<version>.jar`. `./gradlew runGame
 ## Credits
 
 - **Alexthe666**: Ice and Fire, the original mod (LGPL-3.0).
+- **Alexthe666**: Citadel (LGPL-3.0), the library the original mod is built on; the parts this port needs are
+  included, adapted to Fabric.
 - **Raptorfarian**: the original mod's art.
 - **TheBv**: the original mod's ports to newer versions, which this port follows.
 - **The original mod's contributors and translators.**
@@ -77,4 +79,9 @@ The jar is `build/libs/IceAndFire-Fabric-26.3-<version>.jar`. `./gradlew runGame
 
 ## License
 
-LGPL-3.0-only, as the original mod. See [LICENSE](LICENSE).
+LGPL-3.0-only, as the original mod. See [LICENSE](LICENSE); the LGPL-3.0 adds permissions to the GPL-3.0, whose text
+is in [COPYING](COPYING).
+
+This is a modified version of Ice and Fire: ported from Forge to Fabric and changed by Escobar (GAMITA_MODELS) since
+October 2026. The source code of every published version is under its tag in this repository (for example
+`1.0.4-beta+26.3` or `1.0.3-beta+1.20.1`).

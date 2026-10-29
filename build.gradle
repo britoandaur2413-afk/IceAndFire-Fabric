@@ -61,10 +61,12 @@ java {
 
 jar {
 	from("LICENSE") { rename { "LICENSE_iceandfire_fabric" } }
+	from("COPYING") { rename { "COPYING_iceandfire_fabric" } }
 	from("CREDITS.md")
 }
 
 sourcesJar {
 	from("LICENSE") { rename { "LICENSE_iceandfire_fabric" } }
+	from("COPYING") { rename { "COPYING_iceandfire_fabric" } }
 	from("CREDITS.md")
 }
