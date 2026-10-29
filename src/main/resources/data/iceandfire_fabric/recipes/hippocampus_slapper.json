@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T",
+    "S "
+  ],
+  "key": {
+    "S": {
+      "tag": "c:wooden_rods"
+    },
+    "T": {
+      "item": "iceandfire_fabric:hippocampus_fin"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:hippocampus_slapper"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "iceandfire_fabric",
+  "version": "${version}",
+  "name": "Ice and Fire Fabric",
+  "description": "Dragons and other mythological creatures. An unofficial Fabric port of Ice and Fire by Alexthe666, with art by Raptorfarian.",
+  "authors": [
+    "Alexthe666 (original mod)",
+    "Raptorfarian (original art)",
+    "TheBv (original 1.18 port)",
+    "Escobar (Fabric port)"
+  ],
+  "license": "LGPL-3.0-only",
+  "icon": "assets/iceandfire_fabric/textures/logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.iafabric.IafMod"
+    ],
+    "client": [
+      "com.iafabric.client.IafClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "mixins": [
+    "iceandfire_fabric.mixins.json",
+    {
+      "config": "iceandfire_fabric.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "iceandfire_fabric.accesswidener",
+  "custom": {
+    "gamita_models": {
+      "welcome": 2,
+      "kind": "port",
+      "about": {"en": "Fabric port by GAMITA_MODELS, with the exiled pixie, the citadel and Cryona's duel.", "es": "Port a Fabric por GAMITA_MODELS, con el hada exiliada, la ciudadela y el duelo de Cryona.", "pt": "Port para Fabric por GAMITA_MODELS, com a fada exilada, a cidadela e o duelo de Cryona.", "fr": "Portage Fabric par GAMITA_MODELS, avec la fée exilée, la citadelle et le duel de Cryona.", "de": "Fabric-Port von GAMITA_MODELS, mit der verbannten Fee, der Zitadelle und Cryonas Duell.", "ru": "Порт на Fabric от GAMITA_MODELS: изгнанная фея, цитадель и дуэль Крионы."}
+    },
+    "loom:injected_interfaces": {
+      "net/minecraft/class_2487": [
+        "com/iafabric/compat/CompoundTagCompat"
+      ]
+    }
+  }
+}

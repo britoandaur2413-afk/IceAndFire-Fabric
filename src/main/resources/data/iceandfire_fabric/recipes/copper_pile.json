@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:copper_nuggets"
+    },
+    {
+      "tag": "c:copper_nuggets"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:copper_pile"
+  }
+}

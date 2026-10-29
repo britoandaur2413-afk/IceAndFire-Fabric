@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "iceandfire_fabric:sapphire_ore"
+  },
+  "result": "iceandfire_fabric:sapphire_gem",
+  "experience": 0.35,
+  "cookingtime": 200
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:amethyst_block",
+    "iceandfire_fabric:amythest_block"
+  ]
+}

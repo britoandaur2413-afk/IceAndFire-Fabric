@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    },
+    {
+      "tag": "c:amethysts"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:amythest_block"
+  }
+}

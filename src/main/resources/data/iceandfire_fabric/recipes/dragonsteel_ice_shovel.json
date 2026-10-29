@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "T",
+    "T"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:dragonsteel_ice_ingots"
+    },
+    "T": {
+      "tag": "c:wither_bones"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:dragonsteel_ice_shovel"
+  }
+}

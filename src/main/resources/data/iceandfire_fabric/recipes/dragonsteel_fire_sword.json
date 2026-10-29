@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "D",
+    "T"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    "T": {
+      "tag": "c:wither_bones"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:dragonsteel_fire_sword"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:dragonbone_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragonbone_tool.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragonbone_tool.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/kill_if_dragon",
+  "criteria": {
+    "tool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonbone_sword",
+              "iceandfire_fabric:dragonbone_axe",
+              "iceandfire_fabric:dragonbone_pickaxe",
+              "iceandfire_fabric:dragonbone_shovel",
+              "iceandfire_fabric:dragonbone_hoe"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "tool"
+    ]
+  ]
+}

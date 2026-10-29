@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:copper_ingots"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "iceandfire_fabric:copper_nugget"
+  }
+}

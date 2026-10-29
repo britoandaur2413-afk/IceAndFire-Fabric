@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    " B ",
+    " B "
+  ],
+  "key": {
+    "C": {
+      "item": "iceandfire_fabric:myrmex_jungle_chitin"
+    },
+    "B": {
+      "tag": "c:wither_bones"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:myrmex_jungle_pickaxe"
+  }
+}

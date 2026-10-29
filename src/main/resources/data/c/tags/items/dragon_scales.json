@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#c:fire_dragon_scales",
+    "#c:ice_dragon_scales",
+    "#c:lightning_dragon_scales"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:silver_blocks"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "iceandfire_fabric:silver_ingot"
+  }
+}

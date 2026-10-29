@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonscale_electric",
+    "iceandfire_fabric:dragonscale_amythest",
+    "iceandfire_fabric:dragonscale_copper",
+    "iceandfire_fabric:dragonscale_black"
+  ]
+}

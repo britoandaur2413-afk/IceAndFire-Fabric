@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_lightning_ingots"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:dragonsteel_lightning_block"
+  }
+}

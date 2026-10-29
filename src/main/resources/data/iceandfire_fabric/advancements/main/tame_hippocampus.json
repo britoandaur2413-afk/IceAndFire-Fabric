@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:hippocampus_fin"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.tame_hippocampus.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.tame_hippocampus.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/bestiary",
+  "criteria": {
+    "tame_rat": {
+      "trigger": "minecraft:tame_animal",
+      "conditions": {
+        "entity": {
+          "type": "iceandfire_fabric:hippocampus"
+        }
+      }
+    }
+  }
+}

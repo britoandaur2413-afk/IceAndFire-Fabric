@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:rotten_egg"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.rotten_egg.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.rotten_egg.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/bestiary",
+  "criteria": {
+    "bestiary": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:rotten_egg"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

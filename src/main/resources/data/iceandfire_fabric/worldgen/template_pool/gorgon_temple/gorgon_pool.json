@@ -1,0 +1,15 @@
+{
+  "name": "iceandfire_fabric:gorgon_temple/gorgon_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "iceandfire_fabric:gorgon_temple/gorgon",
+        "processors": "iceandfire_fabric:gorgon_temple_processors",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

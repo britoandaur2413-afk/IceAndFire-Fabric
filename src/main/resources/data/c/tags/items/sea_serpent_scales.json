@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:sea_serpent_scales_blue",
+    "iceandfire_fabric:sea_serpent_scales_bronze",
+    "iceandfire_fabric:sea_serpent_scales_deepblue",
+    "iceandfire_fabric:sea_serpent_scales_green",
+    "iceandfire_fabric:sea_serpent_scales_purple",
+    "iceandfire_fabric:sea_serpent_scales_red",
+    "iceandfire_fabric:sea_serpent_scales_teal"
+  ]
+}

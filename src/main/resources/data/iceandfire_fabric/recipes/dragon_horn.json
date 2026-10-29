@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "  B",
+    " BB",
+    "IB "
+  ],
+  "key": {
+    "B": {
+      "item": "iceandfire_fabric:dragonbone"
+    },
+    "I": {
+      "tag": "c:wooden_rods"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:dragon_horn"
+  }
+}

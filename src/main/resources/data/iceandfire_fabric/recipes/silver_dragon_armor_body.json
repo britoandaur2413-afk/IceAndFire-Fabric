@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DDD",
+    "D D"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:silver_blocks"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:dragonarmor_silver_body"
+  }
+}

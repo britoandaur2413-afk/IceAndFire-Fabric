@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "SGS",
+    " B "
+  ],
+  "key": {
+    "S": {
+      "tag": "c:dragon_scales"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "B": {
+      "tag": "c:dragon_bones"
+    }
+  },
+  "result": {
+    "count": 1,
+    "item": "iceandfire_fabric:rider_seal"
+  }
+}

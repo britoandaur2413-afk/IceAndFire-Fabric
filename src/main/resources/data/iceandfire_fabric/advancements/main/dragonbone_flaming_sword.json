@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:dragonbone_sword_fire"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragonbone_sword_fire.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragonbone_sword_fire.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragonbone_tool",
+  "criteria": {
+    "sword": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonbone_sword_fire",
+              "iceandfire_fabric:dragonbone_sword_ice",
+              "iceandfire_fabric:dragonbone_sword_lightning"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "sword"
+    ]
+  ]
+}

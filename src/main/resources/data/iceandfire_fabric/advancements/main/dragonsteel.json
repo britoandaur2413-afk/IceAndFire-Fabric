@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:dragonsteel_fire_ingot"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragonsteel.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragonsteel.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragon_forge_core",
+  "criteria": {
+    "steel": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonsteel_fire_ingot",
+              "iceandfire_fabric:dragonsteel_ice_ingot",
+              "iceandfire_fabric:dragonsteel_lightning_ingot"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "steel"
+    ]
+  ]
+}

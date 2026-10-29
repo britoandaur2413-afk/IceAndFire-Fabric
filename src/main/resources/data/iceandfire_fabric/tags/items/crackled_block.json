@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:crackled_dirt",
+    "iceandfire_fabric:crackled_grass",
+    "iceandfire_fabric:crackled_stone",
+    "iceandfire_fabric:crackled_cobblestone",
+    "iceandfire_fabric:crackled_gravel",
+    "iceandfire_fabric:crackled_dirt_path"
+  ]
+}

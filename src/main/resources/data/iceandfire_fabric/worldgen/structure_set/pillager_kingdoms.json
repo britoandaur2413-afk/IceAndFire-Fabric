@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:pillager_kingdom",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 56,
+    "separation": 28,
+    "salt": 1291834562,
+    "spread_type": "linear"
+  }
+}

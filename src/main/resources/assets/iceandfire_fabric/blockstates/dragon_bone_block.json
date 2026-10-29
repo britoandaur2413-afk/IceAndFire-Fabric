@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "iceandfire_fabric:block/dragon_bone_block"
+    },
+    "axis=z": {
+      "model": "iceandfire_fabric:block/dragon_bone_block",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "iceandfire_fabric:block/dragon_bone_block",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

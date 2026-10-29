@@ -1,0 +1,63 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:dragonscales_blue",
+          "weight": 60,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 1
+              }
+            },
+            {
+              "function": "iceandfire_fabric:customize_to_dragon"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:ice_dragon_flesh",
+          "weight": 40,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 1
+              }
+            },
+            {
+              "function": "iceandfire_fabric:customize_to_dragon"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iceandfire_fabric:dragonegg_blue",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 1,
+                "max": 1
+              }
+            },
+            {
+              "function": "iceandfire_fabric:customize_to_dragon"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

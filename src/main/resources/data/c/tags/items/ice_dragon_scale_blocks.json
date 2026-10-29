@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonscale_blue",
+    "iceandfire_fabric:dragonscale_white",
+    "iceandfire_fabric:dragonscale_sapphire",
+    "iceandfire_fabric:dragonscale_silver"
+  ]
+}

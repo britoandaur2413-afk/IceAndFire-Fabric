@@ -1,0 +1,33 @@
+{
+  "carvers": {},
+  "downfall": 0.5,
+  "effects": {
+    "fog_color": 1714756,
+    "sky_color": 330264,
+    "water_color": 4020182,
+    "water_fog_color": 4020182,
+    "particle": {
+      "options": {
+        "type": "minecraft:white_ash"
+      },
+      "probability": 0.03
+    },
+    "music": {
+      "sound": "minecraft:music.end",
+      "min_delay": 600,
+      "max_delay": 2400,
+      "replace_current_music": true
+    },
+    "mood_sound": {
+      "sound": "minecraft:ambient.soul_sand_valley.mood",
+      "tick_delay": 3000,
+      "block_search_extent": 8,
+      "offset": 2.0
+    }
+  },
+  "features": [],
+  "has_precipitation": false,
+  "temperature": -0.7,
+  "spawners": {},
+  "spawn_costs": {}
+}

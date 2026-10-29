@@ -1,0 +1,8 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "block/oak_planks",
+    "texture": "iceandfire_fabric:models/ghost/ghost_chest"
+  },
+  "elements": []
+}

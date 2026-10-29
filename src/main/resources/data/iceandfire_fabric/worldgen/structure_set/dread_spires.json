@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "iceandfire_fabric:dread_spire",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 44,
+    "separation": 22,
+    "salt": 448120917,
+    "spread_type": "linear"
+  }
+}

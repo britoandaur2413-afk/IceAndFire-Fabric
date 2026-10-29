@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:dragonforge_fire_core"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragon_forge_core.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragon_forge_core.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragon_forge_brick",
+  "criteria": {
+    "core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragonforge_fire_core_disabled",
+              "iceandfire_fabric:dragonforge_ice_core_disabled",
+              "iceandfire_fabric:dragonforge_lightning_core_disabled"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "core"
+    ]
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire_fabric:pillager_kingdom",
+  "biomes": "#iceandfire_fabric:has_structure/pillager_kingdom",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

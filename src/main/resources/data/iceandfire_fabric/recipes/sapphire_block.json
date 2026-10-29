@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    },
+    {
+      "tag": "c:sapphires"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:sapphire_block"
+  }
+}

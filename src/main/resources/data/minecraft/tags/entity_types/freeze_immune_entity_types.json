@@ -1,0 +1,14 @@
+{
+  "__comment": "Entities immune to being frozen by powdered snow",
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:ice_dragon",
+    "iceandfire_fabric:dread_thrall",
+    "iceandfire_fabric:dread_ghoul",
+    "iceandfire_fabric:dread_beast",
+    "iceandfire_fabric:dread_scuttler",
+    "iceandfire_fabric:dread_lich",
+    "iceandfire_fabric:dread_knight",
+    "iceandfire_fabric:dread_horse"
+  ]
+}

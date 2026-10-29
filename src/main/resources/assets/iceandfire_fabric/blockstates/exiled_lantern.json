@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "lit=true,variant=0": {
+      "model": "iceandfire_fabric:block/exiled_lantern_0"
+    },
+    "lit=false,variant=0": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=1": {
+      "model": "iceandfire_fabric:block/exiled_lantern_1"
+    },
+    "lit=false,variant=1": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=2": {
+      "model": "iceandfire_fabric:block/exiled_lantern_2"
+    },
+    "lit=false,variant=2": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=3": {
+      "model": "iceandfire_fabric:block/exiled_lantern_3"
+    },
+    "lit=false,variant=3": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=4": {
+      "model": "iceandfire_fabric:block/exiled_lantern_4"
+    },
+    "lit=false,variant=4": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=5": {
+      "model": "iceandfire_fabric:block/exiled_lantern_5"
+    },
+    "lit=false,variant=5": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=6": {
+      "model": "iceandfire_fabric:block/exiled_lantern_6"
+    },
+    "lit=false,variant=6": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=7": {
+      "model": "iceandfire_fabric:block/exiled_lantern_7"
+    },
+    "lit=false,variant=7": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=8": {
+      "model": "iceandfire_fabric:block/exiled_lantern_8"
+    },
+    "lit=false,variant=8": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=9": {
+      "model": "iceandfire_fabric:block/exiled_lantern_9"
+    },
+    "lit=false,variant=9": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=10": {
+      "model": "iceandfire_fabric:block/exiled_lantern_10"
+    },
+    "lit=false,variant=10": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=11": {
+      "model": "iceandfire_fabric:block/exiled_lantern_11"
+    },
+    "lit=false,variant=11": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=12": {
+      "model": "iceandfire_fabric:block/exiled_lantern_12"
+    },
+    "lit=false,variant=12": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=13": {
+      "model": "iceandfire_fabric:block/exiled_lantern_13"
+    },
+    "lit=false,variant=13": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=14": {
+      "model": "iceandfire_fabric:block/exiled_lantern_14"
+    },
+    "lit=false,variant=14": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=15": {
+      "model": "iceandfire_fabric:block/exiled_lantern_15"
+    },
+    "lit=false,variant=15": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=16": {
+      "model": "iceandfire_fabric:block/exiled_lantern_16"
+    },
+    "lit=false,variant=16": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=17": {
+      "model": "iceandfire_fabric:block/exiled_lantern_17"
+    },
+    "lit=false,variant=17": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=18": {
+      "model": "iceandfire_fabric:block/exiled_lantern_18"
+    },
+    "lit=false,variant=18": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    },
+    "lit=true,variant=19": {
+      "model": "iceandfire_fabric:block/exiled_lantern_19"
+    },
+    "lit=false,variant=19": {
+      "model": "iceandfire_fabric:block/exiled_lantern_off"
+    }
+  }
+}

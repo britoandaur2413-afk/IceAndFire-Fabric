@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DDD",
+    "DDD",
+    "D D"
+  ],
+  "key": {
+    "D": {
+      "tag": "c:copper_blocks"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:dragonarmor_copper_body"
+  }
+}

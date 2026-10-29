@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:blasting",
+  "ingredient": [
+    {
+      "item": "iceandfire_fabric:copper_sword"
+    },
+    {
+      "item": "iceandfire_fabric:copper_shovel"
+    },
+    {
+      "item": "iceandfire_fabric:copper_pickaxe"
+    },
+    {
+      "item": "iceandfire_fabric:copper_axe"
+    },
+    {
+      "item": "iceandfire_fabric:copper_hoe"
+    },
+    {
+      "item": "iceandfire_fabric:armor_copper_metal_helmet"
+    },
+    {
+      "item": "iceandfire_fabric:armor_copper_metal_chestplate"
+    },
+    {
+      "item": "iceandfire_fabric:armor_copper_metal_leggings"
+    },
+    {
+      "item": "iceandfire_fabric:armor_copper_metal_boots"
+    }
+  ],
+  "result": "iceandfire_fabric:copper_nugget",
+  "experience": 0.1,
+  "cookingtime": 100
+}

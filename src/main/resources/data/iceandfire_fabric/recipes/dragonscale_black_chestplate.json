@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "iceandfire_fabric:dragonscales_black"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:armor_black_chestplate"
+  }
+}

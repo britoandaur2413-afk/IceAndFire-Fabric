@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "iceandfire_fabric:troll_tusk"
+    }
+  ],
+  "result": {
+    "count": 5,
+    "item": "minecraft:bone_meal"
+  }
+}

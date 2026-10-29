@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    },
+    {
+      "tag": "c:silver_ingots"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:silver_block"
+  }
+}

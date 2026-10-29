@@ -1,0 +1,40 @@
+accessWidener	v2	named
+# fields the original mod reached into
+accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+# the tide trident is a trident of its own type
+accessible field net/minecraft/world/entity/projectile/ThrownTrident ID_LOYALTY Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/ThrownTrident ID_FOIL Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/ThrownTrident dealtDamage Z
+accessible field net/minecraft/world/entity/projectile/ThrownTrident tridentItem Lnet/minecraft/world/item/ItemStack;
+accessible method net/minecraft/world/damagesource/CombatTracker getMostSignificantFall ()Lnet/minecraft/world/damagesource/CombatEntry;
+# effects made of display entities (Vfx): their shape, how fast it changes, their light
+accessible method net/minecraft/world/entity/Display setTransformation (Lcom/mojang/math/Transformation;)V
+accessible method net/minecraft/world/entity/Display setInterpolationDuration (I)V
+accessible method net/minecraft/world/entity/Display setInterpolationDelay (I)V
+accessible method net/minecraft/world/entity/Display setBrightnessOverride (Lnet/minecraft/util/Brightness;)V
+accessible method net/minecraft/world/entity/Display setViewRange (F)V
+accessible method net/minecraft/world/entity/Display setShadowRadius (F)V
+accessible method net/minecraft/world/entity/Display$BlockDisplay setBlockState (Lnet/minecraft/world/level/block/state/BlockState;)V
+# Cryona's weapons floating to the player (item displays)
+accessible method net/minecraft/world/entity/Display$ItemDisplay setItemStack (Lnet/minecraft/world/item/ItemStack;)V
+accessible method net/minecraft/world/entity/Display$ItemDisplay setItemTransform (Lnet/minecraft/world/item/ItemDisplayContext;)V
+# an entity by its UUID on either side (compat Entities.byUuid), a mob's loot by table (compat LootDrops)
+accessible method net/minecraft/world/level/Level getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+accessible field net/minecraft/world/entity/LivingEntity lastHurtByPlayer Lnet/minecraft/world/entity/player/Player;
+# the siren's pink veil
+accessible method net/minecraft/client/renderer/GameRenderer loadEffect (Lnet/minecraft/resources/ResourceLocation;)V
+# a SimpleContainer's items (1.21's getItems())
+accessible field net/minecraft/world/SimpleContainer items Lnet/minecraft/core/NonNullList;
+# a chest's loot table before it is opened (1.21's getLootTable())
+accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity lootTable Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity lootTableSeed J
+# whether a structure placement's frequency lets it start at a chunk (StructureRoom)
+accessible method net/minecraft/world/level/levelgen/structure/placement/StructurePlacement frequency ()F
+accessible method net/minecraft/world/level/levelgen/structure/placement/StructurePlacement salt ()I
+accessible method net/minecraft/world/level/levelgen/structure/placement/StructurePlacement frequencyReductionMethod ()Lnet/minecraft/world/level/levelgen/structure/placement/StructurePlacement$FrequencyReductionMethod;
+# a render type's texture, to turn a creature's own texture to stone (StoneTextures)
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
+accessible class net/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard
+# the test helpers' place (gametests)
+accessible method net/minecraft/gametest/framework/GameTestHelper getBounds ()Lnet/minecraft/world/phys/AABB;

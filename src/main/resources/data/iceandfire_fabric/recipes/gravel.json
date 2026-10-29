@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    },
+    {
+      "tag": "iceandfire_fabric:crackled_block"
+    }
+  ],
+  "result": {
+    "item": "minecraft:gravel"
+  }
+}

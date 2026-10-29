@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "T T",
+    "T T"
+  ],
+  "key": {
+    "T": {
+      "item": "iceandfire_fabric:troll_leather_mountain"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:mountain_troll_leather_boots"
+  }
+}

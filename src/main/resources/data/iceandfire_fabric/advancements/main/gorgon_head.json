@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:gorgon_head"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.gorgon_head.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.gorgon_head.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/bestiary",
+  "criteria": {
+    "bestiary": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:gorgon_head"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

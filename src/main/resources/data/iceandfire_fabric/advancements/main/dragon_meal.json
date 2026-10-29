@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "iceandfire_fabric:dragon_meal"
+    },
+    "title": {
+      "translate": "advancements.iceandfire_fabric.dragon_meal.title"
+    },
+    "description": {
+      "translate": "advancements.iceandfire_fabric.dragon_meal.description"
+    }
+  },
+  "parent": "iceandfire_fabric:main/dragon_egg",
+  "criteria": {
+    "bestiary": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "iceandfire_fabric:dragon_meal"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

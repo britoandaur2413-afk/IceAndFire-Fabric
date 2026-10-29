@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "iceandfire_fabric:block/dragonforge_lightning_core"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire_fabric:dragon_hall",
+  "biomes": "#iceandfire_fabric:has_structure/dragon_hall",
+  "step": "top_layer_modification",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

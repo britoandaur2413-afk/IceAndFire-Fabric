@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:is_forest",
+    "#minecraft:is_taiga",
+    "#minecraft:is_jungle",
+    "minecraft:lush_caves",
+    "minecraft:meadow",
+    "minecraft:plains",
+    "minecraft:dripstone_caves"
+  ]
+}

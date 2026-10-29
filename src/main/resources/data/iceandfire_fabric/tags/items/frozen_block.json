@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:frozen_dirt",
+    "iceandfire_fabric:frozen_grass",
+    "iceandfire_fabric:frozen_stone",
+    "iceandfire_fabric:frozen_cobblestone",
+    "iceandfire_fabric:frozen_gravel",
+    "iceandfire_fabric:frozen_splinters",
+    "iceandfire_fabric:frozen_dirt_path"
+  ]
+}

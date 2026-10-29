@@ -1,0 +1,54 @@
+{
+  "targets": [
+    "swap"
+  ],
+  "passes": [
+    {
+      "name": "color_convolve",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        {
+          "name": "RedMatrix",
+          "values": [
+            0.7099,
+            0.3035,
+            0.0566
+          ]
+        },
+        {
+          "name": "GreenMatrix",
+          "values": [
+            0.1303,
+            0.8119,
+            0.0478
+          ]
+        },
+        {
+          "name": "BlueMatrix",
+          "values": [
+            0.1453,
+            0.2858,
+            0.6088
+          ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "uniforms": [
+        {
+          "name": "ColorModulate",
+          "values": [
+            1.0,
+            0.95,
+            0.98,
+            1.0
+          ]
+        }
+      ]
+    }
+  ]
+}

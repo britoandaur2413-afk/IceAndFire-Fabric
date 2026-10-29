@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "id": "iceandfire_fabric-test",
+ "version": "1.0.0",
+ "name": "Ice and Fire Fabric tests",
+ "description": "Game tests and client scenes of the Ice and Fire Fabric port",
+ "environment": "*",
+ "entrypoints": {
+  "fabric-gametest": [
+   "com.iafabric.test.IafGameTests",
+   "com.iafabric.test.IafBossTests",
+   "com.iafabric.test.IafFairyGameTests",
+   "com.iafabric.test.IafSaddleTests"
+  ],
+  "client": [
+   "com.iafabric.test.ct.ClientTestRunner"
+  ],
+  "iceandfire_fabric-clienttest": [
+   "com.iafabric.test.IafWelcomeTests",
+   "com.iafabric.test.IafMenuTests",
+   "com.iafabric.test.IafPixieTests",
+   "com.iafabric.test.IafWorldTests",
+   "com.iafabric.test.IafRidingTests",
+   "com.iafabric.test.IafClientTests",
+   "com.iafabric.test.IafBattleTests",
+   "com.iafabric.test.IafSceneTests",
+   "com.iafabric.test.IafRoomTests",
+   "com.iafabric.test.IafFairyTests",
+   "com.iafabric.test.IafFairyTripTests",
+   "com.iafabric.test.IafFairyCompleteTests",
+   "com.iafabric.test.IafFrostFightTests",
+   "com.iafabric.test.IafCryonaFightTests",
+   "com.iafabric.test.IafSaddleScene"
+  ]
+ },
+ "depends": {
+  "iceandfire_fabric": "*",
+  "fabric-api": "*"
+ },
+ "mixins": [
+  "iceandfire_fabric-test.mixins.json"
+ ]
+}

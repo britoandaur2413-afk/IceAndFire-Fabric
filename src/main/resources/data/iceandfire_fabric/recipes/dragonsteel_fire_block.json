@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    },
+    {
+      "tag": "c:dragonsteel_fire_ingots"
+    }
+  ],
+  "result": {
+    "item": "iceandfire_fabric:dragonsteel_fire_block"
+  }
+}

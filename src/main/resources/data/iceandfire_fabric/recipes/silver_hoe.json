@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SS",
+    " T",
+    " T"
+  ],
+  "key": {
+    "S": {
+      "tag": "c:silver_ingots"
+    },
+    "T": {
+      "tag": "c:wooden_rods"
+    }
+  },
+  "result": {
+    "item": "iceandfire_fabric:silver_hoe"
+  }
+}
