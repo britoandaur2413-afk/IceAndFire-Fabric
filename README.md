@@ -83,5 +83,5 @@ LGPL-3.0-only, as the original mod. See [LICENSE](LICENSE); the LGPL-3.0 adds pe
 is in [COPYING](COPYING).
 
 This is a modified version of Ice and Fire: ported from Forge to Fabric and changed by Escobar (GAMITA_MODELS) since
-October 2026. The source code of every published version is under its tag in this repository (for example
-`1.0.4-beta+26.3` or `1.0.3-beta+1.20.1`).
+October 2026. The source code of the latest version is here (`main` for 26.3, the branches `1.21.1` and `1.20.1`);
+the source code of an older published version is given to anyone who asks for it.
