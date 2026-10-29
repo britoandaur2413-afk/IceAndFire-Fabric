@@ -23,8 +23,8 @@ October 2026, with fixes and new content. Each version's changes are in its chan
 
 ## Source code
 
-The source code of every published version is under its tag (for example 1.0.4-beta+26.3 or 1.0.3-beta+1.20.1)
-at https://github.com/britoandaur2413-afk/IceAndFire-Fabric.
+The source code of the latest version is at https://github.com/britoandaur2413-afk/IceAndFire-Fabric (main for Minecraft 26.3,
+the branches 1.21.1 and 1.20.1). The source code of an older published version is given to anyone who asks for it.
 
 ## License
 
