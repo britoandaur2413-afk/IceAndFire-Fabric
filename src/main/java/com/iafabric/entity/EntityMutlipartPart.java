@@ -76,23 +76,6 @@ public abstract class EntityMutlipartPart extends Entity {
         this.damageMultiplier = damageMultiplier;
     }
 
-    /**
-     * Where it is on its body now (from the server, as the body changes its pose): a point at a side and forward of
-     * its middle (in blocks; side to its right, forward to its head), its bottom at a height, and its size. Its size is
-     * sent only when it changes by a little more than nothing.
-     */
-    public void place(float side, float forward, float offsetY, float width, float height) {
-        this.radius = (float) Math.sqrt(side * side + forward * forward);
-        this.angleYaw = ((float) Math.toDegrees(Math.atan2(side, forward)) + 90.0F) * ((float) Math.PI / 180.0F);
-        this.offsetY = offsetY;
-        if (Math.abs(getScaleX() - width) > 0.02F) {
-            setScaleX(width);
-        }
-        if (Math.abs(getScaleY() - height) > 0.02F) {
-            setScaleY(height);
-        }
-    }
-
 
     public static AttributeSupplier.Builder bakeAttributes() {
         return Mob.createMobAttributes()
@@ -155,11 +138,10 @@ public abstract class EntityMutlipartPart extends Entity {
             Entity parent = getParent();
             refreshDimensions();
             if (parent != null && !level().isClientSide()) {
-                float renderYawOffset = parent.getYRot();
-                if (parent instanceof LivingEntity) {
-                    renderYawOffset = ((LivingEntity) parent).yBodyRot;
-                }
-                if (isSlowFollow()) {
+                float renderYawOffset = yawOn(parent);
+                if (this.placesItself()) {
+                    // (placed on its own: around its bones)
+                } else if (isSlowFollow()) {
                     this.setPos(parent.xo + this.radius * Mth.cos((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)), parent.yo + this.offsetY, parent.zo + this.radius * Mth.sin((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)));
                     double d0 = parent.getX() - this.getX();
                     double d1 = parent.getY() - this.getY();
@@ -187,6 +169,16 @@ public abstract class EntityMutlipartPart extends Entity {
             }
         }
         super.tick();
+    }
+
+    /** Whether it places itself on its body (not at a point turned with it). */
+    protected boolean placesItself() {
+        return false;
+    }
+
+    /** The turn it is placed by around its body: its body's. */
+    protected float yawOn(Entity parent) {
+        return parent instanceof LivingEntity living ? living.yBodyRot : parent.getYRot();
     }
 
     protected boolean isSlowFollow(){
@@ -273,6 +265,11 @@ public abstract class EntityMutlipartPart extends Entity {
     public InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand, Vec3 location) {
         // (the game sends the use of a part to the server itself, where it reaches the body once)
         Entity parent = getParent();
+        // as on the body, what is in hand too (the dragon horn, a chain, a name tag): the game uses an item only on a
+        // living entity, and a part is not one
+        if (parent instanceof LivingEntity) {
+            return player.interactOn(parent, hand, location);
+        }
         return parent != null ? parent.interact(player, hand, location) : InteractionResult.PASS;
     }
 

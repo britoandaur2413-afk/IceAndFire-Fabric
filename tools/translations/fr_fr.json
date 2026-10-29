@@ -1173,5 +1173,15 @@
  "iceandfire_fabric.boss.cryona_fury": "La fureur de Cryona",
  "iceandfire_fabric.cryona.untouchable": "Son chagrin la protège : rien ne l'atteint maintenant. Tiens bon !",
  "gui.iceandfire_fabric.boss.frost_name": "Black Frost",
- "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+ "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+ "item.iceandfire_fabric.double_dragon_saddle": "Selle de dragon double",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Dragons de feu, de glace et électriques, niveau 4+",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Un ami monte derrière toi",
+ "dragon.saddle.on": "Selle double posée : un ami peut monter derrière",
+ "dragon.saddle.too_young": "Trop jeune : il lui faut le niveau 4",
+ "dragon.saddle.wrong_kind": "Seulement pour les dragons de feu, de glace et électriques",
+ "dragon.saddle.owner_only": "Seul son propriétaire peut le seller",
+ "dragon.saddle.owner_first": "Monte quand son propriétaire est en selle",
+ "dragon.saddle.needed": "Il lui faut une selle double pour te porter",
+ "dragon.saddle.taken": "La place arrière est prise"
 }

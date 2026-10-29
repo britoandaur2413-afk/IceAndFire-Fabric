@@ -11,17 +11,10 @@ public class EntityDragonRiderPart extends EntityDragonPart {
 	public EntityDragonRiderPart(EntityDragonBase dragon) {
 		super(dragon, 0F, 0F, 0F, 0.9F, 1.5F, 1F);
 		this.mount = dragon;
+		// (it keeps to the seat on its own, on the server and on each player's game: EntityDragonPart)
+		this.setPart(RIDER);
 		Vec3 seat = DragonRiders.seat(dragon);
 		this.setPos(seat.x, seat.y + 0.1, seat.z);
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-		if (!this.level().isClientSide() && this.mount != null && !this.isRemoved()) {
-			Vec3 seat = DragonRiders.seat(this.mount);
-			this.setPos(seat.x, seat.y + 0.1, seat.z);
-		}
 	}
 
 	@Override

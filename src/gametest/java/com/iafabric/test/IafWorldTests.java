@@ -44,30 +44,30 @@ public class IafWorldTests implements FabricClientGameTest {
 					mc.gui.hud.toggle();
 				}
 			});
-			if (place("hall")) {
+			if (place("hall")) soft("hall", () -> {
 				int[] found = locate(context, world, "iceandfire_fabric:dragon_hall");
 				if (found == null) {
 					throw new AssertionError("no dragon hall found by /locate");
 				}
 				dragonHall(context, world, found[0], found[1]);
-			}
-			if (place("kingdom")) {
+			});
+			if (place("kingdom")) soft("kingdom", () -> {
 				int[] kingdom = locate(context, world, "iceandfire_fabric:pillager_kingdom");
 				if (kingdom == null) {
 					throw new AssertionError("no pillager kingdom found by /locate");
 				}
 				pillagerKingdom(context, world, kingdom[0], kingdom[1]);
-			}
-			if (place("sanctuary")) {
+			});
+			if (place("sanctuary")) soft("sanctuary", () -> {
 				int[] sanctuary = locate(context, world, "iceandfire_fabric:pixie_sanctuary");
 				if (sanctuary == null) {
 					throw new AssertionError("no pixie sanctuary found by /locate");
 				}
 				pixiePlace(context, world, sanctuary[0], sanctuary[1], false);
-			}
+			});
 			for (String[] place : new String[][]{{"nest", "iceandfire_fabric:dragon_roost"}, {"cave", "iceandfire_fabric:dragon_cave"}, {"spire", "iceandfire_fabric:dread_spire"},
 				{"throne", "iceandfire_fabric:dread_throne"}}) {
-				if (place(place[0])) {
+				if (place(place[0])) soft(place[0], () -> {
 					int[] found = locate(context, world, place[1]);
 					if (found == null) {
 						throw new AssertionError("no " + place[1] + " found by /locate");
@@ -78,29 +78,42 @@ public class IafWorldTests implements FabricClientGameTest {
 						case "spire" -> spire(context, world, found[0], found[1]);
 						default -> throne(context, world, found[0], found[1]);
 					}
-				}
+				});
 			}
-			if (place("cottage")) {
+			if (place("cottage")) soft("cottage", () -> {
 				int[] cottage = locate(context, world, "iceandfire_fabric:witch_cottage");
 				if (cottage == null) {
 					throw new AssertionError("no witches' cottage found by /locate");
 				}
 				cottage(context, world, cottage[0], cottage[1]);
-			}
-			if (place("hydra")) {
+			});
+			if (place("hydra")) soft("hydra", () -> {
 				int[] cave = locate(context, world, "iceandfire_fabric:hydra_cave");
 				if (cave == null) {
 					throw new AssertionError("no hydra's cave found by /locate");
 				}
 				hydraCave(context, world, cave[0], cave[1]);
-			}
-			if (place("cavern")) {
+			});
+			if (place("cavern")) soft("cavern", () -> {
 				int[] cavern = locate(context, world, "iceandfire_fabric:pixie_cavern");
 				if (cavern == null) {
 					throw new AssertionError("no pixie cavern found by /locate");
 				}
 				pixiePlace(context, world, cavern[0], cavern[1], true);
-			}
+			});
+		}
+	}
+
+	/** Beside a modpack (IAF_PACK=1) a failed check of a place is logged and the next place is visited. */
+	private static void soft(String place, Runnable check) {
+		if (System.getenv("IAF_PACK") == null) {
+			check.run();
+			return;
+		}
+		try {
+			check.run();
+		} catch (AssertionError e) {
+			log("PACK PROBLEM at " + place + ": " + e.getMessage());
 		}
 	}
 
@@ -771,31 +784,74 @@ public class IafWorldTests implements FabricClientGameTest {
 				}
 			}
 			log("flowing fluid blocks in the forge hall: " + loose);
-			// no bit of a tree in the castle, its walls and towers (a crown cut by it, or grown into it from a chunk made later)
+			// no bit of a tree where the castle keeps the place open (its courtyard, its rooms, the air over its walls; one
+			// grown into it from a chunk made later), and none left hanging over it (a crown cut from its trunk: in a forest
+			// of tall trees every crown touches the next); the crowns of the trees round it may lean over its walls
 			int leaves = 0;
+			int open = 0;
+			java.util.Map<String, Integer> kinds = new java.util.TreeMap<>();
 			int half = com.iafabric.world.structure.DragonHallPieces.CASTLE_HALF;
 			for (BlockPos pos : BlockPos.betweenClosed(castle.at(-half, 0, g), castle.at(half, com.iafabric.world.structure.DragonHallPieces.CASTLE_END, g + 26))) {
-				if (level.getBlockState(pos).is(net.minecraft.tags.BlockTags.LEAVES)) {
-					if (leaves++ < 5) {
-						log("leaves inside the castle at " + pos.toShortString());
-					}
+				var state = level.getBlockState(pos);
+				if (state.is(net.minecraft.tags.BlockTags.LEAVES)) {
+					kinds.merge(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), 1, Integer::sum);
+					leaves++;
+				}
+				if ((state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.LOGS)) && castle.openAt(level, pos) && open++ < 5) {
+					log("a tree in the castle's open space at " + pos.toShortString() + ": " + state);
 				}
 			}
-			log("leaves in the castle: " + leaves);
-			found[1] = leaves;
+			var box = castle.getBoundingBox();
+			var hung = com.iafabric.world.structure.BuiltPiece.floatingPlants(level, box.minX() - 16, box.minY(), box.minZ() - 16, box.maxX() + 16,
+				box.maxY() + 24, box.maxZ() + 16, null);
+			int hanging = 0;
+			for (BlockPos pos : hung) {
+				if (pos.getX() >= box.minX() && pos.getX() <= box.maxX() && pos.getZ() >= box.minZ() && pos.getZ() <= box.maxZ() && hanging++ < 5) {
+					log("a tree left hanging over the castle at " + pos.toShortString() + ": " + level.getBlockState(pos));
+				}
+			}
+			log("leaves over the castle: " + leaves + " " + kinds + "; bits of trees in its open space " + open + ", left hanging over it " + hanging);
+			found[1] = open + hanging;
+			// beside a modpack, every bit of a tree in and around the castle, in its frame (u across, v ahead, dy over the
+			// gate), to see what its trees did
+			if (System.getenv("IAF_PACK") != null) {
+				StringBuilder trees = new StringBuilder("u v dy block\n");
+				for (int u = -half - 16; u <= half + 16; u++) {
+					for (int v = -16; v <= com.iafabric.world.structure.DragonHallPieces.CASTLE_END + 16; v++) {
+						for (int dy = -10; dy <= 40; dy++) {
+							var state = level.getBlockState(castle.at(u, v, g + dy));
+							if (state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.LOGS)) {
+								trees.append(u).append(' ').append(v).append(' ').append(dy).append(' ')
+									.append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock())).append('\n');
+							}
+						}
+					}
+				}
+				try {
+					java.nio.file.Files.writeString(net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir().resolve("castle_trees.txt"), trees);
+				} catch (java.io.IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
 		});
 		if (found[0] == 0) {
 			throw new AssertionError("no stage 5 dragon on the hoard");
 		}
-		if (found[1] > 0) {
-			throw new AssertionError(found[1] + " leaves in the castle");
-		}
 		// the castle from outside, before the gate, high up
 		look(context, world, castle, 14, -34, g + 24, -18, 28, 60);
 		context.takeScreenshot("world_dragon_hall_castle");
+		// from high up before it, the whole castle and the land round it
+		look(context, world, castle, 0, -40, g + 48, 0, 42, 40);
+		context.takeScreenshot("world_dragon_hall_above");
 		// the courtyard and the keep
 		look(context, world, castle, 0, 8, g + 5, 0, 5, 30);
 		context.takeScreenshot("world_dragon_hall_courtyard");
+		// the sky over the courtyard (nothing of a tree cut by the castle left up there)
+		look(context, world, castle, 0, 20, g + 1, 0, -65, 20);
+		context.takeScreenshot("world_dragon_hall_sky");
+		if (found[1] > 0) {
+			throw new AssertionError(found[1] + " bits of trees in the castle or left hanging over it");
+		}
 		world.getServer().runCommand("gamemode spectator @p");
 		// in the keep: the stairwell going down
 		look(context, world, castle, 0, 35, g + 7, 0, 32, 30);

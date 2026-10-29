@@ -32,6 +32,45 @@ public class IafGameTests {
 		return n;
 	}
 
+	/** Its owner gets on a grown dragon with a sword in hand (anything with no use on it), as with an empty hand. */
+	@GameTest
+	public void rideWithSword(GameTestHelper helper) {
+		var level = helper.getLevel();
+		var player = mockPlayer(helper);
+		var dragon = com.iafabric.entity.IafEntityRegistry.FIRE_DRAGON.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+		var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 4.5));
+		dragon.snapTo(at.x, at.y, at.z, 0, 0);
+		level.addFreshEntity(dragon);
+		dragon.growDragon(80);
+		dragon.setTame(true, true);
+		dragon.tame(player);
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
+		dragon.mobInteract(player, net.minecraft.world.InteractionHand.MAIN_HAND);
+		boolean on = player.getVehicle() == dragon;
+		dragon.discard();
+		if (!on) {
+			throw new IllegalStateException("its owner did not get on it with a sword in hand");
+		}
+		helper.succeed();
+	}
+
+	/** Black Frost and Cryona are never turned to stone (a gorgon's gaze, her head, a cockatrice); other dragons can be. */
+	@GameTest
+	public void notStone(GameTestHelper helper) {
+		var level = helper.getLevel();
+		var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1));
+		var frost = com.iafabric.world.structure.DreadPieces.dreadDragon(level, level.getRandom(), pos, 125, true);
+		var dragon = com.iafabric.entity.IafEntityRegistry.ICE_DRAGON.create(level, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
+		var cryona = com.iafabric.entity.IafEntityRegistry.DREAD_QUEEN.create(level, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
+		boolean ok = frost.isBlackFrost() && !frost.canBeTurnedToStone() && dragon.canBeTurnedToStone()
+			&& cryona instanceof com.iafabric.entity.util.IBlacklistedFromStatues q && !q.canBeTurnedToStone();
+		frost.discard();
+		if (!ok) {
+			throw new IllegalStateException("Black Frost or Cryona can be turned to stone");
+		}
+		helper.succeed();
+	}
+
 	@GameTest
 	public void registries(GameTestHelper helper) {
 		long blocks = count(BuiltInRegistries.BLOCK, b -> BuiltInRegistries.BLOCK.getKey(b).getNamespace());
@@ -62,6 +101,99 @@ public class IafGameTests {
 	 * effects, professions, creative tabs, banner patterns, advancements and the death messages.
 	 * (Texts the code and the sounds ask for: tools/check_lang.py.)
 	 */
+	/**
+	 * Every tool, weapon and piece of armor of the mod is in the game's tag for its kind (swords, pickaxes, head armor...,
+	 * bows, tridents): 26.x enchantments take only the items in their tags, so out of them nothing of the mod could be
+	 * enchanted in survival, at the table or the anvil (a player could put books on them only in creative). And the game's
+	 * enchantments take them. IAF_WRITE_TAGS=<the folder of data/minecraft/tags/item> writes the tags as they must be.
+	 */
+	@GameTest
+	public void toolsAndArmorEnchant(GameTestHelper helper) {
+		java.util.Map<String, List<String>> want = new java.util.TreeMap<>();
+		List<String> missing = new ArrayList<>();
+		List<String> noTable = new ArrayList<>();
+		for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
+			var id = BuiltInRegistries.ITEM.getKey(item);
+			if (!IafMod.MOD_ID.equals(id.getNamespace())) {
+				continue;
+			}
+			String tag = null;
+			if (item instanceof com.iafabric.item.IafToolItem tool) {
+				tag = switch (tool.kind()) {
+					case SWORD -> "swords";
+					case PICKAXE -> "pickaxes";
+					case AXE -> "axes";
+					case SHOVEL -> "shovels";
+					case HOE -> "hoes";
+				};
+			} else if (item instanceof com.iafabric.item.IafArmorItem armor) {
+				tag = switch (armor.getType()) {
+					case HELMET -> "head_armor";
+					case CHESTPLATE -> "chest_armor";
+					case LEGGINGS -> "leg_armor";
+					case BOOTS -> "foot_armor";
+					default -> null;
+				};
+			} else if (item instanceof net.minecraft.world.item.BowItem) {
+				tag = "enchantable/bow";
+			} else if (item instanceof net.minecraft.world.item.TridentItem) {
+				tag = "enchantable/trident";
+			}
+			if (tag == null) {
+				continue;
+			}
+			want.computeIfAbsent(tag, key -> new ArrayList<>()).add(id.toString());
+			var key = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.Identifier.withDefaultNamespace(tag));
+			if (!new net.minecraft.world.item.ItemStack(item).is(key)) {
+				missing.add(id + " (#minecraft:" + tag + ")");
+			}
+			// the enchanting table also wants the item to say how well it takes enchantments
+			if (!new net.minecraft.world.item.ItemStack(item).isEnchantable()) {
+				noTable.add(id.getPath());
+			}
+		}
+		String out = System.getenv("IAF_WRITE_TAGS");
+		if (out != null) {
+			try {
+				for (var entry : want.entrySet()) {
+					java.nio.file.Path file = java.nio.file.Path.of(out, entry.getKey() + ".json");
+					java.nio.file.Files.createDirectories(file.getParent());
+					StringBuilder json = new StringBuilder("{\n  \"replace\": false,\n  \"values\": [\n");
+					List<String> ids = entry.getValue().stream().sorted().toList();
+					for (int i = 0; i < ids.size(); i++) {
+						json.append("    \"").append(ids.get(i)).append(i < ids.size() - 1 ? "\",\n" : "\"\n");
+					}
+					json.append("  ]\n}\n");
+					java.nio.file.Files.writeString(file, json.toString());
+				}
+			} catch (java.io.IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		var enchantments = helper.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+		List<String> refused = new ArrayList<>();
+		java.util.Map<net.minecraft.world.item.Item, List<net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment>>> tries = java.util.Map.of(
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_LIGHTNING_PICKAXE, List.of(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY,
+				net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH, net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, net.minecraft.world.item.enchantment.Enchantments.MENDING),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_FIRE_SWORD, List.of(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, net.minecraft.world.item.enchantment.Enchantments.LOOTING),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_LIGHTNING_HELMET, List.of(net.minecraft.world.item.enchantment.Enchantments.PROTECTION, net.minecraft.world.item.enchantment.Enchantments.RESPIRATION),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_ICE_BOOTS, List.of(net.minecraft.world.item.enchantment.Enchantments.FEATHER_FALLING),
+			com.iafabric.item.IafItemRegistry.DRAGON_BOW, List.of(net.minecraft.world.item.enchantment.Enchantments.POWER));
+		tries.forEach((item, keys) -> {
+			for (var key : keys) {
+				if (!enchantments.getOrThrow(key).value().canEnchant(new net.minecraft.world.item.ItemStack(item))) {
+					refused.add(key.identifier().getPath() + " on " + BuiltInRegistries.ITEM.getKey(item).getPath());
+				}
+			}
+		});
+		log("tools and armor in the game's tags: " + want.entrySet().stream().map(e -> e.getKey() + " " + e.getValue().size()).toList() + "; missing " + missing.size()
+			+ "; enchantments refused " + refused + "; not for the enchanting table " + noTable);
+		helper.assertTrue(missing.isEmpty(), "not in the game's tags (no enchantment takes them): " + missing);
+		helper.assertTrue(noTable.isEmpty(), "the enchanting table takes nothing of them: " + noTable);
+		helper.assertTrue(refused.isEmpty(), "the game's enchantments refuse: " + refused);
+		helper.succeed();
+	}
+
 	@GameTest
 	public void translations(GameTestHelper helper) {
 		java.util.Map<String, java.util.Map<String, String>> langs = new java.util.LinkedHashMap<>();

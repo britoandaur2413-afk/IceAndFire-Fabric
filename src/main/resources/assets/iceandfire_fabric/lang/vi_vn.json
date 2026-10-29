@@ -2826,5 +2826,15 @@
   "block.minecraft.banner.iceandfire_fabric.weezer.black": "Họa tiết Weezer màu đen",
   "item.iceandfire_fabric.hydra_heart.desc_1": "tùy theo mức độ bị thương của người cầm",
   "gui.iceandfire_fabric.boss.frost_name": "Rồng Đen Băng",
-  "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+  "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+  "item.iceandfire_fabric.double_dragon_saddle": "Yên rồng đôi",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Rồng lửa, băng và sét, giai đoạn 4+",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Một người bạn ngồi sau bạn",
+  "dragon.saddle.on": "Đã đặt yên đôi: một người bạn có thể ngồi sau",
+  "dragon.saddle.too_young": "Còn quá nhỏ: cần giai đoạn 4",
+  "dragon.saddle.wrong_kind": "Chỉ dành cho rồng lửa, băng và sét",
+  "dragon.saddle.owner_only": "Chỉ chủ nhân mới đặt yên được",
+  "dragon.saddle.owner_first": "Hãy lên khi chủ nhân đã cưỡi",
+  "dragon.saddle.needed": "Nó cần yên đôi để chở bạn",
+  "dragon.saddle.taken": "Chỗ phía sau đã có người"
 }

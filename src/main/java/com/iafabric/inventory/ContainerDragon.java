@@ -1,7 +1,11 @@
 package com.iafabric.inventory;
 
+import com.iafabric.IafMod;
+import com.iafabric.entity.DragonSaddle;
 import com.iafabric.entity.EntityDragonBase;
+import com.iafabric.item.IafItemRegistry;
 import com.iafabric.item.ItemDragonArmor;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,11 +17,13 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class ContainerDragon extends AbstractContainerMenu {
+    /** The empty double saddle's place shows a saddle, as a horse's does. */
+    private static final Identifier SADDLE_ICON = Identifier.withDefaultNamespace("container/slot/saddle");
     private final Container dragonInventory;
     private final EntityDragonBase dragon;
 
     public ContainerDragon(int i, Inventory playerInventory) {
-        this(i, new SimpleContainer(5), playerInventory, null);
+        this(i, new SimpleContainer(6), playerInventory, null);
     }
 
     public ContainerDragon(int id, Container dragonInventory, Inventory playerInventory, EntityDragonBase rat) {
@@ -79,6 +85,41 @@ public class ContainerDragon extends AbstractContainerMenu {
                 return super.mayPlace(stack) && !stack.isEmpty() && stack.getItem() instanceof ItemDragonArmor && ((ItemDragonArmor) stack.getItem()).dragonSlot == 3;
             }
         });
+        // the double saddle (DragonSaddle): there on a grown fire, ice or lightning dragon; it stays on while a friend sits behind
+        this.addSlot(new Slot(dragonInventory, DragonSaddle.SLOT, 153, 54) {
+            @Override
+            public void setChanged() {
+                this.container.setChanged();
+            }
+
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                EntityDragonBase dragon = ContainerDragon.this.dragon();
+                return super.mayPlace(stack) && stack.is(IafItemRegistry.DOUBLE_DRAGON_SADDLE) && dragon != null && DragonSaddle.fits(dragon);
+            }
+
+            @Override
+            public boolean mayPickup(Player player) {
+                EntityDragonBase dragon = ContainerDragon.this.dragon();
+                return super.mayPickup(player) && (dragon == null || DragonSaddle.behind(dragon) == null);
+            }
+
+            @Override
+            public boolean isActive() {
+                EntityDragonBase dragon = ContainerDragon.this.dragon();
+                return dragon != null && DragonSaddle.fits(dragon) || this.hasItem();
+            }
+
+            @Override
+            public int getMaxStackSize() {
+                return 1;
+            }
+
+            @Override
+            public Identifier getNoItemIcon() {
+                return SADDLE_ICON;
+            }
+        });
         int j;
         int k;
         for (j = 0; j < 3; ++j) {
@@ -90,6 +131,14 @@ public class ContainerDragon extends AbstractContainerMenu {
         for (j = 0; j < 9; ++j) {
             this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 208 + i));
         }
+    }
+
+    /** Its dragon: on the server the one it was opened for, on the player's game the one they clicked (kept by the proxy). */
+    private EntityDragonBase dragon() {
+        if (this.dragon != null) {
+            return this.dragon;
+        }
+        return IafMod.PROXY.getReferencedMob() instanceof EntityDragonBase clicked ? clicked : null;
     }
 
     @Override
@@ -128,11 +177,15 @@ public class ContainerDragon extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
 
+            } else if (this.getSlot(DragonSaddle.SLOT).mayPlace(itemstack1) && !this.getSlot(DragonSaddle.SLOT).hasItem()) {
+                if (!this.moveItemStackTo(itemstack1, DragonSaddle.SLOT, DragonSaddle.SLOT + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else if (this.getSlot(0).mayPlace(itemstack1)) {
                 if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.dragonInventory.getContainerSize() <= 5 || !this.moveItemStackTo(itemstack1, 5, this.dragonInventory.getContainerSize(), false)) {
+            } else if (this.dragonInventory.getContainerSize() <= 6 || !this.moveItemStackTo(itemstack1, 6, this.dragonInventory.getContainerSize(), false)) {
                 return ItemStack.EMPTY;
             }
             if (itemstack1.isEmpty()) {

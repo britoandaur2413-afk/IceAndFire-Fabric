@@ -32,6 +32,10 @@ public class RenderDragonLightningCharge extends IafEntityRenderer<EntityDragonL
         float yaw = entity.yRotO + (entity.getYRot() - entity.yRotO) * partialTicks;
         VertexConsumer ivertexbuilder2 = bufferIn.getBuffer(RenderTypes.eyes(TEXTURE_CORE));
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderTypes.energySwirl(TEXTURE, f * 0.01F, f * 0.01F));
+        // leaving its dragon's mouth
+        var shift = com.iafabric.client.particle.DragonBreathFx.chargeShift(entity, partialTicks);
+        matrixStackIn.pushPose();
+        matrixStackIn.translate(shift.x, shift.y, shift.z);
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0F, 0.5F, 0F);
@@ -62,6 +66,7 @@ public class RenderDragonLightningCharge extends IafEntityRenderer<EntityDragonL
         MODEL_SPIRIT.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStackIn.popPose();
 
+        matrixStackIn.popPose();
         super.render(entity, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 

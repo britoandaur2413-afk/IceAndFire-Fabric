@@ -107,7 +107,7 @@ import java.util.List;
 import net.minecraft.util.RandomSource;
 import java.util.UUID;
 
-public abstract class EntityDragonBase extends TamableAnimal implements IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IDropArmor, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController {
+public abstract class EntityDragonBase extends TamableAnimal implements IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IDropArmor, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, com.iafabric.entity.util.IBlacklistedFromStatues {
 
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
     protected static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.BOOLEAN);
@@ -133,6 +133,9 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     private static final EntityDataAccessor<Byte> DREAD_LOOK = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.BYTE);
     /** The rider drawn on its back (DragonRiders): 0 none, 1 a pillager, 2 the warlord, 3 a dread knight. */
     private static final EntityDataAccessor<Byte> VIRTUAL_RIDER = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.BYTE);
+    /** It wears the double saddle (DragonSaddle), and who sits in its seat behind (an entity id, or DragonSaddle.NOBODY). */
+    private static final EntityDataAccessor<Boolean> DOUBLE_SADDLE = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> BACK_RIDER = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.INT);
     public static Animation ANIMATION_FIRECHARGE;
     public static Animation ANIMATION_EAT;
     public static Animation ANIMATION_SPEAK;
@@ -276,24 +279,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     private boolean isModelDead;
     private int animationTick;
     private Animation currentAnimation;
-    private float lastScale;
 
-    private EntityDragonPart headPart;
-    private EntityDragonPart neckPart;
-    private EntityDragonPart rightWingUpperPart;
-    private EntityDragonPart rightWingLowerPart;
-    private EntityDragonPart leftWingUpperPart;
-    private EntityDragonPart leftWingLowerPart;
-    private EntityDragonPart tail1Part;
-    private EntityDragonPart tail2Part;
-    private EntityDragonPart tail3Part;
-    private EntityDragonPart tail4Part;
-    /** Its wings' tips and its tail's fin: the wings spread far past the old parts in the air (their tips had none). */
-    private EntityDragonPart rightWingTipPart;
-    private EntityDragonPart leftWingTipPart;
-    private EntityDragonPart tailFinPart;
-    /** The size its parts were made for (its render size / 3: a model unit of 16 is one of these). */
-    private float partScale = 1;
+    /** Its body's parts: its head, body, legs, neck, tail and wings, around its bones as they are posed (DragonBones). */
+    private final EntityDragonPart[] parts = new EntityDragonPart[DragonBones.PARTS];
+    /** Its pose as worked out each tick for its parts, on the server and on each player's game. */
+    public final DragonBones.Work bones = new DragonBones.Work();
     private boolean isOverAir;
 
     /** Air speed used by the riding code (the old LivingEntity#flyingSpeed field). */
@@ -396,48 +386,19 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
     protected abstract boolean shouldTarget(Entity entity);
 
+    /**
+     * Its body's parts, made anew on the server (the players' games are sent them). They take their place and size from
+     * its bones each tick (DragonBones), whatever its size: the scale is not needed.
+     */
     public void resetParts(float scale) {
         removeParts();
-        headPart = new EntityDragonPart(this, 1.55F * scale, 0, 0.6F * scale, 0.5F * scale, 0.35F * scale, 1.5F);
-        headPart.copyPosition(this);
-        headPart.setParent(this);
-        neckPart = new EntityDragonPart(this, 0.85F * scale, 0, 0.7F * scale, 0.5F * scale, 0.2F * scale, 1);
-        neckPart.copyPosition(this);
-        neckPart.setParent(this);
-        rightWingUpperPart = new EntityDragonPart(this, scale, 90, 0.5F * scale, 0.85F * scale, 0.3F * scale, 0.5F);
-        rightWingUpperPart.copyPosition(this);
-        rightWingUpperPart.setParent(this);
-        rightWingLowerPart = new EntityDragonPart(this, 1.4F * scale, 100, 0.3F * scale, 0.85F * scale, 0.2F * scale, 0.5F);
-        rightWingLowerPart.copyPosition(this);
-        rightWingLowerPart.setParent(this);
-        leftWingUpperPart = new EntityDragonPart(this, scale, -90, 0.5F * scale, 0.85F * scale, 0.3F * scale, 0.5F);
-        leftWingUpperPart.copyPosition(this);
-        leftWingUpperPart.setParent(this);
-        leftWingLowerPart = new EntityDragonPart(this, 1.4F * scale, -100, 0.3F * scale, 0.85F * scale, 0.2F * scale, 0.5F);
-        leftWingLowerPart.copyPosition(this);
-        leftWingLowerPart.setParent(this);
-        tail1Part = new EntityDragonPart(this, -0.75F * scale, 0, 0.6F * scale, 0.35F * scale, 0.35F * scale, 1);
-        tail1Part.copyPosition(this);
-        tail1Part.setParent(this);
-        tail2Part = new EntityDragonPart(this, -1.15F * scale, 0, 0.45F * scale, 0.35F * scale, 0.35F * scale, 1);
-        tail2Part.copyPosition(this);
-        tail2Part.setParent(this);
-        tail3Part = new EntityDragonPart(this, -1.5F * scale, 0, 0.35F * scale, 0.35F * scale, 0.35F * scale, 1);
-        tail3Part.copyPosition(this);
-        tail3Part.setParent(this);
-        tail4Part = new EntityDragonPart(this, -1.95F * scale, 0, 0.25F * scale, 0.45F * scale, 0.3F * scale, 1.5F);
-        tail4Part.copyPosition(this);
-        tail4Part.setParent(this);
-        rightWingTipPart = new EntityDragonPart(this, 1.8F * scale, 105, 0.3F * scale, 0.65F * scale, 0.5F * scale, 0.5F);
-        rightWingTipPart.copyPosition(this);
-        rightWingTipPart.setParent(this);
-        leftWingTipPart = new EntityDragonPart(this, 1.8F * scale, -105, 0.3F * scale, 0.65F * scale, 0.5F * scale, 0.5F);
-        leftWingTipPart.copyPosition(this);
-        leftWingTipPart.setParent(this);
-        tailFinPart = new EntityDragonPart(this, -2.75F * scale, 0, 0.42F * scale, 0.9F * scale, 0.3F * scale, 1.5F);
-        tailFinPart.copyPosition(this);
-        tailFinPart.setParent(this);
-        this.partScale = scale;
+        if (this.level().isClientSide()) {
+            return;
+        }
+        for (int i = 0; i < DragonBones.PARTS; i++) {
+            parts[i] = new EntityDragonPart(this, i);
+            parts[i].setParent(this);
+        }
         if (this.tickCount > 0 && this.level() instanceof ServerLevel server && this.getVirtualRider() != DragonRiders.NONE && DragonRiders.hasRiders(this)) {
             // its rider's hitbox again at once
             DragonRiders.keepPart(this, server);
@@ -449,174 +410,33 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             riderPart.remove(RemovalReason.DISCARDED);
             riderPart = null;
         }
-        if (headPart != null) {
-            headPart.remove(RemovalReason.DISCARDED);
-            headPart = null;
-        }
-        if (neckPart != null) {
-            neckPart.remove(RemovalReason.DISCARDED);
-            neckPart = null;
-        }
-        if (rightWingUpperPart != null) {
-            rightWingUpperPart.remove(RemovalReason.DISCARDED);
-            rightWingUpperPart = null;
-        }
-        if (rightWingLowerPart != null) {
-            rightWingLowerPart.remove(RemovalReason.DISCARDED);
-            rightWingLowerPart = null;
-        }
-        if (leftWingUpperPart != null) {
-            leftWingUpperPart.remove(RemovalReason.DISCARDED);
-            leftWingUpperPart = null;
-        }
-        if (leftWingLowerPart != null) {
-            leftWingLowerPart.remove(RemovalReason.DISCARDED);
-            leftWingLowerPart = null;
-        }
-        if (tail1Part != null) {
-            tail1Part.remove(RemovalReason.DISCARDED);
-            tail1Part = null;
-        }
-        if (tail2Part != null) {
-            tail2Part.remove(RemovalReason.DISCARDED);
-            tail2Part = null;
-        }
-        if (tail3Part != null) {
-            tail3Part.remove(RemovalReason.DISCARDED);
-            tail3Part = null;
-        }
-        if (tail4Part != null) {
-            tail4Part.remove(RemovalReason.DISCARDED);
-            tail4Part = null;
-        }
-        if (rightWingTipPart != null) {
-            rightWingTipPart.remove(RemovalReason.DISCARDED);
-            rightWingTipPart = null;
-        }
-        if (leftWingTipPart != null) {
-            leftWingTipPart.remove(RemovalReason.DISCARDED);
-            leftWingTipPart = null;
-        }
-        if (tailFinPart != null) {
-            tailFinPart.remove(RemovalReason.DISCARDED);
-            tailFinPart = null;
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i] != null) {
+                parts[i].remove(RemovalReason.DISCARDED);
+                parts[i] = null;
+            }
         }
     }
 
     public void updateParts() {
         if (this.level().isClientSide()) {
-            // (the server's parts are sent to the client like any entity)
+            // (the server's parts are sent to the client like any entity, and placed there by it)
             return;
         }
-        if (headPart != null) {
-            if (!headPart.shouldContinuePersisting()) {
-                level().addFreshEntity(headPart);
-            }
-            headPart.setParent(this);
-        }
-        if (neckPart != null) {
-            if (!neckPart.shouldContinuePersisting()) {
-                level().addFreshEntity(neckPart);
-            }
-            neckPart.setParent(this);
-        }
-        if (rightWingUpperPart != null) {
-            if (!rightWingUpperPart.shouldContinuePersisting()) {
-                level().addFreshEntity(rightWingUpperPart);
-            }
-            rightWingUpperPart.setParent(this);
-        }
-        if (rightWingLowerPart != null) {
-            if (!rightWingLowerPart.shouldContinuePersisting()) {
-                level().addFreshEntity(rightWingLowerPart);
-            }
-            rightWingLowerPart.setParent(this);
-        }
-        if (leftWingUpperPart != null) {
-            if (!leftWingUpperPart.shouldContinuePersisting()) {
-                level().addFreshEntity(leftWingUpperPart);
-            }
-            leftWingUpperPart.setParent(this);
-        }
-        if (leftWingLowerPart != null) {
-            if (!leftWingLowerPart.shouldContinuePersisting()) {
-                level().addFreshEntity(leftWingLowerPart);
-            }
-            leftWingLowerPart.setParent(this);
-        }
-        if (tail1Part != null) {
-            if (!tail1Part.shouldContinuePersisting()) {
-                level().addFreshEntity(tail1Part);
-            }
-            tail1Part.setParent(this);
-        }
-        if (tail2Part != null) {
-            if (!tail2Part.shouldContinuePersisting()) {
-                level().addFreshEntity(tail2Part);
-            }
-            tail2Part.setParent(this);
-        }
-        if (tail3Part != null) {
-            if (!tail3Part.shouldContinuePersisting()) {
-                level().addFreshEntity(tail3Part);
-            }
-            tail3Part.setParent(this);
-        }
-        if (tail4Part != null) {
-            if (!tail4Part.shouldContinuePersisting()) {
-                level().addFreshEntity(tail4Part);
-            }
-            tail4Part.setParent(this);
-        }
-        for (EntityDragonPart part : new EntityDragonPart[]{rightWingTipPart, leftWingTipPart, tailFinPart}) {
+        // (made with the dragon, before it was set where it is: each goes into the world where the dragon is now, not
+        // where the dragon was made, in land maybe never loaded, where it would never move; one left far behind comes back)
+        double far = 32 + this.getRenderSize() * 2;
+        for (EntityDragonPart part : parts) {
             if (part != null) {
                 if (!part.shouldContinuePersisting()) {
+                    part.copyPosition(this);
                     level().addFreshEntity(part);
+                } else if (!part.isRemoved() && part.distanceToSqr(this) > far * far) {
+                    part.setPos(this.position());
                 }
                 part.setParent(this);
             }
         }
-        layParts();
-    }
-
-    /**
-     * Its parts where its body is drawn, by its pose (measured on its model, the same for the three kinds): on the
-     * ground its wings fold along its sides up to its back; hovering or flying they spread three and a half times its
-     * size out and rise; hovering its tail hangs under it. Between the two as it takes off or lands.
-     * Each: its side (right), forward, bottom, width and height, in its size (render size / 3).
-     */
-    private void layParts() {
-        if (headPart == null || rightWingTipPart == null) {
-            return;
-        }
-        float air = Mth.clamp(Math.max(this.flyProgress, this.hoverProgress) / 20F, 0F, 1F);
-        float hang = Mth.clamp(this.hoverProgress / 20F, 0F, 1F) * (1F - Mth.clamp(this.flyProgress / 20F, 0F, 1F));
-        lay(headPart, air, 0, 1.65F, 0.42F, 0.55F, 0.45F, 0, 1.55F, 0.70F, 0.55F, 0.5F);
-        lay(neckPart, air, 0, 1.05F, 0.52F, 0.5F, 0.42F, 0, 1.0F, 0.6F, 0.5F, 0.6F);
-        for (int side = -1; side <= 1; side += 2) {
-            EntityDragonPart upper = side > 0 ? rightWingUpperPart : leftWingUpperPart;
-            EntityDragonPart lower = side > 0 ? rightWingLowerPart : leftWingLowerPart;
-            EntityDragonPart tip = side > 0 ? rightWingTipPart : leftWingTipPart;
-            lay(upper, air, side * 1.0F, 0.3F, 0.1F, 0.9F, 1.5F, side * 1.3F, 0.45F, 0.95F, 1.15F, 1.0F);
-            lay(lower, air, side * 1.45F, -0.4F, 0.05F, 0.75F, 1.5F, side * 2.4F, 0.25F, 1.3F, 1.2F, 1.1F);
-            lay(tip, air, side * 1.35F, -1.05F, 0.25F, 0.65F, 1.05F, side * 3.25F, 0.55F, 1.85F, 0.9F, 0.8F);
-        }
-        lay(tail1Part, hang, 0, -0.4F, 0.5F, 0.4F, 0.45F, 0, -0.3F, 0.25F, 0.45F, 0.45F);
-        lay(tail2Part, hang, 0, -0.8F, 0.45F, 0.4F, 0.42F, 0, -0.67F, 0.03F, 0.45F, 0.47F);
-        lay(tail3Part, hang, 0, -1.3F, 0.42F, 0.4F, 0.35F, 0, -1.07F, -0.3F, 0.45F, 0.52F);
-        lay(tail4Part, hang, 0, -1.8F, 0.42F, 0.45F, 0.25F, 0, -1.4F, -0.7F, 0.4F, 0.5F);
-        lay(tailFinPart, hang, 0, -2.75F, 0.42F, 0.9F, 0.3F, 0, -1.75F, -1.6F, 0.7F, 0.95F);
-    }
-
-    /** One part between two poses (t: 0 the first, 1 the second), in its size. */
-    private void lay(EntityDragonPart part, float t, float side0, float fwd0, float y0, float w0, float h0,
-        float side1, float fwd1, float y1, float w1, float h1) {
-        if (part == null) {
-            return;
-        }
-        float k = this.partScale;
-        part.place(Mth.lerp(t, side0, side1) * k, Mth.lerp(t, fwd0, fwd1) * k, Mth.lerp(t, y0, y1) * k, Mth.lerp(t, w0, w1) * k,
-            Mth.lerp(t, h0, h1) * k);
     }
 
     /**
@@ -664,7 +484,9 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             burningTarget = null;
             return;
         }
-        if (burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isBaby()) {
+        // (told to sit counts as awake here: the game's sitting is the same flag as sleeping for a dragon, and a dragon
+        // told to sit before a forge is meant to breathe into it)
+        if (burningTarget != null && (!this.isSleeping() || this.isOrderedToSit()) && !this.isModelDead() && !this.isBaby()) {
             float maxDist = 115 * this.getDragonStage();
             boolean flag = false;
             if (level().getBlockEntity(burningTarget) instanceof TileEntityDragonforgeInput && ((TileEntityDragonforgeInput) level().getBlockEntity(burningTarget)).isAssembled()
@@ -682,6 +504,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     protected abstract void breathFireAtPos(BlockPos burningTarget);
+
+    /** Whether a dragon forge with work to do calls it to breathe into it (it is tamed or chained, and sees its aperture). */
+    public boolean forgeCalls() {
+        return burningTarget != null && (this.isTame() || this.isChained()) && level().getBlockEntity(burningTarget) instanceof TileEntityDragonforgeInput input && input.isAssembled();
+    }
 
     protected PathingStuckHandler createStuckHandler() {
         return PathingStuckHandler.createStuckHandler();
@@ -851,6 +678,20 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         builder.define(DRAGON_PITCH, 0F);
         builder.define(CRYSTAL_BOUND, false);
         builder.define(CUSTOM_POSE, "");
+        builder.define(DOUBLE_SADDLE, false);
+        builder.define(BACK_RIDER, DragonSaddle.NOBODY);
+    }
+
+    public boolean hasDoubleSaddle() {
+        return this.entityData.get(DOUBLE_SADDLE);
+    }
+
+    public int getBackRider() {
+        return this.entityData.get(BACK_RIDER);
+    }
+
+    public void setBackRider(int id) {
+        this.entityData.set(BACK_RIDER, id);
     }
 
     @Override
@@ -1024,7 +865,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     public int getContainerSize() {
-        return 5;
+        // its banner, its four armor pieces and the double saddle (DragonSaddle.SLOT)
+        return 6;
     }
 
     protected void createInventory() {
@@ -1053,7 +895,13 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     protected void updateContainerEquipment() {
         if (!this.level().isClientSide()) {
             updateAttributes();
+            this.keepSaddle();
         }
+    }
+
+    /** Whether it wears the double saddle, told to the players' games (they draw it, and seat a rider behind). */
+    private void keepSaddle() {
+        this.entityData.set(DOUBLE_SADDLE, !this.dragonInventory.getItem(DragonSaddle.SLOT).isEmpty());
     }
 
 
@@ -1398,6 +1246,26 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         return InteractionResult.PASS;
     }
 
+    /** Its owner gets on it (a small one rides on its owner's shoulder instead). */
+    private InteractionResult rideBy(Player player) {
+        if (!level().isClientSide()) {
+            final int dragonStage = this.getDragonStage();
+            if (dragonStage < 2) {
+                if (player.getPassengers().size() >= 3)
+                    return InteractionResult.FAIL;
+                this.startRiding(player, true, true);
+                IafNetwork.sendToAll(new MessageStartRidingMob(this.getId(), true, true));
+            } else if (dragonStage > 2 && !player.isPassenger()) {
+                player.setShiftKeyDown(false);
+                player.startRiding(this, true, true);
+                IafNetwork.sendToAll(new MessageStartRidingMob(this.getId(), true, false));
+                this.setInSittingPose(false);
+            }
+            this.getNavigation().stop();
+        }
+        return InteractionResult.SUCCESS;
+    }
+
     @Override
     public InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         // Interaction usually means right-click but the relevant item is often in the main hand
@@ -1412,6 +1280,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             return InteractionResult.SUCCESS;
         }
         if (!this.isModelDead()) {
+            // its owner, shift held: its menu, whatever is in hand (only the dragon staff keeps its own shift click: its home)
+            if (player.isShiftKeyDown() && this.isOwnedBy(player) && stack.getItem() != IafItemRegistry.DRAGON_STAFF) {
+                this.openInventory(player);
+                return InteractionResult.SUCCESS;
+            }
             if (stack.getItem() == IafItemRegistry.CREATIVE_DRAGON_MEAL) {
                 this.setTame(true, true);
                 this.tame(player);
@@ -1447,29 +1320,14 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     return InteractionResult.SUCCESS;
                 }
                 this.tame(player);
+                if (stack.is(IafItemRegistry.DOUBLE_DRAGON_SADDLE) && !DragonSaddle.worn(this)) {
+                    return DragonSaddle.putOn(this, player, stack);
+                }
                 if (stack.getItem() == IafItemRegistry.DRAGON_HORN) {
                     return super.mobInteract(player, hand);
                 }
-                if (stack.isEmpty() && !player.isShiftKeyDown()) {
-                    if (!level().isClientSide()) {
-                        final int dragonStage = this.getDragonStage();
-                        if (dragonStage < 2) {
-                            if (player.getPassengers().size() >= 3)
-                                return InteractionResult.FAIL;
-                            this.startRiding(player, true, true);
-                            IafNetwork.sendToAll(new MessageStartRidingMob(this.getId(), true, true));
-                        } else if (dragonStage > 2 && !player.isPassenger()) {
-                            player.setShiftKeyDown(false);
-                            player.startRiding(this, true, true);
-                            IafNetwork.sendToAll(new MessageStartRidingMob(this.getId(), true, false));
-                            this.setInSittingPose(false);
-                        }
-                        this.getNavigation().stop();
-                    }
-                    return InteractionResult.SUCCESS;
-                } else if (stack.isEmpty() && player.isShiftKeyDown()) {
-                    this.openInventory(player);
-                    return InteractionResult.SUCCESS;
+                if (stack.isEmpty()) {
+                    return this.rideBy(player);
                 } else {
                     int itemFoodAmount = FoodUtils.getFoodPoints(stack, true, dragonType.isPiscivore());
                     if (itemFoodAmount > 0 && (this.getHunger() < 100 || this.getHealth() < this.getMaxHealth())) {
@@ -1543,6 +1401,16 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                             return InteractionResult.SUCCESS;
                         }
                     }
+                    // anything else in hand (a sword, a bow...) has no use on it: its owner gets on, as with an empty hand
+                    if (!player.isShiftKeyDown()) {
+                        return this.rideBy(player);
+                    }
+                }
+            } else if (!player.isShiftKeyDown()) {
+                // someone else: on behind its owner, in a double saddle
+                InteractionResult behind = DragonSaddle.byOther(this, player, stack);
+                if (behind != InteractionResult.PASS) {
+                    return behind;
                 }
             }
         }
@@ -1828,14 +1696,70 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             || (this.dreadMount || this.getDreadLook() > 0) && passenger instanceof EntityDreadMob;
     }
 
+    /** Its rider's shift is held since the air (it brought it down): it does not let the rider off until pressed again. */
+    private boolean shiftFromTheAir;
+
+    public boolean shiftFromTheAir() {
+        return this.shiftFromTheAir;
+    }
+
+    /**
+     * Its owner got off it on the ground: it stays there, sitting (as if told to sit), instead of going off on its own
+     * (it flew away). Told so, in a word over the hotbar.
+     */
+    @Override
+    protected void removePassenger(Entity passenger) {
+        boolean behind = passenger.getId() == this.getBackRider();
+        super.removePassenger(passenger);
+        this.shiftFromTheAir = false;
+        if (behind && !this.level().isClientSide()) {
+            // the friend behind got off: the seat is free, and the drop from its back to the ground does not hurt
+            this.setBackRider(DragonSaddle.NOBODY);
+            if (passenger instanceof LivingEntity living) {
+                MiscProperties.setDismountedDragon(living, true);
+            }
+        }
+        if (!this.level().isClientSide() && passenger instanceof Player player && this.isOwnedBy(player) && this.getDragonStage() > 2
+            && this.isAlive() && !this.isModelDead() && this.onGround() && !this.isFlying() && !this.isHovering()) {
+            this.setCommand(1);
+            player.sendOverlayMessage(Component.translatable("dragon.command.sit"));
+        }
+    }
+
+    /** The top of its back bone as last drawn, in its own frame (before its turn), and when: set by its renderer. */
+    public Vec3 seatOnBack;
+    public int seatOnBackTick;
+    /** Likewise the double saddle's seat behind, on its lower back (DragonSaddle). */
+    public Vec3 seatBehind;
+    public int seatBehindTick;
+
+    /**
+     * Its mouth as last drawn, in its own frame (before its turn): the point between its jaws, the way they open (from
+     * their hinge to their tips, two points of its model) and when; set by its renderer. Its breath starts there.
+     */
+    public Vec3 mouthAt;
+    public Vec3 mouthDir;
+    public int mouthTick;
+    /** On the player's game: where its mouth was the tick before (its breath is born on the way), and when its server last said it breathes. */
+    public Vec3 mouthPrev;
+    public int breathSeenTick = -100;
+
     @Override
     public void positionRider(Entity passenger, Entity.MoveFunction moveFunction) {
         super.positionRider(passenger, moveFunction);
         if (this.hasPassenger(passenger)) {
+            if (DragonSaddle.inBackSeat(this, passenger)) {
+                // the friend behind its owner, in the double saddle's seat on its lower back: as drawn on the player's
+                // game, as its bones are posed on the server
+                Vec3 seat = this.level().isClientSide() && this.seatBehind != null && this.tickCount - this.seatBehindTick < 10
+                    ? DragonSeatPose.onIt(this, this.seatBehind) : DragonSaddle.backSeat(this);
+                passenger.setPos(seat.x, seat.y - DragonSeatPose.RIDER_SEAT, seat.z);
+                return;
+            }
             if (this.carriesRider(passenger)) {
-                // its rider (a pillager of the kingdom, the Dread Queen...) sits on its back, not in its jaws
-                Vec3 riderPos = this.getRiderPosition();
-                passenger.setPos(riderPos.x, this.carriedSeatY(riderPos.y), riderPos.z);
+                // its rider (a pillager of the kingdom, the Dread Queen...) sits in the seat on its back, not in its jaws
+                Vec3 seat = DragonSeatPose.world(this);
+                passenger.setPos(seat.x, seat.y - DragonSeatPose.RIDER_SEAT, seat.z);
                 if (passenger instanceof LivingEntity living) {
                     living.yBodyRot = this.yBodyRot;
                 }
@@ -1852,8 +1776,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 this.setYHeadRot(passenger.getYHeadRot());
                 this.setXRot(passenger.getXRot());
 
-                Vec3 riderPos = this.getRiderPosition();
-                passenger.setPos(riderPos.x, riderPos.y + passenger.getBbHeight(), riderPos.z);
+                // in the seat on its back: on the player's game as it is drawn (the top of its back bone, from its renderer:
+                // the beat of its body too), on the server as its poses put it (DragonSeatPose); the rider's seat on it
+                Vec3 seat = this.level().isClientSide() && this.seatOnBack != null && this.tickCount - this.seatOnBackTick < 10
+                    ? DragonSeatPose.onIt(this, this.seatOnBack) : DragonSeatPose.world(this);
+                passenger.setPos(seat.x, seat.y - DragonSeatPose.RIDER_SEAT, seat.z);
             }
         }
     }
@@ -1956,7 +1883,9 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             // stunned in its fight it takes half again; shielded while Cryona on its back calls Absolute Zero
             i = com.iafabric.boss.BlackFrostFight.damageTaken(this, i);
         }
-        if (this.isVehicle() && dmg.getEntity() != null && this.getControllingPassenger() != null && dmg.getEntity() == this.getControllingPassenger()) {
+        if (this.isVehicle() && dmg.getEntity() != null && (this.getControllingPassenger() != null && dmg.getEntity() == this.getControllingPassenger()
+            || DragonSaddle.inBackSeat(this, dmg.getEntity()))) {
+            // (its riders do not hurt it: its owner, the friend behind)
             return false;
         }
 
@@ -1987,19 +1916,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
     @Override
     public void refreshDimensions() {
+        // (its parts keep up with its size on their own: they are not made anew as it grows)
         super.refreshDimensions();
-        final float scale = Math.min(this.getRenderSize() * 0.35F, 7F);
-//        double prevX = getPosX();
-//        double prevY = getPosY();
-//        double prevZ = getPosZ();
-//        float localWidth = this.getWidth();
-//        if (this.getWidth() > localWidth && !this.firstUpdate && !this.world.isRemote) {
-//            this.setPosition(prevX, prevY, prevZ);
-//        }
-        if (scale != lastScale) {
-            resetParts(this.getRenderSize() / 3);
-        }
-        lastScale = scale;
     }
 
     public float getStepHeight() {
@@ -2550,6 +2468,13 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             this.ticksStill = 0;
             this.hoverTicks = 0;
             this.flyTicks = 0;
+            // shift held in the air brings it down; held on as it lands, it does not let its rider off (it lands and
+            // stays): the rider lets go of it and presses it again to get off
+            if (!rider.isShiftKeyDown()) {
+                this.shiftFromTheAir = false;
+            } else if (!IFlyingMount.canDismount(this)) {
+                this.shiftFromTheAir = true;
+            }
 
             if (this.isGoingUp()) {
                 if (!this.isFlying() && !this.isHovering()) {
@@ -2636,8 +2561,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                     logic.attackTarget(target, rider instanceof Player ? (Player) rider : null, (int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
                 }
             }
-            // Shift key to dismount, on the ground (in the air it brings the dragon down)
-            if (this.getControllingPassenger() != null && this.getControllingPassenger().isShiftKeyDown() && IFlyingMount.canDismount(this)) {
+            // Shift key to dismount, on the ground (in the air it brings the dragon down; held on from the air, not yet)
+            if (this.getControllingPassenger() != null && this.getControllingPassenger().isShiftKeyDown() && IFlyingMount.canDismount(this) && !this.shiftFromTheAir) {
                 if (this.getControllingPassenger() instanceof LivingEntity)
                     MiscProperties.setDismountedDragon((LivingEntity) this.getControllingPassenger(), true);
                 this.getControllingPassenger().stopRiding();
@@ -2829,6 +2754,12 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     @Override
     public void die(@NotNull DamageSource cause) {
         super.die(cause);
+        ItemStack saddle = this.dragonInventory.getItem(DragonSaddle.SLOT);
+        if (!saddle.isEmpty() && this.level() instanceof ServerLevel server) {
+            // its double saddle falls off it
+            this.spawnAtLocation(server, saddle.copy(), 1);
+            this.dragonInventory.setItem(DragonSaddle.SLOT, ItemStack.EMPTY);
+        }
         if (this.pillagerMount && this.level() instanceof ServerLevel server) {
             PillagerDragons.dropArmor(this, server);
         }
@@ -3223,14 +3154,18 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         return super.canAttack(target) && DragonUtils.isAlive(target);
     }
 
+    /** Its body's parts (on the server; none on a player's game, where they come from the server). */
+    public java.util.List<EntityDragonPart> getParts() {
+        return java.util.Arrays.stream(parts).filter(java.util.Objects::nonNull).toList();
+    }
+
     public boolean isPart(Entity entityHit) {
-        return headPart != null && headPart.is(entityHit) || neckPart != null && neckPart.is(entityHit) ||
-            leftWingLowerPart != null && leftWingLowerPart.is(entityHit) || rightWingLowerPart != null && rightWingLowerPart.is(entityHit) ||
-            leftWingUpperPart != null && leftWingUpperPart.is(entityHit) || rightWingUpperPart != null && rightWingUpperPart.is(entityHit) ||
-            tail1Part != null && tail1Part.is(entityHit) || tail2Part != null && tail2Part.is(entityHit) ||
-            tail3Part != null && tail3Part.is(entityHit) || tail4Part != null && tail4Part.is(entityHit) ||
-            rightWingTipPart != null && rightWingTipPart.is(entityHit) || leftWingTipPart != null && leftWingTipPart.is(entityHit) ||
-            tailFinPart != null && tailFinPart.is(entityHit);
+        for (EntityDragonPart part : parts) {
+            if (part != null && part.is(entityHit)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -3268,8 +3203,9 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     @Override
     public void playSound(@NotNull SoundEvent soundIn, float volume, float pitch) {
         if (soundIn == SoundEvents.GENERIC_EAT.value() || soundIn == this.getAmbientSound() || soundIn == this.getHurtSound(null) || soundIn == this.getDeathSound() || soundIn == this.getRoarSound()) {
-            if (!this.isSilent() && this.headPart != null) {
-                this.level().playSound(null, this.headPart.getX(), this.headPart.getY(), this.headPart.getZ(), soundIn, this.getSoundSource(), volume, pitch);
+            EntityDragonPart head = parts[DragonBones.HEAD];
+            if (!this.isSilent() && head != null) {
+                this.level().playSound(null, head.getX(), head.getY(), head.getZ(), soundIn, this.getSoundSource(), volume, pitch);
             }
         } else {
             super.playSound(soundIn, volume, pitch);
@@ -3409,8 +3345,13 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     public void containerChanged(@NotNull Container invBasic) {
         if (!this.level().isClientSide()) {
             updateAttributes();
+            this.keepSaddle();
         }
     }
 
-
+    /** Black Frost is never turned to stone (a gorgon's gaze, her head, a cockatrice): its duel is not ended by a look. */
+    @Override
+    public boolean canBeTurnedToStone() {
+        return !this.isBlackFrost();
+    }
 }

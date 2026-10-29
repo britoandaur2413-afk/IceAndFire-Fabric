@@ -34,5 +34,19 @@
 			"environment": "client"
 		}
 	],
-	"accessWidener": "iceandfire_fabric.classtweaker"
+	"accessWidener": "iceandfire_fabric.classtweaker",
+  "custom": {
+    "gamita_models": {
+      "welcome": 3,
+      "kind": "port",
+      "about": {
+        "en": "Fabric port by GAMITA_MODELS, with the exiled pixie, the citadel and Cryona's duel.",
+        "es": "Port a Fabric por GAMITA_MODELS, con el hada exiliada, la ciudadela y el duelo de Cryona.",
+        "pt": "Port para Fabric por GAMITA_MODELS, com a fada exilada, a cidadela e o duelo de Cryona.",
+        "fr": "Portage Fabric par GAMITA_MODELS, avec la fée exilée, la citadelle et le duel de Cryona.",
+        "de": "Fabric-Port von GAMITA_MODELS, mit der verbannten Fee, der Zitadelle und Cryonas Duell.",
+        "ru": "Порт на Fabric от GAMITA_MODELS: изгнанная фея, цитадель и дуэль Крионы."
+      }
+    }
+  }
 }

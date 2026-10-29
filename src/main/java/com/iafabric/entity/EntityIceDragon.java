@@ -267,11 +267,8 @@ public class EntityIceDragon extends EntityDragonBase {
         if (!level().isClientSide() && this.getControllingPassenger() == null && (this.isHovering() && !this.isFlying() && (this.isInMaterialWater() || this.isOverWater()))) {
             this.setDeltaMovement(this.getDeltaMovement().add(0.0D, 0.2D, 0.0D));
         }
-        if (swimCycle < 48) {
-            swimCycle += 2;
-        } else {
-            swimCycle = 0;
-        }
+        // (by the world's time, as its wing beat: the same here and on the players' games)
+        swimCycle = (int) ((this.level().getGameTime() + this.getId() * 7L) % 25L) * 2;
         if (this.isModelDead() && swimCycle != 0) {
             swimCycle = 0;
         }
@@ -560,6 +557,11 @@ public class EntityIceDragon extends EntityDragonBase {
         this.burnParticleX = burnX;
         this.burnParticleY = burnY;
         this.burnParticleZ = burnZ;
+        if (level().isClientSide()) {
+            // seen breathing: its puffs come from its mouth (DragonBreathFx); what it burns is the server's
+            this.breathSeenTick = this.tickCount;
+            return;
+        }
         Vec3 headPos = getHeadPosition();
         double d2 = burnX - headPos.x;
         double d3 = burnY - headPos.y;
@@ -568,16 +570,11 @@ public class EntityIceDragon extends EntityDragonBase {
         double distance = Math.max(2.5F * this.distanceToSqr(burnX, burnY, burnZ), 0);
         double conqueredDistance = burnProgress / 40D * distance;
         int increment = (int) Math.ceil(conqueredDistance / 100);
-        int particleCount = this.getDragonStage() <= 3 ? 6 : 3;
         for (int i = 0; i < conqueredDistance; i += increment) {
             double progressX = headPos.x + d2 * (i / (float) distance);
             double progressY = headPos.y + d3 * (i / (float) distance);
             double progressZ = headPos.z + d4 * (i / (float) distance);
-            if (canPositionBeSeen(progressX, progressY, progressZ)) {
-                if (level().isClientSide() && random.nextInt(particleCount) == 0) {
-                    IafMod.PROXY.spawnDragonParticle(EnumParticles.DragonIce, headPos.x, headPos.y, headPos.z, 0, 0, 0, this);
-                }
-            } else {
+            if (!canPositionBeSeen(progressX, progressY, progressZ)) {
                 if (!level().isClientSide()) {
                     HitResult result = this.level().clip(new ClipContext(new Vec3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()), new Vec3(progressX, progressY, progressZ), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
                     BlockPos pos = BlockPos.containing(result.getLocation());
@@ -687,13 +684,7 @@ public class EntityIceDragon extends EntityDragonBase {
     @Override
     protected void spawnBabyParticles() {
         if (this.level().isClientSide()) {
-            for (int i = 0; i < 5; i++) {
-                float radiusAdd = i * 0.15F;
-                float headPosX = (float) (getX() + 1.8F * getRenderSize() * (0.3F + radiusAdd) * Mth.cos((float) ((getYRot() + 90) * Math.PI / 180)));
-                float headPosZ = (float) (getZ() + 1.8F * getRenderSize() * (0.3F + radiusAdd) * Mth.sin((float) ((getYRot() + 90) * Math.PI / 180)));
-                float headPosY = (float) (getY() + 0.5 * getRenderSize() * 0.3F);
-                IafMod.PROXY.spawnParticle(EnumParticles.DragonIce, headPosX, headPosY, headPosZ, 0, 0, 0);
-            }
+            IafMod.PROXY.dragonCough(this);
         }
     }
 

@@ -1,13 +1,18 @@
 package com.iafabric.client.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 
@@ -117,12 +122,34 @@ public final class IafGui {
 
 	/** A mob drawn inside a box (it is clipped to it), turned toward the mouse. */
 	public static void entityInBox(GuiGraphicsExtractor g, LivingEntity entity, int x1, int y1, int x2, int y2, int scale, float mouseX, float mouseY) {
-		InventoryScreen.extractEntityInInventoryFollowsMouse(g, x1, y1, x2, y2, scale, 0.0625F, mouseX, mouseY, entity);
+		entityInBox(g, entity, x1, y1, x2, y2, scale, 0.0625F, mouseX, mouseY);
+	}
+
+	/** Likewise, the point this far (blocks) over the middle of its box in the box's middle. */
+	public static void entityInBox(GuiGraphicsExtractor g, LivingEntity entity, int x1, int y1, int x2, int y2, int scale, float lift, float mouseX, float mouseY) {
+		InventoryScreen.extractEntityInInventoryFollowsMouse(g, x1, y1, x2, y2, scale, lift, mouseX, mouseY, entity);
 	}
 
 	/** A mob standing with its feet at (x, y), turned toward the mouse, like 1.18 renderEntityInInventory. */
 	public static void entity(GuiGraphicsExtractor g, LivingEntity entity, int x, int y, int scale, float mouseX, float mouseY) {
 		int half = Math.max(20, scale * 2);
 		InventoryScreen.extractEntityInInventoryFollowsMouse(g, x - half, y - half * 2, x + half, y, scale, 0.0625F, mouseX, mouseY, entity);
+	}
+
+	/** The ids of what is only drawn, from the top down (the world's count up from 1). */
+	private static int drawnIds = Integer.MAX_VALUE;
+
+	/**
+	 * A mob made only to be drawn in a screen (null without a world). 26.x gives no id to an entity the client makes itself,
+	 * and other mods read the id of whatever is drawn (Forgeworks Charms' Hunter Vision crashed the game on the exiled
+	 * pixie's picture), so it gets one no entity of the world has.
+	 */
+	public static <T extends Entity> @Nullable T drawnOnly(EntityType<T> type) {
+		ClientLevel level = Minecraft.getInstance().level;
+		T entity = level == null ? null : type.create(level, EntitySpawnReason.LOAD);
+		if (entity != null) {
+			entity.setId(drawnIds--);
+		}
+		return entity;
 	}
 }

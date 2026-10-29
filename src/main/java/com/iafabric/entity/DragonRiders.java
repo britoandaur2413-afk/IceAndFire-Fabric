@@ -72,7 +72,8 @@ public final class DragonRiders {
 
 	/** Where its rider's feet are (the hitbox stands there): over a player's seat, more for a bigger back. */
 	public static Vec3 seat(EntityDragonBase dragon) {
-		return dragon.getRiderPosition().add(0, 0.95F + 0.065F * dragon.getRenderSize(), 0);
+		// (its feet: the seat on the dragon's back bone, where the player's game draws it, less its seat over its feet)
+		return DragonSeatPose.world(dragon).subtract(0, DragonSeatPose.RIDER_SEAT, 0);
 	}
 
 	/** Every tick on the server for a dragon of the pillagers or the dread (from DragonSmarts). */

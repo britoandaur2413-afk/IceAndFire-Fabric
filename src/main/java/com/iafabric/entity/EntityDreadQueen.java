@@ -63,7 +63,7 @@ import org.jspecify.annotations.Nullable;
  * weapons to who beat her and fades. Her fight is CryonaFight; in her realm ThroneFight leads it. On her throne in her
  * citadel only her sign sleeps, a creature of its own that never fights (EntityCryonaAsleep).
  */
-public class EntityDreadQueen extends EntityDreadMob implements IAnimatedEntity, IVillagerFear, IAnimalFear {
+public class EntityDreadQueen extends EntityDreadMob implements IAnimatedEntity, IVillagerFear, IAnimalFear, com.iafabric.entity.util.IBlacklistedFromStatues {
 
 	public static Animation ANIMATION_SPAWN = Animation.create(40);
 	/** Her staff raised for a spell. */
@@ -499,4 +499,10 @@ public class EntityDreadQueen extends EntityDreadMob implements IAnimatedEntity,
 	public boolean removeWhenFarAway(double distanceToClosestPlayer) {
 		return false;
 	}
+
+    /** Cryona is never turned to stone (a gorgon's gaze, her head, a cockatrice). */
+    @Override
+    public boolean canBeTurnedToStone() {
+        return false;
+    }
 }

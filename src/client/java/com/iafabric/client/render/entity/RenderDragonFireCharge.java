@@ -34,6 +34,11 @@ public class RenderDragonFireCharge extends IafEntityRenderer<Entity> {
     @Override
     public void render(@NotNull Entity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, @NotNull BufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
+        if (entityIn instanceof com.iafabric.entity.EntityDragonCharge charge) {
+            // leaving its dragon's mouth
+            var shift = com.iafabric.client.particle.DragonBreathFx.chargeShift(charge, partialTicks);
+            matrixStackIn.translate(shift.x, shift.y, shift.z);
+        }
         matrixStackIn.translate(0.0D, 0.5D, 0.0D);
         matrixStackIn.rotateDegrees(com.mojang.math.Axis.YP, (-90.0F));
         matrixStackIn.translate(-0.5D, -0.5D, 0.5D);

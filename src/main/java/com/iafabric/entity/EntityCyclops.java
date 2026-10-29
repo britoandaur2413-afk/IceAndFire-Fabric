@@ -263,7 +263,7 @@ public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklis
     public void aiStep() {
         super.aiStep();
         if (eyeEntity == null) {
-            eyeEntity = new EntityCyclopsEye(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
+            eyeEntity = new EntityCyclopsEye(this, 1.0F, 0, 7.4F, 1.2F, 0.6F, 1);
             eyeEntity.copyPosition(this);
         }
         if (level().getDifficulty() == Difficulty.PEACEFUL && this.getTarget() instanceof Player) {
@@ -315,7 +315,7 @@ public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklis
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
         if (eyeEntity == null) {
-            eyeEntity = new EntityCyclopsEye(this, 0.2F, 0, 7.4F, 1.2F, 0.5F, 1);
+            eyeEntity = new EntityCyclopsEye(this, 1.0F, 0, 7.4F, 1.2F, 0.6F, 1);
             eyeEntity.copyPosition(this);
             eyeEntity.setParent(this);
 

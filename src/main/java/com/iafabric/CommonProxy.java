@@ -35,6 +35,14 @@ public class CommonProxy {
     public void spawnDragonParticle(EnumParticles name, double x, double y, double z, double motX, double motY, double motZ, EntityDragonBase entityDragonBase) {
     }
 
+    /** A dragon's breath drawn from its mouth (on the player's game), each tick. */
+    public void tickDragonBreath(EntityDragonBase dragon) {
+    }
+
+    /** A baby dragon's try at breathing: a little puff from its mouth. */
+    public void dragonCough(EntityDragonBase dragon) {
+    }
+
     public void spawnParticle(EnumParticles name, double x, double y, double z, double motX, double motY, double motZ, float size) {
     }
 

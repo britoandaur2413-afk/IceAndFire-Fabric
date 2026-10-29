@@ -1173,5 +1173,15 @@
  "iceandfire_fabric.boss.cryona_fury": "A fúria de Cryona",
  "iceandfire_fabric.cryona.untouchable": "A dor dela a protege: agora nada a alcança. Aguente firme!",
  "gui.iceandfire_fabric.boss.frost_name": "Frio Sombrio",
- "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+ "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+ "item.iceandfire_fabric.double_dragon_saddle": "Sela de dragão dupla",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Dragões de fogo, gelo e elétricos, estágio 4+",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Um amigo vai atrás de você",
+ "dragon.saddle.on": "Sela dupla colocada: um amigo pode ir atrás",
+ "dragon.saddle.too_young": "Jovem demais: precisa do estágio 4",
+ "dragon.saddle.wrong_kind": "Só para dragões de fogo, gelo e elétricos",
+ "dragon.saddle.owner_only": "Só o dono pode selá-lo",
+ "dragon.saddle.owner_first": "Suba quando o dono estiver montado",
+ "dragon.saddle.needed": "Ele precisa de uma sela dupla para levar você",
+ "dragon.saddle.taken": "O assento de trás está ocupado"
 }

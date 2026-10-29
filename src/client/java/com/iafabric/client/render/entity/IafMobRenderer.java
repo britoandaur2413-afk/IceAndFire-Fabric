@@ -118,6 +118,7 @@ public abstract class IafMobRenderer<T extends LivingEntity, M extends BasicEnti
 				layer.render(poseStack, buffers, light, entity, limbSwing, limbSwingAmount, partialTicks, bob, netHeadYaw, headPitch);
 			}
 		}
+		this.submitInPose(entity, state, poseStack, collector, camera);
 		poseStack.popPose();
 		this.renderExtra(entity, partialTicks, poseStack, buffers, light);
 		com.iafabric.client.render.entity.layer.LayerLivingExtras.renderAtFeet(entity, partialTicks, poseStack, buffers, light);
@@ -127,6 +128,13 @@ public abstract class IafMobRenderer<T extends LivingEntity, M extends BasicEnti
 			// another one drawn with it (a dragon's rider), where it is from this one
 			this.entityRenderDispatcher.submit(state.extra, camera, state.extraOffset.x, state.extraOffset.y, state.extraOffset.z, poseStack, collector);
 		}
+	}
+
+	/**
+	 * Draws what goes with the posed model, in its pose (its model's frame, its parts as they are posed this frame):
+	 * a dragon's rider in its seat.
+	 */
+	protected void submitInPose(T entity, State<T> state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
 	}
 
 	/** Draws the posed model (a renderer may draw its body another way). */
@@ -201,5 +209,9 @@ public abstract class IafMobRenderer<T extends LivingEntity, M extends BasicEnti
 		/** Another one drawn with it (a dragon's rider), and where from this one. */
 		public net.minecraft.client.renderer.entity.state.@Nullable EntityRenderState extra;
 		public net.minecraft.world.phys.Vec3 extraOffset = net.minecraft.world.phys.Vec3.ZERO;
+		/** Its riders drawn in its seat, in its pose (a dragon's: on the bone of its back). */
+		public final java.util.List<net.minecraft.client.renderer.entity.state.EntityRenderState> seated = new java.util.ArrayList<>();
+		/** And the one in the seat behind (a dragon's double saddle: on its lower back). */
+		public final java.util.List<net.minecraft.client.renderer.entity.state.EntityRenderState> seatedBehind = new java.util.ArrayList<>();
 	}
 }

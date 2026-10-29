@@ -113,7 +113,7 @@ public class GuiPixieBonds extends Screen {
 
 	private EntityPixie model(int color) {
 		if (models[color] == null && Minecraft.getInstance().level != null) {
-			EntityPixie pixie = IafEntityRegistry.PIXIE.create(Minecraft.getInstance().level, net.minecraft.world.entity.EntitySpawnReason.LOAD);
+			EntityPixie pixie = IafGui.drawnOnly(IafEntityRegistry.PIXIE);
 			if (pixie != null) {
 				pixie.setColor(color);
 			}

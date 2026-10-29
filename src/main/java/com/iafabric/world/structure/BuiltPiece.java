@@ -5,19 +5,24 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
+import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A part of a building made by a rule for each block instead of a saved template: {@link #at} says what goes at a
@@ -280,6 +285,11 @@ public abstract class BuiltPiece extends StructurePiece {
 		return false;
 	}
 
+	/** Whether the building keeps this place open: no bit of a tree may be there (see {@link #keptOpen}). */
+	public boolean openAt(WorldGenLevel level, BlockPos pos) {
+		return boundingBox.isInside(pos) && keptOpen(level, uOf(pos.getX(), pos.getZ()), vOf(pos.getX(), pos.getZ()), pos.getY());
+	}
+
 	/** What a tree or a giant mushroom is made of (not the snow or the moss on the ground). */
 	protected static boolean treePart(BlockState state) {
 		return state.is(BlockTags.LOGS) || state.is(BlockTags.LEAVES) || state.is(Blocks.MUSHROOM_STEM) || state.is(Blocks.RED_MUSHROOM_BLOCK)
@@ -287,16 +297,25 @@ public abstract class BuiltPiece extends StructurePiece {
 			|| state.is(Blocks.PALE_HANGING_MOSS) || state.is(Blocks.CREAKING_HEART);
 	}
 
+	/** What a tree or a giant mushroom is made of, or what grows on it; not leaves a builder set (they never fall). */
 	protected static boolean plant(BlockState state) {
+		if (state.hasProperty(LeavesBlock.PERSISTENT) && state.getValue(LeavesBlock.PERSISTENT)) {
+			return false;
+		}
 		return state.is(BlockTags.LOGS) || state.is(BlockTags.LEAVES) || state.is(Blocks.MUSHROOM_STEM) || state.is(Blocks.RED_MUSHROOM_BLOCK)
 			|| state.is(Blocks.BROWN_MUSHROOM_BLOCK) || state.is(Blocks.VINE) || state.is(Blocks.COCOA) || state.is(Blocks.BEE_NEST)
 			|| state.is(Blocks.SNOW) || state.is(Blocks.PALE_HANGING_MOSS) || state.is(Blocks.PALE_MOSS_CARPET) || state.is(Blocks.CREAKING_HEART);
 	}
 
+	/** The wood of a tree or a giant mushroom: what holds the rest of it up. */
+	private static boolean wood(BlockState state) {
+		return state.is(BlockTags.LOGS) || state.is(Blocks.MUSHROOM_STEM) || state.is(Blocks.CREAKING_HEART);
+	}
+
 	/**
-	 * Takes away what is left of the trees and giant mushrooms this piece cut: every bunch of logs, leaves, mushroom
-	 * blocks (with their vines, snow, cocoa) that touches no ground or wall any more. It looks over the chunk and the
-	 * ones around it (all a chunk being made may touch), so a tree cut in one chunk is cleared in the next one too.
+	 * Takes away what is left of the trees and giant mushrooms this piece cut: every trunk or branch that touches no
+	 * ground or wall any more, with its leaves. It looks over the chunk and the ones around it (all a chunk being made
+	 * may touch), so a tree cut in one chunk is cleared in the next one too.
 	 */
 	private void clearFloatingPlants(WorldGenLevel level, BoundingBox chunkBox) {
 		int margin = plantClearing();
@@ -313,89 +332,185 @@ public abstract class BuiltPiece extends StructurePiece {
 		if (x0 > x1 || z0 > z1 || y0 > y1) {
 			return;
 		}
+		List<BlockPos> loose = floatingPlants(level, x0, y0, z0, x1, y1, z1, (state, pos) -> {
+			if (treePart(state) && box.isInside(pos) && keptOpen(level, uOf(pos.getX(), pos.getZ()), vOf(pos.getX(), pos.getZ()), pos.getY())) {
+				// inside its walls: no tree, leaning on a wall or not
+				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+				return true;
+			}
+			return false;
+		});
+		for (BlockPos pos : loose) {
+			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+		}
+	}
+
+	/** Takes a bit of a tree away at once while an area is looked over (true: it is gone). */
+	@FunctionalInterface
+	public interface PlantCut {
+		boolean cut(BlockState state, BlockPos pos);
+	}
+
+	private static final byte WOOD = 1;
+	/** Leaves the game keeps only near wood (they know how far it is). */
+	private static final byte LEAF = 2;
+	/** What grows on a tree or holds on by itself: vines, cocoa, snow, a mushroom's cap, moss. */
+	private static final byte CLING = 3;
+	private static final int[][] SIDES = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+
+	/**
+	 * The bits of trees and giant mushrooms in an area that nothing holds up any more. Only wood holds a tree: a trunk
+	 * or a branch (its blocks touching, corners too) is held when it touches firm ground or a wall; a leaf belongs to the
+	 * nearest wood within six steps through the leaves, as the game's own leaves do, and is held when that is; what clings
+	 * on (a vine, cocoa, snow, a mushroom's cap) goes with what it grows on, or holds on to something firm by itself. Leaves
+	 * hold nothing up: in a thick forest every crown touches the next, and a crown cut from its trunk would hang on its
+	 * neighbours. What goes on past the area is left as it is. {@code cut} may take bits away at once as they are found.
+	 */
+	public static List<BlockPos> floatingPlants(LevelReader level, int x0, int y0, int z0, int x1, int y1, int z1, @Nullable PlantCut cut) {
 		int sx = x1 - x0 + 1;
 		int sy = y1 - y0 + 1;
 		int sz = z1 - z0 + 1;
 		byte[] cells = new byte[sx * sy * sz];
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		List<BlockPos> loose = new ArrayList<>();
 		boolean any = false;
 		for (int x = x0; x <= x1; x++) {
 			for (int z = z0; z <= z1; z++) {
-				int top = Math.min(y1, level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z) + 1);
-				int u = uOf(x, z);
-				int v = vOf(x, z);
-				for (int y = y0; y <= top; y++) {
+				// all the way up: while the land is being made, the height a chunk knows of its blocks may be from before
+				// the trees of the chunks around it grew into it (their crowns were missed, and their trunks taken away)
+				for (int y = y0; y <= y1; y++) {
 					BlockState state = level.getBlockState(pos.set(x, y, z));
-					if (plant(state)) {
-						if (treePart(state) && box.isInside(pos) && keptOpen(level, u, v, y)) {
-							// inside its walls: no tree, leaning on a wall or not
-							level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
-							continue;
-						}
-						cells[((x - x0) * sz + (z - z0)) * sy + (y - y0)] = 1;
-						any = true;
+					if (!plant(state) || cut != null && cut.cut(state, pos)) {
+						continue;
 					}
+					cells[((x - x0) * sz + (z - z0)) * sy + (y - y0)] = wood(state) ? WOOD : state.hasProperty(LeavesBlock.DISTANCE) ? LEAF : CLING;
+					any = true;
 				}
 			}
 		}
 		if (!any) {
-			return;
+			return loose;
 		}
-		int[] queue = new int[cells.length];
-		for (int start = 0; start < cells.length; start++) {
-			if (cells[start] != 1) {
+		int n = cells.length;
+		int[] queue = new int[n];
+		// the wood, piece by piece
+		int[] piece = new int[n];
+		BooleanArrayList held = new BooleanArrayList();
+		held.add(false);
+		for (int start = 0; start < n; start++) {
+			if (cells[start] != WOOD || piece[start] != 0) {
 				continue;
 			}
+			int id = held.size();
+			boolean firm = false;
 			int head = 0;
 			int tail = 0;
 			queue[tail++] = start;
-			cells[start] = 2;
-			boolean held = false;
+			piece[start] = id;
 			while (head < tail) {
 				int i = queue[head++];
 				int y = i % sy;
 				int z = (i / sy) % sz;
 				int x = i / (sy * sz);
-				if (x == 0 || x == sx - 1 || z == 0 || z == sz - 1 || y == sy - 1 || y == 0) {
-					// it goes on past where this chunk may look: left as it is
-					held = true;
+				if (x == 0 || x == sx - 1 || z == 0 || z == sz - 1 || y == 0 || y == sy - 1) {
+					// it goes on past where this area looks: left as it is
+					firm = true;
 				}
 				for (int dx = -1; dx <= 1; dx++) {
 					for (int dz = -1; dz <= 1; dz++) {
 						for (int dy = -1; dy <= 1; dy++) {
-							if (dx == 0 && dz == 0 && dy == 0) {
-								continue;
-							}
 							int nx = x + dx;
 							int ny = y + dy;
 							int nz = z + dz;
-							if (nx < 0 || nx >= sx || ny < 0 || ny >= sy || nz < 0 || nz >= sz) {
+							if ((dx | dy | dz) == 0 || nx < 0 || nx >= sx || ny < 0 || ny >= sy || nz < 0 || nz >= sz) {
 								continue;
 							}
-							int n = (nx * sz + nz) * sy + ny;
-							if (cells[n] == 1) {
-								cells[n] = 2;
-								queue[tail++] = n;
-							} else if (cells[n] == 0 && !held && Math.abs(dx) + Math.abs(dy) + Math.abs(dz) == 1) {
-								// ground or a wall beside it holds it
-								BlockState next = level.getBlockState(pos.set(x0 + nx, y0 + ny, z0 + nz));
-								if (!next.isAir() && !next.canBeReplaced() && next.getFluidState().isEmpty()) {
-									held = true;
-								}
+							int j = (nx * sz + nz) * sy + ny;
+							if (cells[j] == WOOD && piece[j] == 0) {
+								piece[j] = id;
+								queue[tail++] = j;
+							} else if (!firm && cells[j] == 0 && Math.abs(dx) + Math.abs(dy) + Math.abs(dz) == 1
+								&& firm(level, pos.set(x0 + nx, y0 + ny, z0 + nz))) {
+								firm = true;
 							}
 						}
 					}
 				}
 			}
-			if (!held) {
-				for (int k = 0; k < tail; k++) {
-					int i = queue[k];
-					int y = i % sy;
-					int z = (i / sy) % sz;
-					int x = i / (sy * sz);
-					level.setBlock(pos.set(x0 + x, y0 + y, z0 + z), Blocks.AIR.defaultBlockState(), 2);
+			held.add(firm);
+		}
+		// the leaves: from the wood held (and the area's edge) and from the wood left hanging at once, step by step through
+		// the leaves, so each is reached first from the nearest (from what is held when as near to both)
+		byte[] from = new byte[n];
+		byte[] steps = new byte[n];
+		byte[] source = new byte[n];
+		for (int i = 0; i < n; i++) {
+			if (cells[i] == WOOD) {
+				source[i] = (byte) (held.getBoolean(piece[i]) ? 1 : 2);
+			} else if (cells[i] != 0) {
+				int y = i % sy;
+				int z = (i / sy) % sz;
+				int x = i / (sy * sz);
+				if (x == 0 || x == sx - 1 || z == 0 || z == sz - 1 || y == 0 || y == sy - 1) {
+					source[i] = 1;
+				} else if (cells[i] == CLING) {
+					// a vine on a rock, snow on the ground: held where it is, but it holds nothing up
+					for (int[] side : SIDES) {
+						int j = ((x + side[0]) * sz + z + side[2]) * sy + y + side[1];
+						if (cells[j] == 0 && firm(level, pos.set(x0 + x + side[0], y0 + y + side[1], z0 + z + side[2]))) {
+							from[i] = 1;
+							break;
+						}
+					}
 				}
 			}
 		}
+		int tail = 0;
+		for (byte kind = 1; kind <= 2; kind++) {
+			for (int i = 0; i < n; i++) {
+				if (source[i] == kind) {
+					from[i] = kind;
+					queue[tail++] = i;
+				}
+			}
+		}
+		int head = 0;
+		while (head < tail) {
+			int i = queue[head++];
+			int y = i % sy;
+			int z = (i / sy) % sz;
+			int x = i / (sy * sz);
+			for (int[] side : SIDES) {
+				int nx = x + side[0];
+				int ny = y + side[1];
+				int nz = z + side[2];
+				if (nx < 0 || nx >= sx || ny < 0 || ny >= sy || nz < 0 || nz >= sz) {
+					continue;
+				}
+				int j = (nx * sz + nz) * sy + ny;
+				// what clings on is as far from the wood as what it grows on
+				int far = cells[j] == CLING ? steps[i] : steps[i] + 1;
+				if (cells[j] >= LEAF && from[j] == 0 && far <= 6) {
+					from[j] = from[i];
+					steps[j] = (byte) far;
+					queue[tail++] = j;
+				}
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			if (cells[i] != 0 && from[i] != 1) {
+				int y = i % sy;
+				int z = (i / sy) % sz;
+				int x = i / (sy * sz);
+				loose.add(new BlockPos(x0 + x, y0 + y, z0 + z));
+			}
+		}
+		return loose;
+	}
+
+	/** Ground, a wall, anything a tree can stand on or lean against (not air, water, grass or another tree). */
+	private static boolean firm(LevelReader level, BlockPos pos) {
+		BlockState state = level.getBlockState(pos);
+		return !state.isAir() && !state.canBeReplaced() && state.getFluidState().isEmpty();
 	}
 }

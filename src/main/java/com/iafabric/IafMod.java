@@ -64,6 +64,7 @@ public class IafMod implements ModInitializer {
 		com.iafabric.pixie.ExiledPixies.register();
 		com.iafabric.entity.PillagerFrost.register();
 		com.iafabric.entity.DreadDragons.register();
+		com.iafabric.entity.DragonSaddle.register();
 		com.iafabric.vfx.Vfx.register();
 		com.iafabric.boss.ThroneFight.register();
 		com.iafabric.boss.BossCold.register();

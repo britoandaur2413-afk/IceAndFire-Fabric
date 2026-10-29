@@ -23,7 +23,8 @@ public class ItemDragonBow extends BowItem {
         -> stack.is(TagKey.create(Registries.ITEM, IafTagRegistry.DRAGON_ARROWS));
 
     public ItemDragonBow() {
-        super(IafItemRegistry.props().durability(584));
+        // enchantable as the game's bow (the enchanting table takes only what says how well it takes enchantments)
+        super(IafItemRegistry.props().durability(584).enchantable(1));
     }
 
     @Override

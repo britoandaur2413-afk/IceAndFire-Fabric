@@ -1173,5 +1173,15 @@
  "iceandfire_fabric.boss.cryona_fury": "Ярость Крионы",
  "iceandfire_fabric.cryona.untouchable": "Её горе защищает её: сейчас ничто её не достанет. Держись!",
  "gui.iceandfire_fabric.boss.frost_name": "Ледяная Тьма",
- "gui.iceandfire_fabric.boss.queen_name": "Криона"
+ "gui.iceandfire_fabric.boss.queen_name": "Криона",
+ "item.iceandfire_fabric.double_dragon_saddle": "Двойное драконье седло",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Огненные, ледяные и грозовые драконы, стадия 4+",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Друг едет позади тебя",
+ "dragon.saddle.on": "Двойное седло надето: друг может сесть сзади",
+ "dragon.saddle.too_young": "Слишком молод: нужна стадия 4",
+ "dragon.saddle.wrong_kind": "Только для огненных, ледяных и грозовых драконов",
+ "dragon.saddle.owner_only": "Оседлать его может только владелец",
+ "dragon.saddle.owner_first": "Садись, когда владелец уже верхом",
+ "dragon.saddle.needed": "Ему нужно двойное седло, чтобы нести тебя",
+ "dragon.saddle.taken": "Заднее место занято"
 }

@@ -432,6 +432,10 @@ public class EntityLightningDragon extends EntityDragonBase {
         this.burnParticleX = burnX;
         this.burnParticleY = burnY;
         this.burnParticleZ = burnZ;
+        if (level().isClientSide()) {
+            // seen breathing: its puffs come from its mouth (DragonBreathFx), with the bolt
+            this.breathSeenTick = this.tickCount;
+        }
         Vec3 headPos = getHeadPosition();
         double d2 = burnX - headPos.x;
         double d3 = burnY - headPos.y;
@@ -519,13 +523,7 @@ public class EntityLightningDragon extends EntityDragonBase {
 
     @Override
     protected void spawnBabyParticles() {
-        for (int i = 0; i < 5; i++) {
-            float radiusAdd = i * 0.15F;
-            float headPosX = (float) (this.getX() + 1.8F * getRenderSize() * (0.3F + radiusAdd) * Mth.cos((float) ((getYRot() + 90) * Math.PI / 180)));
-            float headPosZ = (float) (this.getY() + 1.8F * getRenderSize() * (0.3F + radiusAdd) * Mth.sin((float) ((getYRot() + 90) * Math.PI / 180)));
-            float headPosY = (float) (this.getZ() + 0.5 * getRenderSize() * 0.3F);
-            level().addParticle(ParticleTypes.LARGE_SMOKE, headPosX, headPosY, headPosZ, 0, 0, 0);
-        }
+        IafMod.PROXY.dragonCough(this);
     }
 
     @Override

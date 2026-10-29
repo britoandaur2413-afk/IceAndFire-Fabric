@@ -20,5 +20,10 @@ public abstract class PlayerDismountMixin {
 		if (vehicle instanceof IFlyingMount && !IFlyingMount.canDismount(vehicle)) {
 			cir.setReturnValue(false);
 		}
+		// a dragon brought down with shift held lands with its rider on it: shift is pressed again to get off (the one
+		// steering it: a friend behind gets off when they will)
+		if (vehicle instanceof com.iafabric.entity.EntityDragonBase dragon && dragon.shiftFromTheAir() && dragon.getControllingPassenger() == (Object) this) {
+			cir.setReturnValue(false);
+		}
 	}
 }

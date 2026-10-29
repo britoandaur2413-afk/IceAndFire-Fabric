@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonbone_axe",
+    "iceandfire_fabric:dragonsteel_fire_axe",
+    "iceandfire_fabric:dragonsteel_ice_axe",
+    "iceandfire_fabric:dragonsteel_lightning_axe",
+    "iceandfire_fabric:myrmex_desert_axe",
+    "iceandfire_fabric:myrmex_jungle_axe",
+    "iceandfire_fabric:silver_axe"
+  ]
+}

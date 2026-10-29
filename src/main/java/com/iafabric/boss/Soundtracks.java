@@ -32,7 +32,7 @@ public final class Soundtracks {
 
 	public static void register() {
 		// (a player who comes back to the game, or back to life, is told again)
-		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> HEARS.remove(handler.player.getUUID()));
+		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.LEAVE.register(player -> HEARS.remove(player.getUUID()));
 		net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((old, player, alive) -> HEARS.remove(player.getUUID()));
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> HEARS.clear());
 	}

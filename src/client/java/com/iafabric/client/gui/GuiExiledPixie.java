@@ -24,7 +24,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntitySpawnReason;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -278,7 +277,7 @@ public class GuiExiledPixie extends Screen {
 			return;
 		}
 		if (this.model == null || this.model.getVariant() != ExiledVariants.of(Math.max(0, data().variant))) {
-			this.model = IafEntityRegistry.EXILED_PIXIE.create(mc.level, EntitySpawnReason.LOAD);
+			this.model = IafGui.drawnOnly(IafEntityRegistry.EXILED_PIXIE);
 			if (this.model == null) {
 				return;
 			}

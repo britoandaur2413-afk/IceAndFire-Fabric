@@ -2811,5 +2811,15 @@
   "block.minecraft.banner.iceandfire_fabric.weezer.red": "Rotes Weezer-Wappen",
   "block.minecraft.banner.iceandfire_fabric.weezer.black": "Schwarzes Weezer-Wappen",
   "gui.iceandfire_fabric.boss.frost_name": "Black Frost",
-  "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+  "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+  "item.iceandfire_fabric.double_dragon_saddle": "Doppelter Drachensattel",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Feuer-, Eis- und Blitzdrachen, ab Stufe 4",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Ein Freund reitet hinter dir",
+  "dragon.saddle.on": "Doppelsattel angelegt: Ein Freund kann hinten mitreiten",
+  "dragon.saddle.too_young": "Noch zu jung: Er braucht Stufe 4",
+  "dragon.saddle.wrong_kind": "Nur für Feuer-, Eis- und Blitzdrachen",
+  "dragon.saddle.owner_only": "Nur sein Besitzer kann ihn satteln",
+  "dragon.saddle.owner_first": "Steig auf, wenn sein Besitzer reitet",
+  "dragon.saddle.needed": "Er braucht einen Doppelsattel, um dich zu tragen",
+  "dragon.saddle.taken": "Der hintere Sitz ist besetzt"
 }

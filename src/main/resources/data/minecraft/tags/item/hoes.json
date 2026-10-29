@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonbone_hoe",
+    "iceandfire_fabric:dragonsteel_fire_hoe",
+    "iceandfire_fabric:dragonsteel_ice_hoe",
+    "iceandfire_fabric:dragonsteel_lightning_hoe",
+    "iceandfire_fabric:myrmex_desert_hoe",
+    "iceandfire_fabric:myrmex_jungle_hoe",
+    "iceandfire_fabric:silver_hoe"
+  ]
+}

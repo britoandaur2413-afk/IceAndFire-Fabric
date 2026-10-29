@@ -1,0 +1,32 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:amphithere_macuahuitl",
+    "iceandfire_fabric:dragonbone_sword",
+    "iceandfire_fabric:dragonbone_sword_fire",
+    "iceandfire_fabric:dragonbone_sword_ice",
+    "iceandfire_fabric:dragonbone_sword_lightning",
+    "iceandfire_fabric:dragonsteel_fire_sword",
+    "iceandfire_fabric:dragonsteel_ice_sword",
+    "iceandfire_fabric:dragonsteel_lightning_sword",
+    "iceandfire_fabric:dread_knight_sword",
+    "iceandfire_fabric:dread_queen_sword",
+    "iceandfire_fabric:dread_sword",
+    "iceandfire_fabric:ghost_sword",
+    "iceandfire_fabric:hippocampus_slapper",
+    "iceandfire_fabric:hippogryph_sword",
+    "iceandfire_fabric:myrmex_desert_sword",
+    "iceandfire_fabric:myrmex_desert_sword_venom",
+    "iceandfire_fabric:myrmex_jungle_sword",
+    "iceandfire_fabric:myrmex_jungle_sword_venom",
+    "iceandfire_fabric:silver_sword",
+    "iceandfire_fabric:stymphalian_bird_dagger",
+    "iceandfire_fabric:troll_weapon_axe",
+    "iceandfire_fabric:troll_weapon_column",
+    "iceandfire_fabric:troll_weapon_column_forest",
+    "iceandfire_fabric:troll_weapon_column_frost",
+    "iceandfire_fabric:troll_weapon_hammer",
+    "iceandfire_fabric:troll_weapon_trunk",
+    "iceandfire_fabric:troll_weapon_trunk_frost"
+  ]
+}

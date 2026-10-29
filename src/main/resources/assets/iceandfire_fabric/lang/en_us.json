@@ -2811,5 +2811,15 @@
   "iceandfire_fabric.boss.cryona_fury": "Cryona's fury",
   "iceandfire_fabric.cryona.untouchable": "Her grief guards her: nothing reaches her now. Hold on!",
   "gui.iceandfire_fabric.boss.frost_name": "Black Frost",
-  "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+  "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+  "item.iceandfire_fabric.double_dragon_saddle": "Double Dragon Saddle",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Fire, ice and lightning dragons, stage 4+",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_1": "A friend rides behind you",
+  "dragon.saddle.on": "Double saddle on: a friend can ride behind",
+  "dragon.saddle.too_young": "Too young: it needs stage 4",
+  "dragon.saddle.wrong_kind": "Only for fire, ice and lightning dragons",
+  "dragon.saddle.owner_only": "Only its owner can saddle it",
+  "dragon.saddle.owner_first": "Climb on once its owner is riding",
+  "dragon.saddle.needed": "It needs a double saddle to carry you",
+  "dragon.saddle.taken": "The back seat is taken"
 }

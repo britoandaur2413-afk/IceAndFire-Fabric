@@ -1173,5 +1173,15 @@
  "iceandfire_fabric.boss.cryona_fury": "クライオナの怒り",
  "iceandfire_fabric.cryona.untouchable": "悲しみが彼女を守っている：今は何も届かない。耐えて！",
  "gui.iceandfire_fabric.boss.frost_name": "ブラック・フロスト",
- "gui.iceandfire_fabric.boss.queen_name": "クライオナ"
+ "gui.iceandfire_fabric.boss.queen_name": "クライオナ",
+ "item.iceandfire_fabric.double_dragon_saddle": "二人乗りドラゴンの鞍",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_0": "ファイア・アイス・ライトニングドラゴン、ステージ4以上",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_1": "仲間をうしろに乗せられる",
+ "dragon.saddle.on": "二人乗りの鞍をつけた：うしろに仲間が乗れる",
+ "dragon.saddle.too_young": "まだ若すぎる：ステージ4が必要",
+ "dragon.saddle.wrong_kind": "ファイア・アイス・ライトニングドラゴン専用",
+ "dragon.saddle.owner_only": "鞍をつけられるのは主だけ",
+ "dragon.saddle.owner_first": "主が乗ってから乗ろう",
+ "dragon.saddle.needed": "あなたを乗せるには二人乗りの鞍が必要",
+ "dragon.saddle.taken": "うしろの席はふさがっている"
 }

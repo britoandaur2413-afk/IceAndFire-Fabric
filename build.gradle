@@ -34,6 +34,11 @@ dependencies {
 	if (modTester.exists()) {
 		gametestRuntimeOnly files(modTester)
 	}
+	// Other mods beside it in the test runs, to see that they get on together:
+	// gradlew runClientGameTest -PwithMods=<a folder of their jars> (the run's own mods folder is emptied first)
+	if (project.hasProperty("withMods")) {
+		gametestRuntimeOnly fileTree(dir: project.property("withMods"), include: "*.jar")
+	}
 }
 
 processResources {

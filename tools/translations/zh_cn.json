@@ -1173,5 +1173,15 @@
  "iceandfire_fabric.boss.cryona_fury": "克莱奥娜之怒",
  "iceandfire_fabric.cryona.untouchable": "她的悲伤守护着她：现在什么都无法触及她。坚持住！",
  "gui.iceandfire_fabric.boss.frost_name": "黑霜",
- "gui.iceandfire_fabric.boss.queen_name": "克莱奥娜"
+ "gui.iceandfire_fabric.boss.queen_name": "克莱奥娜",
+ "item.iceandfire_fabric.double_dragon_saddle": "双人龙鞍",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_0": "火龙、冰龙和电龙，阶段 4 以上",
+ "item.iceandfire_fabric.double_dragon_saddle.desc_1": "朋友可以坐在你身后",
+ "dragon.saddle.on": "已装上双人鞍：朋友可以坐在后面",
+ "dragon.saddle.too_young": "太年幼了：需要阶段 4",
+ "dragon.saddle.wrong_kind": "仅限火龙、冰龙和电龙",
+ "dragon.saddle.owner_only": "只有主人能为它装鞍",
+ "dragon.saddle.owner_first": "等主人骑上后再上去",
+ "dragon.saddle.needed": "它需要双人鞍才能载你",
+ "dragon.saddle.taken": "后座已经有人了"
 }

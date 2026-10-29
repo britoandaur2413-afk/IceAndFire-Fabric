@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonbone_shovel",
+    "iceandfire_fabric:dragonsteel_fire_shovel",
+    "iceandfire_fabric:dragonsteel_ice_shovel",
+    "iceandfire_fabric:dragonsteel_lightning_shovel",
+    "iceandfire_fabric:myrmex_desert_shovel",
+    "iceandfire_fabric:myrmex_jungle_shovel",
+    "iceandfire_fabric:silver_shovel"
+  ]
+}

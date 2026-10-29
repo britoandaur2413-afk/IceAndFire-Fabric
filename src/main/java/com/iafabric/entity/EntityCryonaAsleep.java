@@ -32,7 +32,7 @@ import org.jspecify.annotations.Nullable;
  * take), she only sleeps on. Black Frost prowls behind her throne the same way (EntityBlackFrostGuard); if it is gone,
  * she sets it again. In an older citadel her throne room is made anew first (CitadelPiece.renewThroneRoom).
  */
-public class EntityCryonaAsleep extends Mob implements IAnimatedEntity {
+public class EntityCryonaAsleep extends Mob implements IAnimatedEntity, com.iafabric.entity.util.IBlacklistedFromStatues {
 	/** How near a player is called (in her citadel: at the foot of her throne's dais). */
 	public static final int CALL = 7;
 	/** How far from her the Black Frost with her may be. */
@@ -284,5 +284,11 @@ public class EntityCryonaAsleep extends Mob implements IAnimatedEntity {
 	@Override
 	public Animation[] getAnimations() {
 		return new Animation[]{};
+	}
+
+	/** Her sign is never turned to stone either. */
+	@Override
+	public boolean canBeTurnedToStone() {
+		return false;
 	}
 }

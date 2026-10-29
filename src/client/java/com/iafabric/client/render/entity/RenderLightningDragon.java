@@ -47,7 +47,11 @@ public class RenderLightningDragon extends RenderDragonBase {
         if (dist > Math.max(256, Minecraft.getInstance().options.getEffectiveRenderDistance() * 16F)) {
             return;
         }
-        Vec3 head = lightningDragon.getHeadPosition();
+        // from its mouth as it is drawn this frame (its old head point if it is not drawn)
+        Vec3 head = com.iafabric.client.particle.DragonBreathFx.mouth(lightningDragon, partialTicks);
+        if (head == null) {
+            head = lightningDragon.getHeadPosition();
+        }
         Vec3 target = new Vec3(lightningDragon.getLightningTargetX(), lightningDragon.getLightningTargetY(), lightningDragon.getLightningTargetZ());
         float energyScale = 0.4F * lightningDragon.getDragonScale();
         LightningBoltData bolt = new LightningBoltData(LightningBoltData.BoltRenderInfo.ELECTRICITY, head, target, 15)

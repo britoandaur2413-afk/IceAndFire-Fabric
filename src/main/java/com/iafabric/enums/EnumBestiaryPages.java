@@ -81,7 +81,7 @@ public enum EnumBestiaryPages {
 
     public static List<EnumBestiaryPages> possiblePages(ItemStack book) {
         if (book.getItem() instanceof ItemBestiary) {
-            CompoundTag tag = ItemNbt.getTag(book);
+            CompoundTag tag = ItemNbt.getOrEmpty(book);
             Collection<EnumBestiaryPages> containedPages = containedPages(Ints.asList(tag.getIntArray("Pages").orElse(new int[0])));
             List<EnumBestiaryPages> possiblePages = new ArrayList<>(ALL_PAGES);
             possiblePages.removeAll(containedPages);
@@ -94,13 +94,14 @@ public enum EnumBestiaryPages {
     public static boolean addPage(EnumBestiaryPages page, ItemStack book) {
         boolean flag = false;
         if (book.getItem() instanceof ItemBestiary) {
-            CompoundTag tag = ItemNbt.getTag(book);
+            CompoundTag tag = ItemNbt.getOrEmpty(book);
             final List<Integer> already = new ArrayList<>(Ints.asList(tag.getIntArray("Pages").orElse(new int[0])));
             if (!already.contains(page.ordinal())) {
                 already.add(page.ordinal());
                 flag = true;
             }
-            tag.putIntArray("Pages", Ints.toArray(already));
+            // (the book's data comes as a copy: the pages go back into the book)
+            ItemNbt.update(book, data -> data.putIntArray("Pages", Ints.toArray(already)));
         }
         return flag;
     }

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "iceandfire_fabric:dragonbone_pickaxe",
+    "iceandfire_fabric:dragonsteel_fire_pickaxe",
+    "iceandfire_fabric:dragonsteel_ice_pickaxe",
+    "iceandfire_fabric:dragonsteel_lightning_pickaxe",
+    "iceandfire_fabric:myrmex_desert_pickaxe",
+    "iceandfire_fabric:myrmex_jungle_pickaxe",
+    "iceandfire_fabric:silver_pickaxe"
+  ]
+}

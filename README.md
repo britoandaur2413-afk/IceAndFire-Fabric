@@ -18,6 +18,10 @@ Cryona's duel on Black Frost at the end.
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 - Java 25
 
+The same mod for Minecraft 1.21.1 and 1.20.1 is in the branches
+[`1.21.1`](https://github.com/britoandaur2413-afk/IceAndFire-Fabric/tree/1.21.1) and
+[`1.20.1`](https://github.com/britoandaur2413-afk/IceAndFire-Fabric/tree/1.20.1).
+
 ## What it has
 
 - **Dragons:** fire, ice and lightning dragons in five stages, from eggs to giants. Young ones nest on high ground,

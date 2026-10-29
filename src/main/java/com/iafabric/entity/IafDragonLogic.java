@@ -36,6 +36,8 @@ public class IafDragonLogic {
     public void updateDragonServer() {
         // Update dragon rider
         dragon.updateRider();
+        // the friend behind, in a double saddle: off with its owner
+        DragonSaddle.tick(dragon);
 
         // Update dragon pitch
         dragon.updatePitch(dragon.yo - dragon.getY());
@@ -52,7 +54,8 @@ public class IafDragonLogic {
         if (dragon.lookingForRoostAIFlag && dragon.getLastHurtByMob() != null || dragon.isSleeping()) {
             dragon.lookingForRoostAIFlag = false;
         }
-        if (IafConfig.doDragonsSleep && !dragon.isSleeping() && !dragon.isTimeToWake() && dragon.getPassengers().isEmpty() && this.dragon.getCommand() != 2) {
+        // (a forge with work that calls it keeps it awake, day or night: a lightning dragon sleeps by day)
+        if (IafConfig.doDragonsSleep && !dragon.isSleeping() && !dragon.isTimeToWake() && dragon.getPassengers().isEmpty() && this.dragon.getCommand() != 2 && !dragon.forgeCalls()) {
             if (dragon.hasHomePosition
                 && dragon.getHomePosition() != null
                 && DragonUtils.isInHomeDimension(dragon)
@@ -68,7 +71,8 @@ public class IafDragonLogic {
         } else {
             dragon.lookingForRoostAIFlag = false;
         }
-        if (dragon.isSleeping() && (dragon.isFlying() || dragon.isHovering() || dragon.isInWater() || (dragon.level().canSeeSkyFromBelowWater(dragon.blockPosition()) && dragon.isTimeToWake() && !dragon.isTame() || dragon.isTimeToWake() && dragon.isTame()) || dragon.getTarget() != null || !dragon.getPassengers().isEmpty())) {
+        if (dragon.isSleeping() && (dragon.isFlying() || dragon.isHovering() || dragon.isInWater() || (dragon.level().canSeeSkyFromBelowWater(dragon.blockPosition()) && dragon.isTimeToWake() && !dragon.isTame() || dragon.isTimeToWake() && dragon.isTame()) || dragon.getTarget() != null || !dragon.getPassengers().isEmpty()
+            || dragon.forgeCalls() && !dragon.isOrderedToSit())) {
             dragon.setInSittingPose(false);
         }
         if (dragon.isOrderedToSit() && dragon.getControllingPassenger() != null) {
@@ -314,11 +318,6 @@ public class IafDragonLogic {
                 dragon.pitch_buffer_body.calculateChainWaveBuffer(80, 10, 1, 0.5F, dragon);
             }
         }
-        if (dragon.walkCycle < 39) {
-            dragon.walkCycle++;
-        } else {
-            dragon.walkCycle = 0;
-        }
         if (dragon.getAnimation() == EntityDragonBase.ANIMATION_WINGBLAST && (dragon.getAnimationTick() == 17 || dragon.getAnimationTick() == 22 || dragon.getAnimationTick() == 28)) {
             dragon.spawnGroundEffects();
         }
@@ -330,6 +329,7 @@ public class IafDragonLogic {
         if (dragon.isModelDead() && dragon.flightCycle != 0) {
             dragon.flightCycle = 0;
         }
+        IafMod.PROXY.tickDragonBreath(dragon);
     }
 
     /*
@@ -352,11 +352,11 @@ public class IafDragonLogic {
                 dragon.playSound(IafSoundRegistry.DRAGON_FLIGHT, dragonSoundVolume, dragonSoundPitch);
             }
         }
-        if (dragon.flightCycle < 58) {
-            dragon.flightCycle += 2;
-        } else {
-            dragon.flightCycle = 0;
-        }
+        // its wing beat and its steps by the world's time (each dragon a little apart): the same on the server and on the
+        // players' games, so its parts follow the beat its wings are drawn with (DragonBones)
+        long beat = dragon.level().getGameTime() + dragon.getId() * 7L;
+        dragon.flightCycle = (int) (beat % 30L) * 2;
+        dragon.walkCycle = (int) (beat % 40L);
 
         final boolean flying = dragon.isFlying();
         if (flying) {

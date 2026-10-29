@@ -12,6 +12,7 @@ import com.iafabric.util.EntityUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -77,7 +78,8 @@ public final class PixieBonding {
 				}
 			}
 		});
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> rest(handler.player, true));
+		// on the server thread, before the player is saved (a connection closes on the network thread)
+		ServerPlayerEvents.LEAVE.register(player -> rest(player, true));
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			PixieBonds bonds = get(handler.player);
 			if (bonds.active >= 0) {

@@ -21,7 +21,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 public final class IafEntityRegistry {
 
-    public static final EntityType<EntityDragonPart> DRAGON_MULTIPART = register("dragon_multipart", EntityType.Builder.<EntityDragonPart>of(EntityDragonPart::new, MobCategory.MISC).sized(0.5F, 0.5F).fireImmune());
+    /** (each player's game places a dragon's parts itself, from the dragon: where the server has them is sent only seldom) */
+    public static final EntityType<EntityDragonPart> DRAGON_MULTIPART = register("dragon_multipart", EntityType.Builder.<EntityDragonPart>of(EntityDragonPart::new, MobCategory.MISC).sized(0.5F, 0.5F).fireImmune().updateInterval(100));
     /** Effects drawn for a while (Vfx): never saved, nothing to summon. */
     public static final EntityType<EntityVfx> VFX = register("vfx", EntityType.Builder.<EntityVfx>of(EntityVfx::new, MobCategory.MISC).sized(0.25F, 0.25F).noSave().fireImmune().clientTrackingRange(10).updateInterval(40));
     public static final EntityType<EntitySlowPart> SLOW_MULTIPART = register("multipart", EntityType.Builder.<EntitySlowPart>of(EntitySlowPart::new, MobCategory.MISC).sized(0.5F, 0.5F).fireImmune());

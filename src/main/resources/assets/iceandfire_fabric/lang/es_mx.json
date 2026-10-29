@@ -2812,5 +2812,15 @@
   "iceandfire_fabric.boss.cryona_fury": "La furia de Cryona",
   "iceandfire_fabric.cryona.untouchable": "Su pena la protege: ahora nada la alcanza. ¡Resiste!",
   "gui.iceandfire_fabric.boss.frost_name": "Black Frost",
-  "gui.iceandfire_fabric.boss.queen_name": "Cryona"
+  "gui.iceandfire_fabric.boss.queen_name": "Cryona",
+  "item.iceandfire_fabric.double_dragon_saddle": "Silla de montar doble",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_0": "Dragones de fuego, hielo y relámpago, fase 4+",
+  "item.iceandfire_fabric.double_dragon_saddle.desc_1": "Un amigo va detrás de ti",
+  "dragon.saddle.on": "Silla doble puesta: un amigo puede ir detrás",
+  "dragon.saddle.too_young": "Aún es muy joven: necesita la fase 4",
+  "dragon.saddle.wrong_kind": "Solo para dragones de fuego, hielo y relámpago",
+  "dragon.saddle.owner_only": "Solo su dueño puede ensillarlo",
+  "dragon.saddle.owner_first": "Sube cuando su dueño vaya montado",
+  "dragon.saddle.needed": "Necesita una silla doble para llevarte",
+  "dragon.saddle.taken": "El asiento de atrás va ocupado"
 }

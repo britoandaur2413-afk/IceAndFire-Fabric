@@ -1,6 +1,7 @@
 package com.iafabric.citadel.client.model.basic;
 
 import com.iafabric.citadel.animation.IRotatablePart;
+import com.iafabric.citadel.client.render.CapturedGeometry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -125,7 +126,8 @@ public class BasicModelPart implements IRotatablePart {
 	}
 
 	public void translateRotate(PoseStack poseStack) {
-		poseStack.translate(this.offsetX, this.offsetY, this.offsetZ);
+		// (the offsets are not drawn, as in Citadel: Ice and Fire sets some that were never seen, and drawn they put a baby
+		// dragon on its owner's shoulder 12 blocks away and a baby amphithere's snout off its head)
 		poseStack.translate(this.rotationPointX / 16.0F, this.rotationPointY / 16.0F, this.rotationPointZ / 16.0F);
 		if (this.rotateAngleZ != 0.0F) {
 			poseStack.rotate(Axis.ZP, this.rotateAngleZ);
@@ -163,8 +165,13 @@ public class BasicModelPart implements IRotatablePart {
 		poseStack.pushPose();
 		translateRotate(poseStack);
 		PoseStack.Pose pose = poseStack.last();
-		for (ModelPart.Cube cube : this.cubeList) {
-			cube.compile(pose, buffer, light, overlay, color);
+		if (buffer instanceof CapturedGeometry captured) {
+			// made in the real buffer when the frame is drawn (see CapturedGeometry)
+			captured.cubes(pose, this.cubeList, light, overlay, color);
+		} else {
+			for (ModelPart.Cube cube : this.cubeList) {
+				cube.compile(pose, buffer, light, overlay, color);
+			}
 		}
 		for (BasicModelPart child : this.childModels) {
 			child.render(poseStack, buffer, light, overlay, color);

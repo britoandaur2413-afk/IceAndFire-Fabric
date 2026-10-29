@@ -110,6 +110,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    public void tickDragonBreath(EntityDragonBase dragon) {
+        DragonBreathFx.tick(dragon);
+    }
+
+    @Override
+    public void dragonCough(EntityDragonBase dragon) {
+        DragonBreathFx.cough(dragon);
+    }
+
+    @Override
     public void spawnParticle(EnumParticles name, double x, double y, double z, double motX, double motY, double motZ) {
         spawnParticle(name, x, y, z, motX, motY, motZ, 1.0F);
     }

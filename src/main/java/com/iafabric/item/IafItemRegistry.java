@@ -188,6 +188,8 @@ public final class IafItemRegistry {
     public static final Item DRAGON_STAFF = register("dragon_stick", () -> new ItemDragonStaff());
     public static final Item DRAGON_HORN = register("dragon_horn", () -> new ItemDragonHorn());
     public static final Item DRAGON_FLUTE = register("dragon_flute", () -> new ItemDragonFlute());
+    /** A grown dragon's saddle with two seats: a friend rides behind its owner (DragonSaddle). */
+    public static final Item DOUBLE_DRAGON_SADDLE = register("double_dragon_saddle", () -> new ItemGeneric(2, 1));
     public static final Item SUMMONING_CRYSTAL_FIRE = register("summoning_crystal_fire", () -> new ItemSummoningCrystal());
     public static final Item SUMMONING_CRYSTAL_ICE = register("summoning_crystal_ice", () -> new ItemSummoningCrystal());
     public static final Item SUMMONING_CRYSTAL_LIGHTNING = register("summoning_crystal_lightning", () -> new ItemSummoningCrystal());

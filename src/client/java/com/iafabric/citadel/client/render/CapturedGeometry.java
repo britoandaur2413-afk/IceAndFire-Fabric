@@ -1,17 +1,28 @@
 package com.iafabric.citadel.client.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import net.minecraft.client.model.geom.ModelPart;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Vertices recorded right away and drawn later. Entity models share one instance per renderer and
  * are posed per entity, but 26.x draws submitted geometry after every entity was posed, so the
- * posed vertices are captured at submit time and replayed when the frame is drawn.
+ * posed vertices are captured at submit time and replayed when the frame is drawn. A model's cubes
+ * are kept as they are, with their pose, and made in the real buffer then: Sodium makes them its
+ * fast way only there (it writes only into the game's own buffers, and warned that this one was not).
  */
 public final class CapturedGeometry implements VertexConsumer {
 	private final FloatArrayList floats = new FloatArrayList();
 	private final IntArrayList ints = new IntArrayList();
+	/** The cubes kept, with their poses and, for each, after how many vertices it comes, its light, overlay and color. */
+	private final List<ModelPart.Cube> cubes = new ArrayList<>();
+	private final List<PoseStack.Pose> cubePoses = new ArrayList<>();
+	private final IntArrayList cubeInts = new IntArrayList();
 	private float x, y, z, u, v, nx, ny, nz;
 	private int color = -1, overlay, light;
 	private boolean pending;
@@ -109,16 +120,42 @@ public final class CapturedGeometry implements VertexConsumer {
 		return this;
 	}
 
-	public boolean isEmpty() {
+	/** Keeps a model part's cubes, posed as now, to be made in the real buffer when the frame is drawn. */
+	public void cubes(PoseStack.Pose pose, List<ModelPart.Cube> parts, int light, int overlay, int color) {
+		if (parts.isEmpty()) {
+			return;
+		}
 		flush();
-		return ints.isEmpty();
+		PoseStack.Pose kept = pose.copy();
+		int at = ints.size() / 3;
+		for (ModelPart.Cube cube : parts) {
+			cubes.add(cube);
+			cubePoses.add(kept);
+			cubeInts.add(at);
+			cubeInts.add(light);
+			cubeInts.add(overlay);
+			cubeInts.add(color);
+		}
 	}
 
-	/** Sends every recorded vertex to the real buffer. */
+	public boolean isEmpty() {
+		flush();
+		return ints.isEmpty() && cubes.isEmpty();
+	}
+
+	/** Sends every recorded vertex and cube to the real buffer, in the order they came. */
 	public void replay(VertexConsumer buffer) {
 		flush();
 		int count = ints.size() / 3;
-		for (int i = 0; i < count; i++) {
+		int cube = 0;
+		for (int i = 0; i <= count; i++) {
+			for (; cube < cubes.size() && cubeInts.getInt(cube * 4) == i; cube++) {
+				int c = cube * 4;
+				cubes.get(cube).compile(cubePoses.get(cube), buffer, cubeInts.getInt(c + 1), cubeInts.getInt(c + 2), cubeInts.getInt(c + 3));
+			}
+			if (i == count) {
+				break;
+			}
 			int f = i * 8;
 			int n = i * 3;
 			buffer.addVertex(floats.getFloat(f), floats.getFloat(f + 1), floats.getFloat(f + 2), ints.getInt(n), floats.getFloat(f + 3),

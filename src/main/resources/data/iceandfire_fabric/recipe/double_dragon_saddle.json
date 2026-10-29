@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "LLL",
+    "SBS"
+  ],
+  "key": {
+    "L": "minecraft:leather",
+    "S": "minecraft:saddle",
+    "B": "iceandfire_fabric:dragonbone"
+  },
+  "result": {
+    "id": "iceandfire_fabric:double_dragon_saddle"
+  }
+}

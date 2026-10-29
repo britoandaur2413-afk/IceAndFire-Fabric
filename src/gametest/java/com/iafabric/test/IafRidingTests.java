@@ -127,19 +127,81 @@ public class IafRidingTests implements FabricClientGameTest {
 			context.waitTicks(20);
 			report(context, world, "mounted");
 			context.takeScreenshot("ride_mounted");
+			// from behind and from its side: the rider on its back
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+			context.waitTicks(10);
+			context.takeScreenshot("ride_mounted_behind");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON));
+			sideShots(context, world, dragonId[0], "ride_side_ground", 2);
 
 			context.getInput().holdKey(options -> options.keyJump);
 			context.waitTicks(50);
 			context.getInput().releaseKey(options -> options.keyJump);
 			report(context, world, "after space");
+			sideShots(context, world, dragonId[0], "ride_side_hover", 4);
 			context.getInput().holdKey(options -> options.keyUp);
 			context.waitTicks(40);
 			report(context, world, "flying forward");
 			context.takeScreenshot("ride_flying");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+			for (int i = 0; i < 3; i++) {
+				// along its beat: the rider stays on its back
+				context.waitTicks(7);
+				context.takeScreenshot("ride_flying_behind_" + i);
+			}
+			// turning in flight its back rolls: the rider in its seat leans with it (seen from close behind it)
+			net.minecraft.world.entity.decoration.ArmorStand[] behind = {null};
+			context.runOnClient(mc -> {
+				behind[0] = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, mc.player.getX(), mc.player.getY(), mc.player.getZ());
+				mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+			});
+			for (int i = 0; i < 16; i++) {
+				context.runOnClient(mc -> {
+					mc.player.setYRot(mc.player.getYRot() + 6F);
+					mc.player.setYHeadRot(mc.player.getYRot());
+					if (mc.player.getVehicle() instanceof EntityDragonBase d) {
+						float yaw = d.yBodyRot * net.minecraft.util.Mth.DEG_TO_RAD;
+						var at = mc.player.position().add(0, 1, 0);
+						// 6 blocks behind and 2 over the rider, looking at it
+						double x = at.x + net.minecraft.util.Mth.sin(yaw) * 6, z = at.z - net.minecraft.util.Mth.cos(yaw) * 6, y = at.y + 2;
+						float look = (float) Math.toDegrees(Math.atan2(-(at.x - x), at.z - z));
+						behind[0].snapTo(x, y, z, look, 18F);
+						behind[0].setYHeadRot(look);
+						behind[0].setOldPosAndRot();
+						mc.setCameraEntity(behind[0]);
+					}
+				});
+				context.waitTick();
+				if (i == 5 || i == 10 || i == 15) {
+					context.takeScreenshot("ride_turn_close_" + i);
+				}
+			}
+			context.runOnClient(mc -> {
+				mc.setCameraEntity(mc.player);
+				mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+			});
+			sideShots(context, world, dragonId[0], "ride_side_fly", 2);
+			// up and down: the rider tilts with its back
+			context.getInput().holdKey(options -> options.keyJump);
+			context.waitTicks(10);
+			sideShots(context, world, dragonId[0], "ride_side_climb", 2);
+			context.getInput().releaseKey(options -> options.keyJump);
+			context.getInput().holdKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.x"));
+			context.waitTicks(10);
+			sideShots(context, world, dragonId[0], "ride_side_dive", 2);
+			context.getInput().releaseKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.x"));
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON));
 			context.getInput().holdKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.r"));
 			context.waitTicks(20);
 			report(context, world, "breathing (R)");
 			context.takeScreenshot("ride_breath");
+			// its breath a while on, from its back and from behind it: from its mouth
+			context.waitTicks(15);
+			context.takeScreenshot("ride_breath_more");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+			context.waitTicks(8);
+			context.takeScreenshot("ride_breath_back");
+			context.runOnClient(mc -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON));
 			context.getInput().releaseKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.r"));
 			context.getInput().releaseKey(options -> options.keyUp);
 
@@ -167,11 +229,55 @@ public class IafRidingTests implements FabricClientGameTest {
 			report(context, world, "shift in the air");
 			context.waitTicks(100);
 			report(context, world, "after coming down");
+			// shift still held as it lands: the rider stays on it, and it stays on the ground
+			world.getServer().runOnServer(server -> {
+				var player = server.getPlayerList().getPlayers().get(0);
+				var dragon = (EntityDragonBase) server.overworld().getEntity(dragonId[0]);
+				if (player.getVehicle() != dragon) {
+					throw new AssertionError("landing with shift held dropped the rider off");
+				}
+				if (!dragon.onGround() || dragon.isFlying() || dragon.isHovering()) {
+					throw new AssertionError("it did not stay on the ground: onGround " + dragon.onGround() + " flying " + dragon.isFlying() + " hovering " + dragon.isHovering());
+				}
+			});
 			context.getInput().releaseKey(options -> options.keyShift);
 			context.waitTicks(10);
+			world.getServer().runOnServer(server -> {
+				if (server.getPlayerList().getPlayers().get(0).getVehicle() == null) {
+					throw new AssertionError("letting go of shift dropped the rider off");
+				}
+			});
 			context.getInput().holdKeyFor(options -> options.keyShift, 10);
 			context.waitTicks(20);
 			report(context, world, "shift on the ground");
+			// pressed again: off; it stays there, sitting
+			world.getServer().runOnServer(server -> {
+				var player = server.getPlayerList().getPlayers().get(0);
+				var dragon = (EntityDragonBase) server.overworld().getEntity(dragonId[0]);
+				if (player.getVehicle() != null) {
+					throw new AssertionError("shift pressed again on the ground did not let the rider off");
+				}
+				if (dragon.getCommand() != 1 || !dragon.isOrderedToSit()) {
+					throw new AssertionError("it did not stay sitting: command " + dragon.getCommand() + " sitting " + dragon.isOrderedToSit());
+				}
+			});
+			// seen from its side, a few blocks off: sitting where it landed
+			context.waitTicks(30);
+			context.runOnClient(mc -> {
+				if (mc.level.getEntity(dragonId[0]) instanceof EntityDragonBase dragon) {
+					var eye = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, dragon.getX(), dragon.getY(), dragon.getZ());
+					float yaw = dragon.yBodyRot * net.minecraft.util.Mth.DEG_TO_RAD;
+					double x = dragon.getX() + Math.cos(yaw) * 16, z = dragon.getZ() + Math.sin(yaw) * 16, y = dragon.getY() + 5;
+					float look = (float) Math.toDegrees(Math.atan2(-(dragon.getX() - x), dragon.getZ() - z));
+					eye.snapTo(x, y, z, look, 12F);
+					eye.setYHeadRot(look);
+					eye.setOldPosAndRot();
+					mc.setCameraEntity(eye);
+				}
+			});
+			context.waitTicks(3);
+			context.takeScreenshot("ride_off_sitting");
+			context.runOnClient(mc -> mc.setCameraEntity(mc.player));
 
 			// A fire forge ahead: R while looking at it sends the breath into its aperture, and it starts cooking.
 			BlockPos coreAt = new BlockPos(0, GROUND + 1, 14);
@@ -262,6 +368,57 @@ public class IafRidingTests implements FabricClientGameTest {
 	}
 
 	/** A fire forge as a player builds it: 3x3x3 of forge bricks, dragon bone blocks at the corners above and below, the core in the middle, the aperture on its north side; iron and fire blood in it. */
+	/**
+	 * Pictures of the rider on its dragon from the dragon's side, close (a camera of the player's game only, kept
+	 * beside the rider every tick, whichever way the dragon flies), a few ticks apart along its beat: the rider in its
+	 * seat, tilting with the dragon's back. The camera goes back to the player after.
+	 */
+	private static void sideShots(ClientGameTestContext context, TestSingleplayerContext world, int dragonId, String name, int count) {
+		net.minecraft.world.entity.decoration.ArmorStand[] eye = {null};
+		net.minecraft.client.CameraType[] was = {null};
+		context.runOnClient(mc -> {
+			eye[0] = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, mc.player.getX(), mc.player.getY(), mc.player.getZ());
+			// (seen through the stand's own eyes: a camera behind it would stand back by the dragon's size)
+			was[0] = mc.options.getCameraType();
+			mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+			if (!mc.gui.hud.isHidden()) {
+				mc.gui.hud.toggle();
+			}
+		});
+		for (int i = 0; i < count * 6; i++) {
+			context.runOnClient(mc -> {
+				var dragon = mc.player.getVehicle();
+				if (dragon instanceof EntityDragonBase d) {
+					besideIt(d, mc.player, eye[0]);
+					mc.setCameraEntity(eye[0]);
+				}
+			});
+			context.waitTick();
+			if (i % 6 == 5) {
+				context.takeScreenshot(name + "_" + i / 6);
+			}
+		}
+		context.runOnClient(mc -> {
+			mc.setCameraEntity(mc.player);
+			mc.options.setCameraType(was[0]);
+			if (mc.gui.hud.isHidden()) {
+				mc.gui.hud.toggle();
+			}
+		});
+	}
+
+	/** The camera 7 blocks to the dragon's side (as it is turned now), at its rider's height, looking at the rider. */
+	private static void besideIt(EntityDragonBase dragon, net.minecraft.world.entity.Entity rider, net.minecraft.world.entity.Entity eye) {
+		float yaw = dragon.yBodyRot * net.minecraft.util.Mth.DEG_TO_RAD;
+		var at = rider.position().add(0, 1, 0);
+		double x = at.x + Math.cos(yaw) * 7, z = at.z + Math.sin(yaw) * 7, y = at.y + 0.5;
+		double dx = at.x - x, dz = at.z - z;
+		float look = (float) Math.toDegrees(Math.atan2(-dx, dz));
+		eye.snapTo(x, y, z, look, 4F);
+		eye.setYHeadRot(look);
+		eye.setOldPosAndRot();
+	}
+
 	private static void buildFireForge(net.minecraft.server.level.ServerLevel level, BlockPos core) {
 		for (int dy = -1; dy <= 1; dy++) {
 			for (int dx = -1; dx <= 1; dx++) {

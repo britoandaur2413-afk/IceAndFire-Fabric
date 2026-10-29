@@ -120,7 +120,8 @@ public final class IafArmorRenderer implements ArmorRenderer {
 			default -> 3;
 		}];
 		Identifier tex = slot == EquipmentSlot.LEGS ? legsTexture : texture;
-		ArmorRenderer.submitTransformCopyingModel(contextModel, state, model, state, false, collector, poseStack,
+		// posed like the wearer and, on a player, hidden where the player is (a first-person swing shows only the arms)
+		collector.submitModel(new WornArmorModel(contextModel, model, slot), state, poseStack,
 			stack.hasFoil() ? RenderTypes.armorCutoutNoCullGlint(tex) : RenderTypes.armorCutoutNoCull(tex), light, OverlayTexture.NO_OVERLAY, state.outlineColor);
 	}
 }

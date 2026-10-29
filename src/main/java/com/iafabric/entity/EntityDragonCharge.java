@@ -22,6 +22,10 @@ import org.jspecify.annotations.Nullable;
 public abstract class EntityDragonCharge extends AbstractHurtingProjectile implements IDragonProjectile {
 	private static final double POWER = 0.07D;
 
+	/** On the player's game: its dragon's mouth from it, and when, as it was first drawn (it is drawn leaving the mouth). */
+	public @Nullable Vec3 fromMouth;
+	public float fromMouthAt;
+
 	public EntityDragonCharge(EntityType<? extends AbstractHurtingProjectile> type, Level worldIn) {
 		super(type, worldIn);
 		this.accelerationPower = POWER;

@@ -1036,7 +1036,9 @@ public class EntityHippogryph extends TamableAnimal implements ISyncMount, IAnim
                 target.hurtOrSimulate(target.damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
             }
         }
-        if (this.getControllingPassenger() != null && this.getControllingPassenger().isShiftKeyDown() && IFlyingMount.canDismount(this)) {
+        // only the server lets its rider off, as the game does: let off on the screen alone, a rider was left a ghost the
+        // server still had on it whenever the two did not agree it had landed
+        if (!this.level().isClientSide() && this.getControllingPassenger() != null && this.getControllingPassenger().isShiftKeyDown() && IFlyingMount.canDismount(this)) {
             this.getControllingPassenger().stopRiding();
         }
 

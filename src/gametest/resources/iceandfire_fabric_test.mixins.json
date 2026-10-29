@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.iafabric.test.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"DrawnEntityIdMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -16,7 +16,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -91,7 +90,7 @@ public class GuiPixieMenu extends AbstractContainerScreen<PixieMenu> {
 
 	private EntityPixie model() {
 		if (model == null && Minecraft.getInstance().level != null) {
-			model = IafEntityRegistry.PIXIE.create(Minecraft.getInstance().level, EntitySpawnReason.LOAD);
+			model = IafGui.drawnOnly(IafEntityRegistry.PIXIE);
 			if (model != null) {
 				model.setColor(menu.color);
 			}

@@ -616,4 +616,212 @@ public class IafBossTests {
 		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 		return player;
 	}
+
+	/**
+	 * A dragon's parts hold to its bones as its model poses them (DragonBones), in its three kinds: standing, sitting (the
+	 * lightning dragon raises its neck high) and hovering as its wings beat. Its head part holds its snout, each piece of
+	 * its neck its own middle, its last tail part its club, its wings' parts the tips of their fingers; and its wings'
+	 * parts are no bigger than its wings need (they were tall columns over its back, the same for the three kinds).
+	 */
+	@GameTest(maxTicks = 420, environment = "iceandfire_fabric:normal")
+	public void dragonPartsFit(GameTestHelper helper) {
+		var level = helper.getLevel();
+		var types = new net.minecraft.world.entity.EntityType<?>[]{IafEntityRegistry.FIRE_DRAGON, IafEntityRegistry.ICE_DRAGON, IafEntityRegistry.LIGHTNING_DRAGON};
+		String[] kinds = {"fire", "ice", "lightning"};
+		EntityDragonBase[] dragon = new EntityDragonBase[1];
+		String[] state = {"standing"};
+		// (a player by them: with none near, a dragon's parts keep their last pose)
+		var watcher = survivalPlayer(helper);
+		var by = helper.absoluteVec(new net.minecraft.world.phys.Vec3(4.5, 2, -8));
+		watcher.snapTo(by.x, by.y, by.z, 0F, 0F);
+		helper.onEachTick(() -> {
+			// (no mind of its own: what it is doing is kept up)
+			if (dragon[0] != null && state[0].startsWith("hovering")) {
+				dragon[0].setNoGravity(true);
+				dragon[0].setHovering(true);
+			}
+		});
+		for (int k = 0; k < 3; k++) {
+			int which = k;
+			int start = k * 130;
+			helper.runAfterDelay(start + 1, () -> {
+				EntityDragonBase made = (EntityDragonBase) types[which].create(level, EntitySpawnReason.COMMAND);
+				BlockPos at = helper.absolutePos(new BlockPos(4, 2, 4));
+				made.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0F, 0F);
+				made.setAgeInDays(0);
+				made.growDragon(40);
+				made.setNoAi(true);
+				level.addFreshEntity(made);
+				dragon[0] = made;
+				state[0] = "standing";
+			});
+			helper.runAfterDelay(start + 20, () -> {
+				fit(helper, dragon[0], kinds[which], state[0], 14);
+				// (told to sit: it sits only so)
+				dragon[0].setCommand(1);
+				state[0] = "sitting";
+			});
+			helper.runAfterDelay(start + 64, () -> {
+				fit(helper, dragon[0], kinds[which], state[0], 14);
+				dragon[0].setCommand(0);
+				state[0] = "hovering";
+			});
+			helper.runAfterDelay(start + 112, () -> fit(helper, dragon[0], kinds[which], state[0] + " (one beat)", 28));
+			helper.runAfterDelay(start + 119, () -> fit(helper, dragon[0], kinds[which], state[0] + " (another beat)", 28));
+			helper.runAfterDelay(start + 125, () -> {
+				dragon[0].discard();
+				dragon[0] = null;
+			});
+		}
+		helper.runAfterDelay(400, () -> {
+			level.getServer().getPlayerList().remove(watcher);
+			helper.succeed();
+		});
+	}
+
+	/** Its parts around its bones now: a few points of its bones in their parts, and its wings' boxes not too big. */
+	private static void fit(GameTestHelper helper, EntityDragonBase dragon, String kind, String state, double most) {
+		var level = helper.getLevel();
+		var parts = level.getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, dragon.getBoundingBox().inflate(60),
+			p -> dragon.getUUID().equals(p.getParentId()) && p.part() >= 0);
+		helper.assertTrue(parts.size() == com.iafabric.entity.DragonBones.PARTS, "the " + kind + " dragon " + state + " has " + parts.size() + " parts");
+		AABB[] box = new AABB[com.iafabric.entity.DragonBones.PARTS];
+		for (var part : parts) {
+			box[part.part()] = part.getBoundingBox().inflate(0.02);
+		}
+		var at = dragon.position();
+		holds(helper, box, com.iafabric.entity.DragonBones.HEAD, com.iafabric.entity.DragonBones.HEAD, at,
+			com.iafabric.entity.DragonBones.middle(dragon, "HeadFront"), kind + " " + state + ": its snout");
+		for (int k = 0; k < 3; k++) {
+			holds(helper, box, com.iafabric.entity.DragonBones.NECK + k, com.iafabric.entity.DragonBones.NECK + k, at,
+				com.iafabric.entity.DragonBones.middle(dragon, "Neck" + (k + 1)), kind + " " + state + ": its neck's piece " + (k + 1));
+		}
+		holds(helper, box, com.iafabric.entity.DragonBones.TAIL + 5, com.iafabric.entity.DragonBones.TAIL + 5, at,
+			com.iafabric.entity.DragonBones.middle(dragon, "Club"), kind + " " + state + ": its club");
+		for (String side : new String[]{"R", "L"}) {
+			int first = side.equals("R") ? com.iafabric.entity.DragonBones.WING_RIGHT : com.iafabric.entity.DragonBones.WING_LEFT;
+			// the tips of its first and its last finger (the first's end is named apart in the fire dragon's right wing)
+			var tip = com.iafabric.entity.DragonBones.point(dragon, "finger" + side + "1.2", 0, 16.5F, 0);
+			if (tip == null) {
+				tip = com.iafabric.entity.DragonBones.point(dragon, "finger" + side + ".2", 0, 16.5F, 0);
+			}
+			holds(helper, box, first, first + 5, at, tip, kind + " " + state + ": the tip of its " + side + " wing's first finger");
+			holds(helper, box, first, first + 5, at, com.iafabric.entity.DragonBones.point(dragon, "finger" + side + "4.2", 0, 14.5F, 0),
+				kind + " " + state + ": the tip of its " + side + " wing's last finger");
+		}
+		double k = dragon.getRenderSize() / 3.0;
+		double wings = 0;
+		for (int i = com.iafabric.entity.DragonBones.WING_RIGHT; i < com.iafabric.entity.DragonBones.PARTS; i++) {
+			wings += box[i].getXsize() * box[i].getYsize() * box[i].getZsize();
+		}
+		double head = box[com.iafabric.entity.DragonBones.HEAD].getYsize() + box[com.iafabric.entity.DragonBones.HEAD].minY - at.y;
+		log(String.format(java.util.Locale.ROOT, "dragon parts %s %s: its wings' boxes %.1f of its size cubed (at most %.0f), its head's top %.2f of its size up",
+			kind, state, wings / (k * k * k), most, head / k));
+		helper.assertTrue(wings / (k * k * k) <= most, "the " + kind + " dragon's wings' boxes are too big " + state + ": " + wings / (k * k * k));
+	}
+
+	private static void holds(GameTestHelper helper, AABB[] box, int from, int to, net.minecraft.world.phys.Vec3 at, org.joml.Vector3f point, String what) {
+		helper.assertTrue(point != null, what + ": no such bone");
+		var p = at.add(point.x(), point.y(), point.z());
+		for (int i = from; i <= to; i++) {
+			if (box[i].contains(p)) {
+				return;
+			}
+		}
+		helper.assertTrue(false, what + " at " + String.format(java.util.Locale.ROOT, "%.2f %.2f %.2f", point.x(), point.y(), point.z()) + " is in none of its parts");
+	}
+
+	/**
+	 * An arrow in a cyclops' eye blinds it (it roars, sees little and is slow). One through the back of its head, where
+	 * its eye's box reaches, strikes its head and does not: only a shot at its face does. Its eye's box stays on its face
+	 * as it turns its head.
+	 */
+	@GameTest(maxTicks = 120, environment = "iceandfire_fabric:normal")
+	public void cyclopsEye(GameTestHelper helper) {
+		var level = helper.getLevel();
+		var pos = helper.absoluteVec(new net.minecraft.world.phys.Vec3(4.5, 2, 4.5));
+		var cyclops = IafEntityRegistry.CYCLOPS.create(level, EntitySpawnReason.COMMAND);
+		cyclops.snapTo(pos.x, pos.y, pos.z, 0F, 0F);
+		cyclops.yBodyRot = 0F;
+		cyclops.yHeadRot = 0F;
+		cyclops.setNoAi(true);
+		level.addFreshEntity(cyclops);
+		// (its eye part takes its place on its face from its 11th tick)
+		helper.runAfterDelay(25, () -> {
+			var eye = cyclops.eyeEntity;
+			helper.assertTrue(eye != null, "the cyclops has no eye part");
+			var at = eye.getBoundingBox().getCenter();
+			// from behind it, at the top of its eye's box (over its body's: an arrow finds what is a little around its way),
+			// the arrow strikes its eye's box first, through the back of its head
+			var top = new net.minecraft.world.phys.Vec3(at.x, eye.getBoundingBox().maxY - 0.05, at.z);
+			var from = top.add(0, 0, -8);
+			var to = top.add(0, 0, 2);
+			var behind = new net.minecraft.world.entity.projectile.arrow.Arrow(level, from.x, from.y, from.z, new ItemStack(net.minecraft.world.item.Items.ARROW), null);
+			behind.setDeltaMovement(0, 0, 3);
+			var hit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(level, behind, from, to, new AABB(from, to).inflate(1),
+				e -> e == eye || e == cyclops);
+			helper.assertTrue(hit != null && hit.getEntity() == eye, "an arrow at the back of its head strikes " + (hit == null ? "nothing" : hit.getEntity()));
+			float life = cyclops.getHealth();
+			eye.hurtServer(level, level.damageSources().arrow(behind, null), 4F);
+			helper.assertTrue(!cyclops.isBlinded(), "an arrow through the back of its head blinded the cyclops");
+			helper.assertTrue(cyclops.getHealth() < life, "an arrow through the back of its head did not hurt the cyclops");
+			// from ahead, straight at its eye
+			from = at.add(0, 0, 6);
+			to = at.add(0, 0, -2);
+			var ahead = new net.minecraft.world.entity.projectile.arrow.Arrow(level, from.x, from.y, from.z, new ItemStack(net.minecraft.world.item.Items.ARROW), null);
+			ahead.setDeltaMovement(0, 0, -3);
+			hit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(level, ahead, from, to, new AABB(from, to).inflate(1),
+				e -> e == eye || e == cyclops);
+			helper.assertTrue(hit != null && hit.getEntity() == eye, "an arrow at its eye strikes " + (hit == null ? "nothing" : hit.getEntity()));
+			eye.hurtServer(level, level.damageSources().arrow(ahead, null), 4F);
+			helper.assertTrue(cyclops.isBlinded(), "an arrow in its eye did not blind the cyclops");
+			log("cyclops eye: an arrow through the back of its head hurts it (" + life + " -> " + cyclops.getHealth() + ") but does not blind it; one in its eye does");
+			cyclops.yHeadRot = 60F;
+		});
+		helper.runAfterDelay(30, () -> {
+			// its head turned: its eye's box is on its face there (where it looks, a block from its middle)
+			var eye = cyclops.eyeEntity.getBoundingBox().getCenter().subtract(cyclops.position());
+			var look = net.minecraft.world.entity.Entity.calculateViewVector(0, cyclops.yHeadRot);
+			double angle = Math.toDegrees(Math.acos(Math.max(-1, Math.min(1, new net.minecraft.world.phys.Vec3(eye.x, 0, eye.z).normalize().dot(look)))));
+			log("cyclops eye: its head turned to " + Math.round(cyclops.yHeadRot) + ", its eye's box " + Math.round(angle) + " degrees from where it looks");
+			helper.assertTrue(angle < 5, "its eye's box is " + angle + " degrees from where its head looks");
+			cyclops.discard();
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A dragon's parts go into the world where the dragon is: they are made with it, before it is set where it is, and
+	 * went into the world there, at the world's middle (far out, as in a world played far from it, that land is not
+	 * loaded and they never moved: no head, neck, wing or tail to strike). One left far behind comes back to it.
+	 */
+	@GameTest(maxTicks = 40, environment = "iceandfire_fabric:normal")
+	public void dragonPartsFarAway(GameTestHelper helper) {
+		var level = helper.getLevel();
+		EntityDragonBase dragon = IafEntityRegistry.FIRE_DRAGON.create(level, EntitySpawnReason.COMMAND);
+		BlockPos at = helper.absolutePos(new BlockPos(4, 2, 4));
+		dragon.snapTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0F, 0F);
+		dragon.setAgeInDays(0);
+		dragon.growDragon(40);
+		dragon.setNoAi(true);
+		level.addFreshEntity(dragon);
+		var parts = dragon.getParts();
+		// (as made: where the dragon was made, not where it is)
+		double before = parts.stream().mapToDouble(p -> p.distanceTo(dragon)).max().orElse(-1);
+		// with its first tick they go into the world
+		dragon.updateParts();
+		double after = parts.stream().mapToDouble(p -> p.distanceTo(dragon)).max().orElse(-1);
+		// one left far behind (in land not loaded) comes back with the next
+		var part = parts.get(0);
+		part.setPos(dragon.getX() + 3000, part.getY(), dragon.getZ());
+		dragon.updateParts();
+		double back = part.distanceTo(dragon);
+		log(String.format(java.util.Locale.ROOT, "dragon parts far away: %d parts, %.1f blocks from the dragon as made, %.2f as they went into the world; one left 3000 blocks behind came back to %.2f",
+			parts.size(), before, after, back));
+		dragon.discard();
+		helper.assertTrue(parts.size() == com.iafabric.entity.DragonBones.PARTS, "the dragon has " + parts.size() + " parts");
+		helper.assertTrue(after < 0.01, "its parts went into the world " + after + " blocks from the dragon");
+		helper.assertTrue(back < 0.01, "a part left far behind did not come back to its dragon: " + back);
+		helper.succeed();
+	}
 }

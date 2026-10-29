@@ -39,7 +39,15 @@ public class IafSceneTests implements FabricClientGameTest {
 		boolean hitbox = !IafTestOnly.skip("hitbox");
 		// (only when asked by name: Black Frost measured against a ruler, for the rooms made for it)
 		boolean frostSize = System.getenv("IAF_ONLY") != null && !IafTestOnly.skip("frostsize");
-		if (!riders && !vfx && !boss && !magic && !hitbox && !frostSize) {
+		// (only when asked by name: the riders in their seats on their dragons' backs, close)
+		boolean mounts = System.getenv("IAF_ONLY") != null && !IafTestOnly.skip("mounts");
+		// (only when asked by name: the dragons' breath, from their mouths)
+		boolean breath = System.getenv("IAF_ONLY") != null && !IafTestOnly.skip("breath");
+		// (only when asked by name: the dragons' parts around their bones, their boxes shown, in each pose)
+		boolean dragonBoxes = System.getenv("IAF_ONLY") != null && !IafTestOnly.skip("dragonbox");
+		// (only when asked by name: what the player's game has of a wild dragon's parts, part by part)
+		boolean partsProbe = System.getenv("IAF_ONLY") != null && !IafTestOnly.skip("partsprobe");
+		if (!riders && !vfx && !boss && !magic && !hitbox && !frostSize && !mounts && !breath && !dragonBoxes && !partsProbe) {
 			return;
 		}
 		try (TestSingleplayerContext world = context.worldBuilder().adjustSettings(settings ->
@@ -71,6 +79,465 @@ public class IafSceneTests implements FabricClientGameTest {
 			if (frostSize) {
 				frostSize(context, world);
 			}
+			if (mounts) {
+				mounts(context, world);
+			}
+			if (breath) {
+				breath(context, world);
+			}
+			if (dragonBoxes) {
+				dragonBoxes(context, world);
+			}
+			if (partsProbe) {
+				partsProbe(context, world, 10.5, 10.5, "near", true);
+				partsProbe(context, world, -10007251.5, 1006415.5, "far", false);
+			}
+		}
+	}
+
+	/**
+	 * A wild fire dragon (with its mind) near the player, as in a world: what the player's game has of its parts, part by
+	 * part (where, how big, whether the game draws its box with F3+B), and what the server has.
+	 */
+	private static void partsProbe(ClientGameTestContext context, TestSingleplayerContext world, double x, double z, String where, boolean rider) {
+		int[] id = new int[1];
+		camera(context, world, x - 12, GROUND + 6, z - 12, -45, 10, 40);
+		world.getServer().runOnServer(server -> {
+			var level = server.overworld();
+			EntityDragonBase dragon = IafEntityRegistry.FIRE_DRAGON.create(level, EntitySpawnReason.COMMAND);
+			dragon.snapTo(x, level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, (int) Math.floor(x), (int) Math.floor(z)), z, 0, 0);
+			level.addFreshEntity(dragon);
+			dragon.setAgeInDays(0);
+			dragon.growDragon(80);
+			id[0] = dragon.getId();
+			if (rider) {
+				// a kingdom's dragon, its pillager on its back: its rider's part too
+				dragon.pillagerMount = true;
+				dragon.setAgingDisabled(true);
+				dragon.setPersistenceRequired();
+				var pillager = net.minecraft.world.entity.EntityTypes.PILLAGER.create(level, EntitySpawnReason.COMMAND);
+				pillager.snapTo(x, dragon.getY(), z + 3, 0, 0);
+				level.addFreshEntity(pillager);
+				pillager.startRiding(dragon, true, true);
+			}
+		});
+		context.runOnClient(mc -> {
+			if (mc.gui.hud.isHidden()) {
+				mc.gui.hud.toggle();
+			}
+		});
+		context.waitTicks(60);
+		world.getServer().runOnServer(server -> {
+			var dragon = (EntityDragonBase) server.overworld().getEntity(id[0]);
+			var parts = server.overworld().getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, dragon.getBoundingBox().inflate(80),
+				p -> dragon.getUUID().equals(p.getParentId()));
+			log("probe " + where + " server: dragon at " + round(dragon.position()) + ", " + parts.size() + " parts");
+			for (var p : parts) {
+				log(String.format(java.util.Locale.ROOT, "probe %s server part %d: from it %s, box %.2f x %.2f x %.2f", where, p.part(),
+					round(p.position().subtract(dragon.position())), p.getBoundingBox().getXsize(), p.getBoundingBox().getYsize(), p.getBoundingBox().getZsize()));
+			}
+		});
+		context.runOnClient(mc -> {
+			var dragon = (EntityDragonBase) mc.level.getEntity(id[0]);
+			if (dragon == null) {
+				log("probe " + where + ": the dragon is not on the player's game");
+				return;
+			}
+			var cam = mc.player.getEyePosition();
+			long fade = net.minecraft.util.Util.toMillis(mc.options.chunkSectionFadeInTime().get());
+			var parts = mc.level.getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, dragon.getBoundingBox().inflate(80),
+				p -> dragon.getUUID().equals(p.getParentId()));
+			log("probe " + where + " client: dragon at " + round(dragon.position()) + " (camera " + round(cam) + "), " + parts.size() + " parts; the dragon's own section seen "
+				+ mc.levelRenderer.isSectionCompiledAndVisible(dragon.blockPosition(), fade));
+			// its rider's part, placed on the player's game itself (the server sends where its parts are only seldom)
+			parts.stream().filter(p -> p.part() == com.iafabric.entity.EntityDragonPart.RIDER).findFirst().ifPresent(p -> log(String.format(java.util.Locale.ROOT,
+				"probe %s client rider part: %.2f blocks from its seat on the dragon, box %.2f x %.2f", where,
+				p.position().distanceTo(com.iafabric.entity.DragonRiders.seat(dragon).add(0, 0.1, 0)), p.getBbWidth(), p.getBbHeight())));
+			for (var p : parts) {
+				log(String.format(java.util.Locale.ROOT, "probe %s client part %d: from it %s, box %.2f x %.2f x %.2f, ticks %d, near enough %s, its section seen %s, invisible %s",
+					where, p.part(), round(p.position().subtract(dragon.position())), p.getBoundingBox().getXsize(), p.getBoundingBox().getYsize(),
+					p.getBoundingBox().getZsize(), p.tickCount, p.shouldRender(cam.x, cam.y, cam.z),
+					mc.levelRenderer.isSectionCompiledAndVisible(p.blockPosition(), fade), p.isInvisible()));
+			}
+		});
+		context.takeScreenshot("partsprobe_" + where);
+		world.getServer().runOnServer(server -> {
+			var dragon = server.overworld().getEntity(id[0]);
+			if (dragon != null) {
+				dragon.discard();
+			}
+		});
+	}
+
+	/** Each part's box of these dragons outlined in white dust (its edges, a dot every so far) on the player's game. */
+	private static void outline(ClientGameTestContext context, int[] ids, double step) {
+		context.runOnClient(mc -> {
+			var dust = new net.minecraft.core.particles.DustParticleOptions(0xFFFFFF, 0.6F);
+			for (int id : ids) {
+				if (!(mc.level.getEntity(id) instanceof EntityDragonBase dragon)) {
+					continue;
+				}
+				for (var part : mc.level.getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, dragon.getBoundingBox().inflate(60),
+					p -> dragon.getUUID().equals(p.getParentId()) && p.part() >= 0)) {
+					var b = part.getBoundingBox();
+					double[] xs = {b.minX, b.maxX}, ys = {b.minY, b.maxY}, zs = {b.minZ, b.maxZ};
+					for (double y : ys) {
+						for (double z : zs) {
+							for (double x = b.minX; x <= b.maxX; x += step) {
+								mc.level.addAlwaysVisibleParticle(dust, true, x, y, z, 0, 0, 0);
+							}
+						}
+					}
+					for (double x : xs) {
+						for (double z : zs) {
+							for (double y = b.minY; y <= b.maxY; y += step) {
+								mc.level.addAlwaysVisibleParticle(dust, true, x, y, z, 0, 0, 0);
+							}
+						}
+					}
+					for (double x : xs) {
+						for (double y : ys) {
+							for (double z = b.minZ; z <= b.maxZ; z += step) {
+								mc.level.addAlwaysVisibleParticle(dust, true, x, y, z, 0, 0, 0);
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * The three dragons' parts with their boxes shown (F3+B), grown ones: standing, sitting, hovering and flying as their
+	 * wings beat, all three from their side, then each from its side and from ahead. Their parts hold to their bones as
+	 * they are drawn (DragonBones), on the ground and in the air.
+	 */
+	private static void dragonBoxes(ClientGameTestContext context, TestSingleplayerContext world) {
+		String[] kinds = {"fire", "ice", "lightning"};
+		int[] ids = new int[3];
+		int[] distances = new int[2];
+		context.runOnClient(mc -> {
+			distances[0] = mc.options.renderDistance().get();
+			distances[1] = mc.options.simulationDistance().get();
+			mc.options.renderDistance().set(10);
+			mc.options.simulationDistance().set(10);
+		});
+		world.getServer().runOnServer(server -> {
+			var level = server.overworld();
+			var types = new net.minecraft.world.entity.EntityType<?>[]{IafEntityRegistry.FIRE_DRAGON, IafEntityRegistry.ICE_DRAGON, IafEntityRegistry.LIGHTNING_DRAGON};
+			for (int i = 0; i < 3; i++) {
+				EntityDragonBase dragon = (EntityDragonBase) types[i].create(level, EntitySpawnReason.COMMAND);
+				dragon.snapTo(30.5, GROUND, i * 60 + 0.5, 90, 0);
+				level.addFreshEntity(dragon);
+				dragon.setAgeInDays(0);
+				dragon.growDragon(85);
+				dragon.setAgingDisabled(true);
+				dragon.setNoAi(true);
+				dragon.setHealth(dragon.getMaxHealth());
+				dragon.setYRot(90);
+				dragon.yBodyRot = 90;
+				dragon.yHeadRot = 90;
+				ids[i] = dragon.getId();
+			}
+		});
+		// (the boxes are drawn with the hud shown; F3+B as a player shows them)
+		context.runOnClient(mc -> {
+			if (mc.gui.hud.isHidden()) {
+				mc.gui.hud.toggle();
+			}
+		});
+		context.getInput().holdKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.f3"));
+		context.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.b"));
+		context.getInput().releaseKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.f3"));
+		log("dragon boxes: F3+B, hit boxes shown " + context.computeOnClient(mc -> mc.debugEntries.isCurrentlyEnabled(
+			net.minecraft.client.gui.components.debug.DebugScreenEntries.ENTITY_HITBOXES)));
+		String[] poses = {"standing", "sitting", "hovering", "flying"};
+		// (each in its pose the whole while, every tick before the dragons' own: they would land or take off on their own)
+		heldIds = ids;
+		if (!holding) {
+			holding = true;
+			net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.START_SERVER_TICK.register(server -> {
+				String pose = heldPose;
+				if (pose == null) {
+					return;
+				}
+				for (int id : heldIds) {
+					if (server.overworld().getEntity(id) instanceof EntityDragonBase dragon) {
+						boolean air = pose.equals("hovering") || pose.equals("flying");
+						dragon.setCommand(pose.equals("sitting") ? 1 : 0);
+						dragon.setNoGravity(air);
+						if (air && dragon.getY() < GROUND + 10) {
+							dragon.setPos(dragon.getX(), GROUND + 10, dragon.getZ());
+						}
+						dragon.setHovering(pose.equals("hovering"));
+						dragon.setFlying(pose.equals("flying"));
+						// (it does not want to land, nor to go from hovering to flying: it has only just taken off)
+						dragon.flyTicks = 0;
+						dragon.hoverTicks = 0;
+						dragon.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+					}
+				}
+			});
+		}
+		for (String pose : poses) {
+			heldPose = pose;
+			context.waitTicks(50);
+			double up = pose.equals("hovering") || pose.equals("flying") ? 10 : 0;
+			camera(context, world, -24, GROUND + 34 + up, -46, -38, 24, 2);
+			context.waitTicks(10);
+			context.takeScreenshot("dragonbox_" + pose + "_all");
+			for (int i = 0; i < 3; i++) {
+				double z = i * 60 + 0.5;
+				int[] one = {ids[i]};
+				// from its right side (in the air from farther: its wings spread toward the camera)
+				double away = up > 0 ? 34 : 24;
+				camera(context, world, 30.5, GROUND + 8 + up, z - away, 0, up > 0 ? 6 : 12, 2);
+				context.waitTicks(4);
+				outline(context, one, 0.3);
+				context.waitTicks(1);
+				context.takeScreenshot("dragonbox_" + pose + "_" + kinds[i] + "_side");
+				camera(context, world, up > 0 ? 0.5 : 6.5, GROUND + 6 + up, z, -90, 10, 2);
+				context.waitTicks(4);
+				outline(context, one, 0.3);
+				context.waitTicks(1);
+				context.takeScreenshot("dragonbox_" + pose + "_" + kinds[i] + "_front");
+				// what the player's game has (the camera beside it: one far off has no parts sent there): its parts, around its
+				// bones as it is drawn there
+				String kind = kinds[i];
+				context.runOnClient(mc -> {
+					if (!(mc.level.getEntity(one[0]) instanceof EntityDragonBase dragon)) {
+						throw new AssertionError("the " + kind + " dragon is not on the player's game " + pose);
+					}
+					var parts = mc.level.getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, dragon.getBoundingBox().inflate(60),
+						p -> dragon.getUUID().equals(p.getParentId()) && p.part() >= 0);
+					var snout = com.iafabric.entity.DragonBones.middle(dragon, "HeadFront");
+					var head = parts.stream().filter(p -> p.part() == com.iafabric.entity.DragonBones.HEAD).findFirst();
+					boolean held = snout != null && head.isPresent()
+						&& head.get().getBoundingBox().inflate(0.05).contains(dragon.position().add(snout.x(), snout.y(), snout.z()));
+					log("dragon boxes " + kind + " " + pose + ": " + parts.size() + " parts on the player's game, its snout in its head's part " + held
+						+ " (sitting " + dragon.sitProgress + ", hovering " + dragon.hoverProgress + ", flying " + dragon.flyProgress + ")");
+					if (parts.size() != com.iafabric.entity.DragonBones.PARTS || !held) {
+						throw new AssertionError("the " + kind + " dragon's parts are not around it on the player's game " + pose);
+					}
+				});
+				if (up > 0) {
+					// from above: its wings spread
+					camera(context, world, 30.5, GROUND + up + 34, z, 90, 90, 2);
+					context.waitTicks(4);
+					outline(context, one, 0.4);
+					context.waitTicks(1);
+					context.takeScreenshot("dragonbox_" + pose + "_" + kinds[i] + "_top");
+				}
+			}
+		}
+		context.getInput().holdKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.f3"));
+		context.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.b"));
+		context.getInput().releaseKey(com.mojang.blaze3d.platform.InputConstants.getKey("key.keyboard.f3"));
+		context.runOnClient(mc -> {
+			if (!mc.gui.hud.isHidden()) {
+				mc.gui.hud.toggle();
+			}
+			mc.options.renderDistance().set(distances[0]);
+			mc.options.simulationDistance().set(distances[1]);
+		});
+		heldPose = null;
+		world.getServer().runOnServer(server -> {
+			for (int id : ids) {
+				var dragon = server.overworld().getEntity(id);
+				if (dragon != null) {
+					dragon.discard();
+				}
+			}
+		});
+	}
+
+	/** The pose the dragons of the parts' scene are held in, and which (each server tick: see dragonBoxes). */
+	private static volatile String heldPose;
+	private static volatile int[] heldIds = new int[0];
+	private static boolean holding;
+
+	/**
+	 * The dragons' breath (fire, frost, lightning), grown ones, each breathing at a point ahead of it: from their side,
+	 * close to their heads (it must leave their mouths, between their jaws) and from ahead; then the fire dragon in the
+	 * air drifting sideways while it turns its head, breathing (the stream stays on its mouth). Checks that their mouths
+	 * are drawn ahead of them and open toward where they breathe, and counts the particles while they breathe.
+	 */
+	private static void breath(ClientGameTestContext context, TestSingleplayerContext world) {
+		String[] kinds = {"fire", "ice", "lightning"};
+		int[] ids = new int[3];
+		// (far enough to see the three of them, and for them to live, while it is shown)
+		int[] distances = new int[2];
+		context.runOnClient(mc -> {
+			distances[0] = mc.options.renderDistance().get();
+			distances[1] = mc.options.simulationDistance().get();
+			mc.options.renderDistance().set(10);
+			mc.options.simulationDistance().set(10);
+		});
+		double[][] targets = new double[3][];
+		world.getServer().runOnServer(server -> {
+			var level = server.overworld();
+			var types = new net.minecraft.world.entity.EntityType<?>[]{IafEntityRegistry.FIRE_DRAGON, IafEntityRegistry.ICE_DRAGON, IafEntityRegistry.LIGHTNING_DRAGON};
+			for (int i = 0; i < 3; i++) {
+				EntityDragonBase dragon = (EntityDragonBase) types[i].create(level, EntitySpawnReason.COMMAND);
+				double z = i * 30 + 0.5;
+				dragon.snapTo(30.5, GROUND, z, 90, 0);
+				level.addFreshEntity(dragon);
+				dragon.setAgeInDays(0);
+				dragon.growDragon(85);
+				dragon.setAgingDisabled(true);
+				dragon.setNoAi(true);
+				dragon.setHealth(dragon.getMaxHealth());
+				dragon.setYRot(90);
+				dragon.yBodyRot = 90;
+				dragon.yHeadRot = 90;
+				ids[i] = dragon.getId();
+				// ahead of it (west), a little lower than its head, in the air (nothing there to burn)
+				targets[i] = new double[]{4.5, GROUND + 3, z};
+			}
+		});
+		// the three of them in view (they are drawn: their mouths are where they are drawn)
+		camera(context, world, 0, GROUND + 20, -40, -27, 13, 60);
+		for (int tick = 0; tick < 30; tick++) {
+			breathe(world, ids, targets);
+			context.waitTick();
+		}
+		context.takeScreenshot("breath_all");
+		// its mouth as drawn: ahead of it, opening toward where it breathes
+		context.runOnClient(mc -> {
+			for (int i = 0; i < 3; i++) {
+				if (mc.level.getEntity(ids[i]) instanceof EntityDragonBase dragon) {
+					var mouth = com.iafabric.client.particle.DragonBreathFx.mouth(dragon);
+					if (mouth == null || dragon.mouthDir == null) {
+						throw new AssertionError("the " + kinds[i] + " dragon's mouth was not drawn");
+					}
+					var ahead = mouth.subtract(dragon.position());
+					var toTarget = new net.minecraft.world.phys.Vec3(targets[i][0], targets[i][1], targets[i][2]).subtract(mouth).normalize();
+					var open = com.iafabric.client.particle.DragonBreathFx.mouthWay(dragon);
+					double angle = Math.toDegrees(Math.acos(Math.max(-1, Math.min(1, open.dot(toTarget)))));
+					log("breath " + kinds[i] + ": mouth " + round(ahead) + " from its feet (old head point " + round(dragon.getHeadPosition().subtract(dragon.position()))
+						+ "), opening " + Math.round(angle) + " degrees from its target; particles " + mc.particleEngine.countParticles());
+					if (ahead.x > -1) {
+						throw new AssertionError("the " + kinds[i] + " dragon's mouth is not ahead of it (west): " + round(ahead));
+					}
+				}
+			}
+		});
+		for (int i = 0; i < 3; i++) {
+			double z = i * 30 + 0.5;
+			int which = i;
+			// from its right side (north of it, looking south), a little above: the stream leaves its mouth westward
+			breatheWhile(context, world, ids, targets, 6);
+			camera(context, world, 20, GROUND + 9, z - 22, 0, 15, 2);
+			breatheWhile(context, world, ids, targets, 8);
+			context.takeScreenshot("breath_" + kinds[i] + "_side");
+			// close to its head
+			camera(context, world, 24, GROUND + 7, z - 9, 20, 22, 2);
+			breatheWhile(context, world, ids, targets, 8);
+			context.takeScreenshot("breath_" + kinds[i] + "_mouth");
+			// from ahead of it and a little aside: into its mouth
+			camera(context, world, 6, GROUND + 7, z - 12, -51, 12, 2);
+			breatheWhile(context, world, ids, targets, 8);
+			context.takeScreenshot("breath_" + kinds[i] + "_front");
+			context.runOnClient(mc -> {
+				if (mc.level.getEntity(ids[which]) instanceof EntityDragonBase dragon) {
+					log("breath " + kinds[which] + " now: breathing " + dragon.isBreathingFire() + " (" + dragon.fireBreathProgress + "), seen "
+						+ (dragon.tickCount - dragon.breathSeenTick) + " ticks ago, mouth drawn " + (dragon.tickCount - dragon.mouthTick) + " ticks ago"
+						+ (dragon instanceof com.iafabric.entity.EntityLightningDragon lightning ? ", bolt " + lightning.hasLightningTarget() : "")
+						+ "; particles " + mc.particleEngine.countParticles());
+				} else {
+					log("breath " + kinds[which] + ": not on the player's game");
+				}
+			});
+		}
+		// the fire dragon's charge (its blast): drawn leaving its mouth, on its way within a few ticks
+		camera(context, world, 20, GROUND + 9, -21.5, 0, 15, 10);
+		for (int tick = 0; tick < 30; tick++) {
+			world.getServer().runOnServer(server -> {
+				if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase dragon) {
+					dragon.setBreathingFire(false);
+					dragon.stimulateFire(targets[0][0], targets[0][1], targets[0][2], 3);
+				}
+			});
+			context.waitTick();
+			if (tick == 21 || tick == 22 || tick == 24 || tick == 27) {
+				context.takeScreenshot("breath_fire_charge_" + tick);
+				context.runOnClient(mc -> {
+					for (var charge : mc.level.getEntitiesOfClass(com.iafabric.entity.EntityDragonCharge.class, mc.player.getBoundingBox().inflate(60))) {
+						log("charge " + charge.tickCount + " ticks old: drawn from its dragon's mouth " + (charge.fromMouth == null ? "not yet" : round(charge.fromMouth)) + " off where its server shot it");
+					}
+				});
+			}
+		}
+		// the fire dragon in the air, drifting sideways and turning its head as it breathes
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase dragon) {
+				dragon.setNoGravity(true);
+				dragon.setHovering(true);
+				dragon.setPos(dragon.getX(), GROUND + 8, dragon.getZ() - 12);
+			}
+			for (int i = 1; i < 3; i++) {
+				var other = server.overworld().getEntity(ids[i]);
+				if (other != null) {
+					other.discard();
+				}
+			}
+		});
+		// from above (north up), then from ahead and aside
+		for (int pass = 0; pass < 2; pass++) {
+			world.getServer().runOnServer(server -> {
+				if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase dragon) {
+					dragon.setPos(30.5, GROUND + 8, -11.5);
+				}
+			});
+			if (pass == 0) {
+				camera(context, world, 16, GROUND + 42, 0.5, 180, 90, 20);
+			} else {
+				camera(context, world, 2, GROUND + 14, -22, -55, 12, 20);
+			}
+			for (int tick = 0; tick < 48; tick++) {
+				int at = tick;
+				world.getServer().runOnServer(server -> {
+					if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase dragon) {
+						dragon.setPos(dragon.getX(), dragon.getY(), dragon.getZ() + 0.5);
+						dragon.yHeadRot = 90 + 35 * (float) Math.sin(at * 0.25);
+						dragon.setBreathingFire(true);
+						dragon.stimulateFire(4.5, GROUND + 6, dragon.getZ() - 14 * Math.sin(at * 0.25), 1);
+					}
+				});
+				context.waitTick();
+				if (tick >= 18 && tick % 6 == 0) {
+					context.takeScreenshot("breath_fire_moving_" + (pass == 0 ? "top_" : "side_") + (tick - 18) / 6);
+				}
+			}
+		}
+		world.getServer().runOnServer(server -> {
+			var dragon = server.overworld().getEntity(ids[0]);
+			if (dragon != null) {
+				dragon.discard();
+			}
+		});
+		context.runOnClient(mc -> {
+			mc.options.renderDistance().set(distances[0]);
+			mc.options.simulationDistance().set(distances[1]);
+		});
+	}
+
+	/** Each of them breathes at its point, this tick (as their fights do: the server says so to the players' games). */
+	private static void breathe(TestSingleplayerContext world, int[] ids, double[][] targets) {
+		world.getServer().runOnServer(server -> {
+			for (int i = 0; i < ids.length; i++) {
+				if (server.overworld().getEntity(ids[i]) instanceof EntityDragonBase dragon) {
+					dragon.setBreathingFire(true);
+					dragon.stimulateFire(targets[i][0], targets[i][1], targets[i][2], 1);
+				}
+			}
+		});
+	}
+
+	private static void breatheWhile(ClientGameTestContext context, TestSingleplayerContext world, int[] ids, double[][] targets, int ticks) {
+		for (int tick = 0; tick < ticks; tick++) {
+			breathe(world, ids, targets);
+			context.waitTick();
 		}
 	}
 
@@ -246,7 +713,7 @@ public class IafSceneTests implements FabricClientGameTest {
 		if (life[1] >= life[0]) {
 			throw new AssertionError("a blow on a part from the player's game did not reach the dragon");
 		}
-		// in the air its wings spread three and a half times its size out (the model's tips at 3.66): so do its parts
+		// in the air its wings spread three and a half times its size out: its parts hold the tips of its fingers there
 		for (int i = 0; i < 50; i++) {
 			world.getServer().runOnServer(s -> {
 				var dragon = (EntityDragonBase) s.overworld().getEntity(made[0]);
@@ -255,20 +722,33 @@ public class IafSceneTests implements FabricClientGameTest {
 			});
 			context.waitTicks(1);
 		}
-		double[] spread = new double[2];
+		double[] spread = new double[3];
 		world.getServer().runOnServer(s -> {
 			var dragon = (EntityDragonBase) s.overworld().getEntity(made[0]);
 			double k = dragon.getRenderSize() / 3;
+			var parts = s.overworld().getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, around, p -> dragon.getUUID().equals(p.getParentId()));
 			double far = 0;
-			for (var part : s.overworld().getEntitiesOfClass(com.iafabric.entity.EntityDragonPart.class, around, p -> dragon.getUUID().equals(p.getParentId()))) {
-				far = Math.max(far, Math.sqrt(part.position().subtract(dragon.position()).horizontalDistanceSqr()) + part.getBbWidth() / 2);
+			for (var part : parts) {
+				far = Math.max(far, Math.max(Math.abs(part.getBoundingBox().minX - dragon.getX()), Math.abs(part.getBoundingBox().maxX - dragon.getX())));
+				far = Math.max(far, Math.max(Math.abs(part.getBoundingBox().minZ - dragon.getZ()), Math.abs(part.getBoundingBox().maxZ - dragon.getZ())));
 			}
 			spread[0] = far / k;
 			spread[1] = dragon.hoverProgress;
+			// the tips of its fingers (the ice dragon's: fingerR1.2 and so on), each in one of its parts
+			for (String finger : new String[]{"fingerR1.2", "fingerR2.2", "fingerR3.2", "fingerR4.2", "fingerL1.2", "fingerL2.2", "fingerL3.2", "fingerL4.2"}) {
+				var tip = com.iafabric.entity.DragonBones.point(dragon, finger, 0, 14.5F, 0);
+				if (tip != null) {
+					var at = dragon.position().add(tip.x(), tip.y(), tip.z());
+					if (parts.stream().noneMatch(p -> p.getBoundingBox().inflate(0.02).contains(at))) {
+						spread[2]++;
+					}
+				}
+			}
 		});
-		log(String.format(java.util.Locale.ROOT, "hitboxes in the air: its parts reach %.2f of its size out (its wings' tips at 3.66), hovering %.0f/20", spread[0], spread[1]));
-		if (spread[0] < 3.3) {
-			throw new AssertionError("in the air the dragon's parts do not reach its wings' tips: " + spread[0]);
+		log(String.format(java.util.Locale.ROOT, "hitboxes in the air: its parts reach %.2f of its size out, hovering %.0f/20; finger tips out of its parts: %.0f",
+			spread[0], spread[1], spread[2]));
+		if (spread[2] > 0 || spread[0] < 2.5) {
+			throw new AssertionError("in the air the dragon's parts do not hold its wings: " + spread[2] + " finger tips out, reach " + spread[0]);
 		}
 		context.takeScreenshot("hitbox_dragon_air");
 		context.runOnClient(mc -> mc.debugEntries.setStatus(net.minecraft.client.gui.components.debug.DebugScreenEntries.ENTITY_HITBOXES,
@@ -1358,6 +1838,92 @@ public class IafSceneTests implements FabricClientGameTest {
 	}
 
 	/** A kingdom dragon with its pillager, the elite with the warlord, a dread dragon with its knight. */
+	/**
+	 * Cryona on Black Frost, in the seat on its back bone: standing, hovering (the beat of its body) and tilted, from its
+	 * side, close. With the riders scene, the pillagers' and the knight's seats.
+	 */
+	private static void mounts(ClientGameTestContext context, TestSingleplayerContext world) {
+		int[] ids = new int[2];
+		world.getServer().runOnServer(server -> {
+			var level = server.overworld();
+			EntityDragonBase frost = com.iafabric.world.structure.DreadPieces.dreadDragon(level, level.getRandom(), new BlockPos(80, GROUND, 0), 125, true);
+			frost.snapTo(80.5, GROUND, 0.5, 90, 0);
+			level.addFreshEntity(frost);
+			frost.setNoAi(true);
+			frost.setYRot(90);
+			frost.yBodyRot = 90;
+			frost.yHeadRot = 90;
+			var queen = IafEntityRegistry.DREAD_QUEEN.create(level, EntitySpawnReason.COMMAND);
+			queen.snapTo(80.5, GROUND + 6, 0.5, 90, 0);
+			level.addFreshEntity(queen);
+			queen.setNoAi(true);
+			queen.startRiding(frost, true, true);
+			ids[0] = frost.getId();
+			ids[1] = queen.getId();
+			log("mounts: Cryona riding " + queen.isPassenger() + ", carried " + frost.carriesRider(queen));
+		});
+		context.waitTicks(40);
+		// from its left side (it faces west), a little above its back
+		camera(context, world, 78.5, GROUND + 10, -17.5, 0, 14, 20);
+		context.takeScreenshot("mounts_cryona_ground");
+		compareSeats(context, ids[0], "on the ground");
+		// close to her: from her left side and from behind her, a little above
+		double[] q = new double[3];
+		world.getServer().runOnServer(server -> {
+			var queen = server.overworld().getEntity(ids[1]);
+			q[0] = queen.getX();
+			q[1] = queen.getY();
+			q[2] = queen.getZ();
+		});
+		camera(context, world, q[0], q[1] + 2.5, q[2] - 5, 0, 20, 20);
+		context.takeScreenshot("mounts_cryona_side_close");
+		camera(context, world, q[0] + 5, q[1] + 3, q[2] - 3, 60, 25, 20);
+		context.takeScreenshot("mounts_cryona_behind_close");
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase frost) {
+				frost.setHovering(true);
+			}
+		});
+		for (int i = 0; i < 4; i++) {
+			context.waitTicks(i == 0 ? 30 : 5);
+			context.takeScreenshot("mounts_cryona_hover_" + i);
+		}
+		compareSeats(context, ids[0], "hovering");
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(ids[0]) instanceof EntityDragonBase frost) {
+				frost.setDragonPitch(-35);
+			}
+		});
+		context.waitTicks(10);
+		context.takeScreenshot("mounts_cryona_tilted");
+		world.getServer().runOnServer(server -> {
+			for (int id : ids) {
+				var e = server.overworld().getEntity(id);
+				if (e != null) {
+					e.discard();
+				}
+			}
+		});
+	}
+
+	/** Where the seat is drawn (its posed back bone) and where the server puts it (its poses): they must be close. */
+	private static void compareSeats(ClientGameTestContext context, int dragonId, String when) {
+		context.runOnClient(mc -> {
+			if (mc.level.getEntity(dragonId) instanceof EntityDragonBase dragon && dragon.seatOnBack != null) {
+				var posed = com.iafabric.entity.DragonSeatPose.local(dragon, dragon.getDragonPitch());
+				double off = posed.distanceTo(dragon.seatOnBack);
+				log("seat " + when + ": drawn " + round(dragon.seatOnBack) + ", by its poses " + round(posed) + ", apart " + Math.round(off * 100) / 100.0);
+				if (off > 0.6) {
+					throw new AssertionError("the seat by its poses is " + off + " from where it is drawn " + when);
+				}
+			}
+		});
+	}
+
+	private static String round(net.minecraft.world.phys.Vec3 v) {
+		return Math.round(v.x * 100) / 100.0 + " " + Math.round(v.y * 100) / 100.0 + " " + Math.round(v.z * 100) / 100.0;
+	}
+
 	private static void riders(ClientGameTestContext context, TestSingleplayerContext world) {
 		int[] ids = new int[3];
 		world.getServer().runOnServer(server -> {

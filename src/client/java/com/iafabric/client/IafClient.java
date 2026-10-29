@@ -23,6 +23,8 @@ public class IafClient implements ClientModInitializer {
 		IafEntityRenderers.init();
 		com.iafabric.client.gui.IafGuiRegistry.register();
 		com.iafabric.client.render.IafArmorRenderer.init();
+		BetterCombatCompat.init();
+		com.iafabric.gamita.GamitaCollection.init(IafMod.MOD_ID);
 		IafKeybinds.init();
 		net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementAfter(
 			net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.HOTBAR, com.iafabric.IafMod.id("pixie_spell"), com.iafabric.client.gui.PixieSpellHud::render);
