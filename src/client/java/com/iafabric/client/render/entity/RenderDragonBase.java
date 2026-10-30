@@ -38,24 +38,35 @@ public class RenderDragonBase extends IafMobRenderer<EntityDragonBase, TabulaMod
 
     /** The spikes of its back where a double saddle sits (the saddle is over them): not drawn while it wears one. */
     private static final String[] UNDER_SADDLE = {"spike6", "spike7", "spike8"};
+    /**
+     * The spikes of its back by the seat: on a grown dragon its rider's eyes are in them, so in first person (a spyglass,
+     * a zoom) nothing was seen past them. Not drawn for the rider who sees from the seat; everyone else sees them.
+     */
+    private static final String[] BY_THE_SEAT = {"spike5", "spike6"};
 
     @Override
     public void submit(IafMobRenderer.State<EntityDragonBase> state, PoseStack poseStack, net.minecraft.client.renderer.SubmitNodeCollector collector,
                        net.minecraft.client.renderer.state.level.CameraRenderState camera) {
-        if (state.entity == null || !DragonSaddle.worn(state.entity)) {
+        boolean saddle = state.entity != null && DragonSaddle.worn(state.entity);
+        boolean fromTheSeat = state.entity != null && state.entity.getPassengers().stream().anyMatch(DragonSeat::inOwnEyes);
+        if (!saddle && !fromTheSeat) {
             super.submit(state, poseStack, collector, camera);
             return;
         }
-        this.showUnderSaddle(false);
+        this.show(UNDER_SADDLE, !saddle);
+        if (fromTheSeat) {
+            this.show(BY_THE_SEAT, false);
+        }
         try {
             super.submit(state, poseStack, collector, camera);
         } finally {
-            this.showUnderSaddle(true);
+            this.show(UNDER_SADDLE, true);
+            this.show(BY_THE_SEAT, true);
         }
     }
 
-    private void showUnderSaddle(boolean show) {
-        for (String name : UNDER_SADDLE) {
+    private void show(String[] spikes, boolean show) {
+        for (String name : spikes) {
             var spike = this.model.getCube(name);
             if (spike != null) {
                 spike.showModel = show;
@@ -80,7 +91,8 @@ public class RenderDragonBase extends IafMobRenderer<EntityDragonBase, TabulaMod
             state.extra = null;
         }
         for (var passenger : entity.getPassengers()) {
-            if (DragonSeat.seated(passenger) && !DragonSeat.inOwnEyes(passenger)) {
+            // (a rider nothing can draw, as another mod's creature with no renderer, is left out rather than crash)
+            if (DragonSeat.seated(passenger) && !DragonSeat.inOwnEyes(passenger) && this.entityRenderDispatcher.getRenderer(passenger) != null) {
                 var rider = (net.minecraft.world.entity.LivingEntity) passenger;
                 var drawn = this.entityRenderDispatcher.extractEntity(rider, partialTicks);
                 if (drawn instanceof net.minecraft.client.renderer.entity.state.LivingEntityRenderState living) {

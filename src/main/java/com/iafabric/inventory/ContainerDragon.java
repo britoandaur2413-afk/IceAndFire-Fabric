@@ -143,7 +143,15 @@ public class ContainerDragon extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player playerIn) {
-        return this.dragon == null || !this.dragon.hasInventoryChanged(this.dragonInventory) && this.dragonInventory.stillValid(playerIn) && this.dragon.isAlive() && this.dragon.distanceTo(playerIn) < 8.0F;
+        if (this.dragon == null) {
+            return true;
+        }
+        if (this.dragon.hasInventoryChanged(this.dragonInventory) || !this.dragonInventory.stillValid(playerIn) || !this.dragon.isAlive()) {
+            return false;
+        }
+        // on its back its menu stays open however big it is (on a grown dragon its rider sits far over its middle); on
+        // foot, within 8 blocks of its body, not of its middle (by a grown dragon's side its middle is farther than that)
+        return playerIn.getVehicle() == this.dragon || this.dragon.getBoundingBox().distanceToSqr(playerIn.position()) < 64.0D;
     }
 
     @Override

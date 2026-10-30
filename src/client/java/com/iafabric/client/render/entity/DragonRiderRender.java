@@ -56,6 +56,9 @@ public final class DragonRiderRender {
 			DRAWN.put(dragon, drawn);
 		}
 		LivingEntity rider = drawn.entity;
+		if (dispatcher.getRenderer(rider) == null) {
+			return;
+		}
 		// where it sits, turned with the dragon's body as it is drawn
 		float yaw = dragon.getYRot() * Mth.DEG_TO_RAD;
 		Vec3 seat = DragonRiders.seat(dragon).subtract(dragon.position());

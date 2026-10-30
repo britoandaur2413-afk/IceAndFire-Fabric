@@ -102,6 +102,10 @@ public class RenderStoneStatue extends IafEntityRenderer<EntityStoneStatue> {
         }
         @SuppressWarnings("unchecked")
         EntityRenderer<Entity, EntityRenderState> renderer = (EntityRenderer<Entity, EntityRenderState>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(inside);
+        if (renderer == null) {
+            // (a creature of another mod with no renderer: no statue of it can be drawn)
+            return;
+        }
         EntityRenderState insideState = renderer.createRenderState(inside, 0.0F);
         insideState.lightCoords = state.lightCoords;
         insideState.nameTag = null;

@@ -1401,6 +1401,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                             return InteractionResult.SUCCESS;
                         }
                     }
+                    // its rider, already on it: anything else in hand is the rider's own to use (a spyglass, a bow, its
+                    // own food), not a click on the dragon in front of them
+                    if (player.getVehicle() == this) {
+                        return InteractionResult.PASS;
+                    }
                     // anything else in hand (a sword, a bow...) has no use on it: its owner gets on, as with an empty hand
                     if (!player.isShiftKeyDown()) {
                         return this.rideBy(player);

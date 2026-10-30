@@ -29,7 +29,7 @@ public class ClientProxy extends CommonProxy {
     private static MyrmexHive referedClientHive = null;
     private int previousViewType = 0;
     private int thirdPersonViewDragon = 0;
-    private Entity referencedMob = null;
+    private volatile Entity referencedMob = null;
     private BlockEntity referencedTE = null;
 
     public static MyrmexHive getReferedClientHive() {
@@ -71,9 +71,19 @@ public class ClientProxy extends CommonProxy {
         return Minecraft.getInstance().hasShiftDown();
     }
 
+    /**
+     * The mob whose menu is open, as the player's game has it. In a world of one's own the server sets it too (one game
+     * runs both): its own copy is never given out, the game's copy of the same mob is (the server's copy has the
+     * server's players as riders, which nothing can draw: riding a dragon, its menu crashed the game).
+     */
     @Override
     public Entity getReferencedMob() {
-        return referencedMob;
+        Entity mob = referencedMob;
+        if (mob != null && !mob.level().isClientSide()) {
+            ClientLevel level = Minecraft.getInstance().level;
+            return level == null ? null : level.getEntity(mob.getId());
+        }
+        return mob;
     }
 
     @Override

@@ -49,6 +49,10 @@ public final class BufferSource {
 			return;
 		}
 		EntityRenderer<Entity, EntityRenderState> renderer = (EntityRenderer<Entity, EntityRenderState>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+		if (renderer == null) {
+			// (nothing can draw it: another mod's creature with no renderer, or the server's own copy of one)
+			return;
+		}
 		EntityRenderState state = renderer.createRenderState(entity, partialTicks);
 		state.lightCoords = light;
 		renderer.submit(state, poseStack, collector, camera);

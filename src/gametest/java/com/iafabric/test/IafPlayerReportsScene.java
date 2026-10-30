@@ -80,6 +80,7 @@ public class IafPlayerReportsScene implements FabricClientGameTest {
 			horn(context, world, problems);
 			anvil(world, problems);
 			forge(context, world, problems);
+			menuRiding(context, world, problems);
 			scribe[0] = scribe(context, world);
 			scribe[1] = scribeByItself(context, world, problems);
 			save = world.getWorldSave();
@@ -418,6 +419,236 @@ public class IafPlayerReportsScene implements FabricClientGameTest {
 				problems.add("a tamed lightning dragon " + how + " by a lightning forge never breathed into it (" + seen + ")");
 			}
 		}
+	}
+
+	/**
+	 * Right click weapons and items from a full grown dragon's back, aimed at its head in front (the worst case: the click
+	 * lands on the dragon): bows and a crossbow shoot, tridents and a snowball are thrown, and the mod's items held in use
+	 * (the gorgon's head, the cockatrice's scepter, a death worm gauntlet) are in use; the shots fly on past the dragon,
+	 * which is not hurt.
+	 */
+	private static void weaponsFromTheSeat(ClientGameTestContext context, TestSingleplayerContext world, int dragonId, List<String> problems) {
+		record Try(net.minecraft.world.item.Item item, String how, int hold) {
+		}
+		List<Try> tries = List.of(new Try(net.minecraft.world.item.Items.BOW, "shoot", 25), new Try(IafItemRegistry.DRAGON_BOW, "shoot", 25),
+			new Try(net.minecraft.world.item.Items.CROSSBOW, "crossbow", 35), new Try(net.minecraft.world.item.Items.TRIDENT, "shoot", 15),
+			new Try(IafItemRegistry.TIDE_TRIDENT, "shoot", 15), new Try(net.minecraft.world.item.Items.SNOWBALL, "throw", 0),
+			new Try(IafItemRegistry.GORGON_HEAD, "use", 15), new Try(IafItemRegistry.ITEM_COCKATRICE_SCEPTER, "use", 15),
+			new Try(IafItemRegistry.DEATHWORM_GAUNTLET_RED, "use", 15));
+		context.runOnClient(mc -> {
+			mc.options.setCameraType(CameraType.FIRST_PERSON);
+			mc.player.setYRot(0F);
+			mc.player.setXRot(10F);
+		});
+		float health = world.getServer().computeOnServer(server -> ((EntityDragonBase) server.overworld().getEntity(dragonId)).getHealth());
+		List<String> results = new ArrayList<>();
+		for (Try one : tries) {
+			world.getServer().runOnServer(server -> {
+				ServerPlayer player = player(server);
+				player.getInventory().clearContent();
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(one.item(), one.item() == net.minecraft.world.item.Items.SNOWBALL ? 16 : 1));
+				player.getInventory().add(new ItemStack(net.minecraft.world.item.Items.ARROW, 64));
+				for (Entity shot : server.overworld().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class, player.getBoundingBox().inflate(96))) {
+					shot.discard();
+				}
+			});
+			context.waitTicks(5);
+			boolean using;
+			if (one.how().equals("throw")) {
+				context.getInput().pressKey(options -> options.keyUse);
+				context.waitTicks(2);
+				// (a snowball is gone once it lands: one fewer in hand is the throw)
+				using = world.getServer().computeOnServer(server -> player(server).getMainHandItem().getCount() < 16);
+			} else {
+				context.getInput().holdKey(options -> options.keyUse);
+				// (in use at any tick of the hold: the scepter's and the gauntlet's uses last a tick and come again while
+				// the key is held, as in the original)
+				using = false;
+				for (int tick = 0; tick < Math.max(one.hold(), 5); tick++) {
+					context.waitTick();
+					using |= context.computeOnClient(mc -> mc.player.isUsingItem());
+				}
+				context.getInput().releaseKey(options -> options.keyUse);
+				if (one.how().equals("crossbow")) {
+					context.waitTicks(3);
+					context.getInput().pressKey(options -> options.keyUse);
+				}
+			}
+			context.waitTicks(12);
+			String result = world.getServer().computeOnServer(server -> {
+				ServerPlayer player = player(server);
+				List<net.minecraft.world.entity.projectile.Projectile> shots = server.overworld().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class,
+					player.getBoundingBox().inflate(96), shot -> shot.getOwner() == player);
+				double farthest = shots.stream().mapToDouble(shot -> shot.distanceTo(player)).max().orElse(0);
+				return shots.size() + " " + farthest;
+			});
+			int shots = Integer.parseInt(result.split(" ")[0]);
+			double farthest = Double.parseDouble(result.split(" ")[1]);
+			String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(one.item()).getPath();
+			String line = one.how().equals("throw") ? id + (using ? ": thrown" : ": not thrown")
+				: String.format(java.util.Locale.ROOT, "%s: %s%s", id, using ? "in use" : "not in use",
+				one.how().equals("use") ? "" : String.format(java.util.Locale.ROOT, ", %d shot(s), the farthest %.1f blocks away", shots, farthest));
+			results.add(line);
+			boolean worked = one.how().equals("use") || one.how().equals("throw") ? using : shots > 0 && farthest > 4;
+			if (!worked) {
+				problems.add("from a grown dragon's back, " + line);
+			}
+		}
+		float after = world.getServer().computeOnServer(server -> ((EntityDragonBase) server.overworld().getEntity(dragonId)).getHealth());
+		log("right click weapons and items from a grown dragon's back, aimed at its head: " + String.join("; ", results)
+			+ String.format(java.util.Locale.ROOT, "; the dragon's health %.1f -> %.1f", health, after));
+		if (after < health) {
+			problems.add("the rider's shots hurt their own dragon (" + health + " -> " + after + ")");
+		}
+		world.getServer().runOnServer(server -> {
+			ServerPlayer player = player(server);
+			player.getInventory().clearContent();
+			for (Entity shot : server.overworld().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class, player.getBoundingBox().inflate(96))) {
+				shot.discard();
+			}
+		});
+	}
+
+	/** What is on the screen: the dragon's menu (and which copy of the dragon it draws), or what else. */
+	private static String dragonMenu(ClientGameTestContext context) {
+		return context.computeOnClient(mc -> {
+			if (!(mc.gui.screen() instanceof com.iafabric.client.gui.GuiDragon)) {
+				return "no menu: " + mc.gui.screen();
+			}
+			Entity drawn = IafMod.PROXY.getReferencedMob();
+			return "its menu, drawing " + (drawn == null ? "nothing" : drawn.level().isClientSide() ? "the game's dragon" : "the server's dragon")
+				+ (mc.player.isPassenger() ? ", the player riding" : ", the player off");
+		});
+	}
+
+	private static void openDragonMenu(TestSingleplayerContext world, int id) {
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(id) instanceof EntityDragonBase dragon) {
+				dragon.openInventory(player(server));
+			}
+		});
+	}
+
+	/**
+	 * Its owner riding a grown dragon opens its menu (shift and a right click on it: a player did it with the dragon horn in
+	 * hand), in first and in third person: the menu draws the dragon with its rider. In a world of one's own the server
+	 * also told the menu which dragon to draw, its own copy, whose rider is the server's player, whom nothing can draw:
+	 * the game crashed. Then the dragon full grown: its menu stays open for its rider (it closed at once: the rider sits
+	 * more than 8 blocks from its middle), in first person the spyglass shows the land ahead (the spikes by the seat
+	 * filled the view), and on foot by its side its menu stays open, and closes once the player walks away.
+	 */
+	private static void menuRiding(ClientGameTestContext context, TestSingleplayerContext world, List<String> problems) {
+		world.getServer().runCommand("tp @p 60.5 " + GROUND + " 30.5 0 0");
+		context.waitTicks(5);
+		int[] id = {0};
+		world.getServer().runOnServer(server -> {
+			ServerLevel level = server.overworld();
+			ServerPlayer player = player(server);
+			EntityDragonBase dragon = IafEntityRegistry.LIGHTNING_DRAGON.create(level, EntitySpawnReason.COMMAND);
+			dragon.setAgeInDays(74);
+			dragon.absSnapTo(60.5, GROUND, 33.5, 0, 0);
+			dragon.tame(player);
+			level.addFreshEntity(dragon);
+			player.startRiding(dragon, true, true);
+			id[0] = dragon.getId();
+		});
+		context.waitTicks(30);
+		for (CameraType camera : new CameraType[]{CameraType.FIRST_PERSON, CameraType.THIRD_PERSON_BACK}) {
+			context.runOnClient(mc -> mc.options.setCameraType(camera));
+			openDragonMenu(world, id[0]);
+			context.waitTicks(20);
+			String seen = dragonMenu(context);
+			log("the dragon's menu while riding, " + camera + ": " + seen);
+			context.takeScreenshot("reports_menu_riding_" + camera.name().toLowerCase(java.util.Locale.ROOT));
+			if (!seen.contains("the game's dragon")) {
+				problems.add("riding, the dragon's menu in " + camera + ": " + seen);
+			}
+			context.runOnClient(mc -> mc.player.closeContainer());
+			context.waitTicks(5);
+		}
+		// full grown, still ridden: its menu
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(id[0]) instanceof EntityDragonBase dragon) {
+				dragon.setAgeInDays(125);
+			}
+		});
+		context.waitTicks(40);
+		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+		openDragonMenu(world, id[0]);
+		context.waitTicks(20);
+		String grown = dragonMenu(context);
+		double over = world.getServer().computeOnServer(server -> player(server).distanceTo(server.overworld().getEntity(id[0])));
+		log(String.format(java.util.Locale.ROOT, "the full grown dragon's menu, its rider %.1f blocks from its middle: %s", over, grown));
+		if (!grown.contains("its menu")) {
+			problems.add("riding a full grown dragon, its menu did not stay open (" + grown + ")");
+		}
+		context.runOnClient(mc -> mc.player.closeContainer());
+		context.waitTicks(5);
+		// the spyglass from its back, in first person
+		world.getServer().runOnServer(server -> player(server).setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.SPYGLASS)));
+		context.runOnClient(mc -> {
+			mc.player.setYRot(0F);
+			mc.player.setXRot(10F);
+		});
+		context.waitTicks(10);
+		context.takeScreenshot("reports_riding_grown_first_person");
+		// (a little up, past its head, as a rider looks at what is far)
+		context.runOnClient(mc -> mc.player.setXRot(-6F));
+		context.getInput().holdKey(options -> options.keyUse);
+		context.waitTicks(15);
+		boolean scoping = context.computeOnClient(mc -> mc.player.isScoping());
+		context.takeScreenshot("reports_riding_grown_spyglass");
+		context.getInput().releaseKey(options -> options.keyUse);
+		log("the spyglass on a full grown dragon's back, in first person: " + (scoping ? "looking through it" : "not used"));
+		if (!scoping) {
+			problems.add("the spyglass was not used from a full grown dragon's back");
+		}
+		world.getServer().runOnServer(server -> player(server).setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY));
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("justzoom")) {
+			// beside a modpack with Just Zoom: its zoom key, held on the dragon's back
+			context.waitTicks(5);
+			context.getInput().holdKey(InputConstants.getKey("key.keyboard.z"));
+			context.waitTicks(20);
+			context.takeScreenshot("reports_riding_grown_justzoom");
+			context.getInput().releaseKey(InputConstants.getKey("key.keyboard.z"));
+			context.waitTicks(10);
+		}
+		weaponsFromTheSeat(context, world, id[0], problems);
+		context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		context.waitTicks(5);
+		context.takeScreenshot("reports_riding_grown_third_person");
+		context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+		// on foot by its side: open while near its body (farther than 8 blocks from its middle), closed once away
+		double[] side = world.getServer().computeOnServer(server -> {
+			ServerPlayer player = player(server);
+			player.stopRiding();
+			var box = server.overworld().getEntity(id[0]).getBoundingBox();
+			player.teleportTo(box.maxX + 6, GROUND, (box.minZ + box.maxZ) / 2);
+			return new double[]{box.maxX + 6, (box.minZ + box.maxZ) / 2, box.getXsize()};
+		});
+		context.waitTicks(10);
+		openDragonMenu(world, id[0]);
+		context.waitTicks(20);
+		String byItsSide = dragonMenu(context);
+		double fromMiddle = world.getServer().computeOnServer(server -> player(server).distanceTo(server.overworld().getEntity(id[0])));
+		log(String.format(java.util.Locale.ROOT, "on foot 6 blocks from its body (%.1f wide), %.1f from its middle: %s", side[2], fromMiddle, byItsSide));
+		if (!byItsSide.contains("its menu")) {
+			problems.add("on foot by a full grown dragon's side, its menu did not stay open (" + byItsSide + ")");
+		}
+		world.getServer().runOnServer(server -> player(server).teleportTo(side[0] + 20, GROUND, side[1]));
+		context.waitTicks(20);
+		String away = dragonMenu(context);
+		log("20 blocks farther: " + away);
+		if (away.contains("its menu")) {
+			problems.add("the dragon's menu stayed open with the player 20 blocks away");
+			context.runOnClient(mc -> mc.player.closeContainer());
+		}
+		world.getServer().runOnServer(server -> {
+			if (server.overworld().getEntity(id[0]) instanceof EntityDragonBase dragon) {
+				dragon.discard();
+			}
+		});
+		context.waitTicks(5);
 	}
 
 	/**
