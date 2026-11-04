@@ -31,6 +31,7 @@
    "com.iafabric.test.IafPromoScene",
    "com.iafabric.test.IafTriDragonScene",
    "com.iafabric.test.IafBetterCombatScene",
+   "com.iafabric.test.IafDynamicLightsScene",
    "com.iafabric.test.IafArmorStandScene",
    "com.iafabric.test.IafPlayerReportsScene"
   ],

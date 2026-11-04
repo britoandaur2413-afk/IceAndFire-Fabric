@@ -187,6 +187,10 @@ public final class PixieBonding {
 		// behind their head: it flies into sight, it does not appear in their face
 		double yaw = Math.toRadians(player.getYRot());
 		pixie.snapTo(player.getX() + Math.sin(yaw) * 1.4, player.getEyeY() + 0.5, player.getZ() - Math.cos(yaw) * 1.4, player.getYRot(), 0);
+		// no room there (a narrow tunnel): by their side, inside the space they stand in
+		if (!level.noCollision(pixie)) {
+			pixie.snapTo(player.getX(), player.getY() + 1.1, player.getZ(), player.getYRot(), 0);
+		}
 		level.addFreshEntity(pixie);
 		bonds.active = color;
 		bonds.activeId = pixie.getUUID();

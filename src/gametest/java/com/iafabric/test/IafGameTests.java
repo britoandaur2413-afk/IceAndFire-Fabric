@@ -573,6 +573,88 @@ public class IafGameTests {
         });
     }
 
+    /** Every crafting recipe of the mod is made on a crafting table by the first item of each of its ingredients (a player:
+     * JEI showed the dragon armor and the lectern, and the table gave nothing). */
+    @GameTest(maxTicks = 40)
+    public void everyRecipeCrafts(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var recipes = level.getServer().getRecipeManager();
+        List<String> failed = new ArrayList<>();
+        int checked = 0;
+        for (var holder : recipes.getRecipes()) {
+            if (!holder.id().identifier().getNamespace().equals(IafMod.MOD_ID)) {
+                continue;
+            }
+            List<net.minecraft.world.item.ItemStack> grid = new ArrayList<>();
+            int width;
+            int height;
+            if (holder.value() instanceof net.minecraft.world.item.crafting.ShapedRecipe shaped) {
+                width = shaped.getWidth();
+                height = shaped.getHeight();
+                for (var ingredient : shaped.getIngredients()) {
+                    grid.add(ingredient.map(i -> new net.minecraft.world.item.ItemStack(i.items().findFirst().orElseThrow())).orElse(net.minecraft.world.item.ItemStack.EMPTY));
+                }
+            } else if (holder.value() instanceof net.minecraft.world.item.crafting.ShapelessRecipe shapeless) {
+                var ingredients = shapeless.placementInfo().ingredients();
+                width = 3;
+                height = (ingredients.size() + 2) / 3;
+                for (var ingredient : ingredients) {
+                    grid.add(new net.minecraft.world.item.ItemStack(ingredient.items().findFirst().orElseThrow()));
+                }
+                while (grid.size() < width * height) {
+                    grid.add(net.minecraft.world.item.ItemStack.EMPTY);
+                }
+            } else {
+                continue;
+            }
+            checked++;
+            var input = net.minecraft.world.item.crafting.CraftingInput.of(width, height, grid);
+            var found = recipes.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level);
+            if (found.isEmpty()) {
+                failed.add(holder.id().identifier() + " " + grid);
+            }
+        }
+        log("crafting recipes of the mod made on a table: " + (checked - failed.size()) + " of " + checked);
+        helper.assertTrue(failed.isEmpty(), failed.size() + " recipes give nothing on a table: " + failed);
+        helper.succeed();
+    }
+
+    /** Graveyard soil makes ghosts at night as the world's random ticks reach it (it waited for ticks that never came), and a
+     * ghost that came from the soil, killed by a player, drops ectoplasm (one from a cursed chest drops nothing, as in the original). */
+    @GameTest(maxTicks = 60, environment = "iceandfire_fabric:night")
+    public void graveyardSoilMakesGhosts(GameTestHelper helper) {
+        var level = helper.getLevel();
+        BlockPos soil = helper.absolutePos(new BlockPos(2, 1, 2));
+        level.setBlockAndUpdate(soil, com.iafabric.block.IafBlockRegistry.GRAVEYARD_SOIL.defaultBlockState());
+        level.setBlockAndUpdate(soil.above(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        var box = new net.minecraft.world.phys.AABB(soil).inflate(20);
+        for (int i = 0; i < 300 && level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box).isEmpty(); i++) {
+            level.getBlockState(soil).randomTick(level, soil, level.getRandom());
+        }
+        var ghosts = level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box);
+        log("ghosts made by graveyard soil at midnight: " + ghosts.size());
+        helper.assertTrue(!ghosts.isEmpty(), "graveyard soil made no ghost at midnight in 300 random ticks: bright " + level.isBrightOutside() + " difficulty " + level.getDifficulty() + " above " + level.getBlockState(soil.above()) + " soil " + level.getBlockState(soil));
+        var player = mockPlayer(helper);
+        player.snapTo(soil.getX() + 0.5, soil.getY() + 1, soil.getZ() + 0.5, 0, 0);
+        int ectoplasm = 0;
+        for (int i = 0; i < 20; i++) {
+            var ghost = IafEntityRegistry.GHOST.create(level, EntitySpawnReason.TRIGGERED);
+            ghost.snapTo(soil.getX() + 0.5, soil.getY() + 1, soil.getZ() + 0.5, 0, 0);
+            level.addFreshEntity(ghost);
+            ghost.hurtServer(level, level.damageSources().playerAttack(player), 10000F);
+        }
+        for (var item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, box)) {
+            if (item.getItem().is(com.iafabric.item.IafItemRegistry.ECTOPLASM)) {
+                ectoplasm += item.getItem().getCount();
+            }
+            item.discard();
+        }
+        log("ectoplasm from 20 ghosts killed by a player: " + ectoplasm);
+        helper.assertTrue(ectoplasm > 0, "20 ghosts killed by a player dropped no ectoplasm");
+        level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box).forEach(Entity::discard);
+        helper.succeed();
+    }
+
     /** The ghost sword's swing throws a blade that flies (it is a living projectile for a moment). */
     @GameTest(maxTicks = 40)
     public void ghostSwordThrows(GameTestHelper helper) {

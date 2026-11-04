@@ -206,8 +206,23 @@ public abstract class EntityMutlipartPart extends Entity {
     }
 
 
+    /** Whether it was ever given an id (put in a level, or sent by the server): a body's own copies on a player's game never are. */
+    private boolean hasId;
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.hasId = true;
+    }
+
     @Override
     public void remove(@NotNull RemovalReason reason) {
+        if (!hasId) {
+            // never in a level (a body's own copy on a player's game, made again when it grows): just dropped. Removing
+            // it told the mods that watch removals (LambDynamicLights) of an entity with no id, and 26.3 throws there
+            this.setRemoved(RemovalReason.DISCARDED);
+            return;
+        }
         super.remove(RemovalReason.DISCARDED);
     }
 

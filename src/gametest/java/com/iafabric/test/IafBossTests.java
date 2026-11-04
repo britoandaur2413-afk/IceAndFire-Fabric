@@ -385,6 +385,45 @@ public class IafBossTests {
 			.thenSucceed();
 	}
 
+	/**
+	 * A player: in a 2x2 tunnel the red bonded pixie came out in the roof and hurt them without end. Out next to them in
+	 * a tunnel, and even pushed into the stone, it hurts its player not once.
+	 */
+	@GameTest(maxTicks = 140, environment = "iceandfire_fabric:normal")
+	public void bondedPixieInTunnel(GameTestHelper helper) {
+		for (int x = 0; x <= 7; x++) {
+			for (int y = 1; y <= 4; y++) {
+				for (int z = 0; z <= 7; z++) {
+					boolean hole = x >= 3 && x <= 4 && y >= 2 && y <= 3;
+					helper.setBlock(x, y, z, hole ? net.minecraft.world.level.block.Blocks.AIR : net.minecraft.world.level.block.Blocks.STONE);
+				}
+			}
+		}
+		ServerPlayer player = survivalPlayer(helper);
+		var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(3.5, 2, 3.5));
+		player.snapTo(at.x, at.y, at.z, 0, 0);
+		com.iafabric.entity.EntityPixie wild = helper.spawn(IafEntityRegistry.PIXIE, new BlockPos(4, 2, 4), EntitySpawnReason.COMMAND);
+		wild.setColor(0);
+		wild.tame(player);
+		helper.assertTrue(com.iafabric.pixie.PixieBonding.bond(player, 0), "the pixie could not be bonded");
+		wild.discard();
+		helper.assertTrue(com.iafabric.pixie.PixieBonding.summon(player, 0), "the pixie did not come out");
+		float health = player.getHealth();
+		helper.runAfterDelay(5, () -> {
+			var pixie = com.iafabric.pixie.PixieBonding.activePixie(player);
+			helper.assertTrue(pixie != null, "no pixie out");
+			helper.assertTrue(helper.getLevel().noCollision(pixie), "the pixie came out inside the stone at " + pixie.position());
+			// pushed into the roof
+			pixie.snapTo(pixie.getX(), at.y + 1.6, pixie.getZ(), 0, 0);
+		});
+		helper.runAfterDelay(120, () -> {
+			helper.assertTrue(player.getHealth() >= health, "the player was hurt in the tunnel: " + health + " -> " + player.getHealth());
+			var pixie = com.iafabric.pixie.PixieBonding.activePixie(player);
+			helper.assertTrue(pixie != null && !pixie.isInWall(), "the pixie stayed in the stone");
+			helper.succeed();
+		});
+	}
+
 	/** A pixie at its last level takes no more dust (the slot keeps it). */
 	@GameTest(maxTicks = 40, environment = "iceandfire_fabric:normal")
 	public void pixieDustAtMax(GameTestHelper helper) {

@@ -94,7 +94,8 @@ public class PixieAIFollowOwner extends Goal {
                         for (int l = 0; l <= 4; ++l) {
                             for (int i1 = 0; i1 <= 4; ++i1) {
                                 if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && this.isEmptyBlock(new BlockPos(i + l, k, j + i1)) && this.isEmptyBlock(new BlockPos(i + l, k + 1, j + i1))) {
-                                    this.tameable.snapTo(i + l + 0.5F, k + 1.5, j + i1 + 0.5F,
+                                    // inside the two free blocks (k + 1.5 put its head in the roof of a two-block tunnel)
+                                    this.tameable.snapTo(i + l + 0.5F, k + 1.1, j + i1 + 0.5F,
                                         this.tameable.getYRot(), this.tameable.getXRot());
                                     return;
                                 }

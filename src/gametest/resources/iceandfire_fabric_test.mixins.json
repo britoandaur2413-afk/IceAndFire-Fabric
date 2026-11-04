@@ -5,6 +5,9 @@
 	"client": [
 		"DrawnEntityIdMixin"
 	],
+	"mixins": [
+		"NanRotationMixin"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}

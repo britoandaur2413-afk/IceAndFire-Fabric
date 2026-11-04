@@ -35,7 +35,7 @@ public class EntitySeaSerpentBubbles extends IafFireball implements IDragonProje
     public EntitySeaSerpentBubbles(EntityType<? extends IafFireball> t, Level worldIn,
                                    EntitySeaSerpent shooter, double accelX, double accelY, double accelZ) {
         super(t, shooter, accelX, accelY, accelZ, worldIn);
-        double d0 = Math.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
+        double d0 = Math.max(Math.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ), 1.0E-4D);
         this.xPower = accelX / d0 * 0.1D;
         this.yPower = accelY / d0 * 0.1D;
         this.zPower = accelZ / d0 * 0.1D;
@@ -106,7 +106,7 @@ public class EntitySeaSerpentBubbles extends IafFireball implements IDragonProje
                 double d2 = target.getX() - this.getX();
                 double d3 = target.getY() - this.getY();
                 double d4 = target.getZ() - this.getZ();
-                double d0 = Math.sqrt(d2 * d2 + d3 * d3 + d4 * d4);
+                double d0 = Math.max(Math.sqrt(d2 * d2 + d3 * d3 + d4 * d4), 1.0E-4D);
                 this.xPower = d2 / d0 * 0.1D;
                 this.yPower = d3 / d0 * 0.1D;
                 this.zPower = d4 / d0 * 0.1D;

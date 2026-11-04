@@ -270,9 +270,25 @@ public class EntitySeaSerpent extends Animal implements IAnimatedEntity, IMultip
         return false;
     }
 
+    /**
+     * A sea serpent never moves to a NaN place (one did: with LambDynamicLights the game crashed lighting it, and it was
+     * saved so): its speed is stopped and it stays where it was, also one saved so in an older world.
+     */
+    private void keepFinite() {
+        Vec3 motion = this.getDeltaMovement();
+        if (!Double.isFinite(motion.x) || !Double.isFinite(motion.y) || !Double.isFinite(motion.z)) {
+            this.setDeltaMovement(Vec3.ZERO);
+        }
+        if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
+            double x = Double.isFinite(this.xo) ? this.xo : 0, y = Double.isFinite(this.yo) ? this.yo : 64, z = Double.isFinite(this.zo) ? this.zo : 0;
+            this.setPos(x, y, z);
+        }
+    }
+
     @Override
     public void tick() {
         super.tick();
+        keepFinite();
         if(jumpCooldown > 0){
             jumpCooldown--;
         }
@@ -564,7 +580,8 @@ public class EntitySeaSerpent extends Animal implements IAnimatedEntity, IMultip
                 destroyBoat(entity);
                 double xRatio = this.getX() - entity.getX();
                 double zRatio = this.getZ() - entity.getZ();
-                float f = Mth.sqrt((float) (xRatio * xRatio + zRatio * zRatio));
+                // at least a hair apart: one right under its middle was thrown at NaN (0 / 0)
+                float f = Math.max(Mth.sqrt((float) (xRatio * xRatio + zRatio * zRatio)), 1.0E-4F);
                 float strength = 0.3F * this.getSeaSerpentScale();
                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.5D, 1D, 0.5D));
                 entity.setDeltaMovement(entity.getDeltaMovement().add(xRatio / f * strength, strength, zRatio / f * strength));
@@ -608,6 +625,12 @@ public class EntitySeaSerpent extends Animal implements IAnimatedEntity, IMultip
         double x = -Mth.sin(this.getYRot() * 0.017453292F) * Mth.cos(this.getXRot() * 0.017453292F);
         double z = Mth.cos(this.getYRot() * 0.017453292F) * Mth.cos(this.getXRot() * 0.017453292F);
         float f = Mth.sqrt((float) (x * x + z * z));
+        if (f < 1.0E-4F) {
+            // leaping straight up or down (pitch 90): no way ahead, and 0 / 0 made its speed NaN
+            x = -Mth.sin(this.getYRot() * 0.017453292F);
+            z = Mth.cos(this.getYRot() * 0.017453292F);
+            f = 1F;
+        }
         x = x / f;
         z = z / f;
         x = x * velocity;

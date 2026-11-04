@@ -161,6 +161,12 @@ public class EntityPixie extends TamableAnimal {
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (this.isBonded()) {
+            // the place itself never hurts a bonded pixie (a wall in a narrow tunnel hurt it every tick, and so its player)
+            if (source.getEntity() == null && (source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CRAMMING)
+                || source.is(DamageTypes.FLY_INTO_WALL) || source.is(DamageTypes.FALL) || source.is(DamageTypes.DROWN)
+                || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.CACTUS) || source.is(DamageTypes.SWEET_BERRY_BUSH))) {
+                return false;
+            }
             // a bonded pixie is not hurt: its player takes a part of it
             com.iafabric.pixie.PixieBonding.onBondedPixieHurt(this, level, source, amount);
             return false;
@@ -408,8 +414,8 @@ public class EntityPixie extends TamableAnimal {
                 this.discard();
                 return;
             }
-            if (this.getY() < server.getMinY() + 2) {
-                this.teleportTo(owner.getX(), owner.getY() + 1.5, owner.getZ());
+            if (this.getY() < server.getMinY() + 2 || this.tickCount % 10 == 0 && this.isInWall()) {
+                this.teleportTo(owner.getX(), owner.getY() + 1.1, owner.getZ());
             }
         }
         if (this.getOwner() != null && this.isOwnerClose() && this.tickCount % 80 == 0 && !this.isBonded() && this.givesOwnerEffect()) {

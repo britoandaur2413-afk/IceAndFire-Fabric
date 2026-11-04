@@ -112,9 +112,10 @@ public class SeaSerpentAIJump extends JumpGoal {
         Vec3 vector3d = this.serpent.getDeltaMovement();
         if (vector3d.y * vector3d.y < 0.1F && this.serpent.getXRot() != 0.0F) {
             this.serpent.setXRot(Mth.rotLerp(this.serpent.getXRot(), 0.0F, 0.2F));
-        } else {
+        } else if (vector3d.lengthSqr() > 1.0E-8D) {
+            // still (0 / 0) or a hair over 1 gave a NaN pitch
             final double d0 = vector3d.horizontalDistance();
-            final double d1 = Math.signum(-vector3d.y) * Math.acos(d0 / vector3d.length()) * (180F / (float) Math.PI);
+            final double d1 = Math.signum(-vector3d.y) * Math.acos(Math.min(d0 / vector3d.length(), 1D)) * (180F / (float) Math.PI);
             this.serpent.setXRot((float) d1);
         }
 

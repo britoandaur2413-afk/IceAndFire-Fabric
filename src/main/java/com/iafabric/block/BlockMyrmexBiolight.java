@@ -53,6 +53,12 @@ public class BlockMyrmexBiolight extends BushBlock {
     }
 
     @Override
+    protected void randomTick(@NotNull BlockState state, @NotNull ServerLevel worldIn, @NotNull BlockPos pos, @NotNull RandomSource rand) {
+        // random ticks no longer run tick() by themselves: what it does over time comes with them
+        this.tick(state, worldIn, pos, rand);
+    }
+
+    @Override
     public void tick(@NotNull BlockState state, ServerLevel worldIn, @NotNull BlockPos pos, @NotNull RandomSource rand) {
         if (!worldIn.isClientSide()) {
             this.updateState(state, worldIn, pos, state.getBlock());
