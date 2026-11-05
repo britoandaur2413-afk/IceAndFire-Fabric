@@ -110,6 +110,16 @@ public class GamitaWelcomeScreen extends Screen {
 		return null;
 	}
 
+	/** The video of its future expansion ("next": {"url": ...}), or null: then its picture is only a picture. */
+	private static String nextUrl(ModContainer mod) {
+		try {
+			String url = mod.getMetadata().getCustomValue("gamita_models").getAsObject().get("next").getAsObject().get("url").getAsString();
+			return url.startsWith("https://") ? url : null;
+		} catch (RuntimeException ignored) {
+			return null;
+		}
+	}
+
 	/** The name of its future expansion ("next": {"title": by language}), or null when it has none. */
 	private static String nextTitle(ModContainer mod) {
 		try {
@@ -232,7 +242,12 @@ public class GamitaWelcomeScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		return super.mouseClicked(this.fitted(event), doubleClick);
+		MouseButtonEvent fitted = this.fitted(event);
+		if (fitted.button() == 0 && this.overPicture(fitted.x(), fitted.y())) {
+			GamitaCollection.open(this.picUrl);
+			return true;
+		}
+		return super.mouseClicked(fitted, doubleClick);
 	}
 
 	@Override
@@ -245,7 +260,18 @@ public class GamitaWelcomeScreen extends Screen {
 		super.mouseMoved(x / this.fit, y / this.fit);
 	}
 
+	/** Where the mouse is (in the screen's own units) and where the expansion's picture was drawn, with its video. */
+	private int mouseGX = -1, mouseGY = -1;
+	private int picX0, picY0, picX1, picY1;
+	private String picUrl;
+
+	private boolean overPicture(double x, double y) {
+		return this.picUrl != null && x >= this.picX0 && x < this.picX1 && y >= this.picY0 && y < this.picY1;
+	}
+
 	private void drawAll(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
+		this.mouseGX = mouseX;
+		this.mouseGY = mouseY;
 		float t = (net.minecraft.util.Util.getMillis() - this.opened) / 1000F;
 		int cx = this.width / 2;
 		this.panel(g, t);
@@ -278,6 +304,7 @@ public class GamitaWelcomeScreen extends Screen {
 	 */
 	private void expansion(GuiGraphicsExtractor g, Icon icon, float t) {
 		String title = nextTitle(icon.mod());
+		this.picUrl = null;
 		int x0 = this.panelX + 10, x1 = this.panelX + this.panelW - 10, y0 = this.nextY;
 		g.fillGradient(x0, y0, x1, y0 + NEXT_H, 0xC0181424, 0xC0101018);
 		g.outline(x0, y0, x1 - x0, NEXT_H, GOLD_DARK);
@@ -305,6 +332,26 @@ public class GamitaWelcomeScreen extends Screen {
 			int from = Math.max(px, sx), to = Math.min(px + pw, sx + 8);
 			if (from < to) {
 				g.fill(from, py, to, py + ph, 0x30FFFFFF);
+			}
+			// with a video: the picture is a link (a play mark on it, brighter frame and "Watch the video" under the mouse)
+			String url = nextUrl(icon.mod());
+			if (url != null) {
+				this.picUrl = url;
+				this.picX0 = px;
+				this.picY0 = py;
+				this.picX1 = px + pw;
+				this.picY1 = py + ph;
+				boolean over = this.overPicture(this.mouseGX, this.mouseGY);
+				int cxp = px + pw / 2, cyp = py + ph / 2;
+				if (over) {
+					g.fill(px, py, px + pw, py + ph, 0x60000000);
+					g.outline(px - 1, py - 1, pw + 2, ph + 2, 0xFFFFFFFF);
+				}
+				g.fill(cxp - 9, cyp - 7, cxp + 9, cyp + 7, over ? 0xE0E02020 : 0xB0101010);
+				g.centeredText(this.font, "▶", cxp + 1, cyp - 4, 0xFFFFFFFF);
+				if (over) {
+					g.centeredText(this.font, GamitaTexts.get(GamitaTexts.VIDEO), cxp, py + ph - 10, 0xFFFFFFFF);
+				}
 			}
 		}
 		int tx = px + pw + (pw > 0 ? 8 : 4), tw = x1 - 6 - tx;

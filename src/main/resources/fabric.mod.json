@@ -37,7 +37,7 @@
 	"accessWidener": "iceandfire_fabric.classtweaker",
   "custom": {
     "gamita_models": {
-      "welcome": 3,
+      "welcome": 4,
       "kind": "port",
       "about": {
         "en": "Fabric port by GAMITA_MODELS, with the exiled pixie, the citadel and Cryona's duel.",
@@ -46,6 +46,18 @@
         "fr": "Portage Fabric par GAMITA_MODELS, avec la fée exilée, la citadelle et le duel de Cryona.",
         "de": "Fabric-Port von GAMITA_MODELS, mit der verbannten Fee, der Zitadelle und Cryonas Duell.",
         "ru": "Порт на Fabric от GAMITA_MODELS: изгнанная фея, цитадель и дуэль Крионы."
+      },
+      "next": {
+        "image": "assets/iceandfire_fabric/gamita_next.png",
+        "url": "https://youtu.be/aGW3DspddQw",
+        "title": {
+          "en": "Fulgora, the Storm Hydra: a giant three-headed dragon. Out January 1, 2027",
+          "es": "Fulgora, la Hidra de la Tormenta: un dragón gigante de tres cabezas. Sale el 1 de enero de 2027",
+          "pt": "Fulgora, a Hidra da Tempestade: um dragão gigante de três cabeças. Chega em 1º de janeiro de 2027",
+          "fr": "Fulgora, l'Hydre de l'Orage : un dragon géant à trois têtes. Sortie le 1er janvier 2027",
+          "de": "Fulgora, die Sturmhydra: ein riesiger dreiköpfiger Drache. Erscheint am 1. Januar 2027",
+          "ru": "Фульгора, Грозовая гидра: гигантский трёхглавый дракон. Выход 1 января 2027"
+        }
       }
     }
   }

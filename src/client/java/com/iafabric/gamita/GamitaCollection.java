@@ -17,7 +17,7 @@ import java.util.List;
  */
 public final class GamitaCollection {
 	/** This copy's welcome; a newer one (more mods, new texts) is shown instead of an older one. */
-	public static final int WELCOME = 3;
+	public static final int WELCOME = 4;
 	public static final String PATREON = "https://patreon.com/DragonLorePackforMinecraft";
 	public static final String DISCORD = "https://discord.gg/t6TssmqKv6";
 
