@@ -164,6 +164,12 @@ public class EntityGhostSword extends IafArrow {
         this.knockbackStrength = knockbackStrengthIn;
     }
 
+    /** Never its own thrower. */
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        return entity != this.getOwner() && super.canHitEntity(entity);
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult result) {
         Entity entity = result.getEntity();
@@ -237,12 +243,11 @@ public class EntityGhostSword extends IafArrow {
             if (this.getPierceLevel() <= 0) {
                 this.remove(RemovalReason.DISCARDED);
             }
-        } else {
-            this.setDeltaMovement(this.getDeltaMovement().scale(-0.1D));
-            //this.ticksInAir = 0;
-            if (!this.level().isClientSide() && this.getDeltaMovement().lengthSqr() < 1.0E-7D) {
-                this.remove(RemovalReason.DISCARDED);
-            }
+        } else if (!this.level().isClientSide()) {
+            // what takes no hit (a tamed pixie, a dragon's body) stops it: it fades there. An arrow bounces back and
+            // falls; this one has no weight and went back, slowly, into the player who threw it
+            ((net.minecraft.server.level.ServerLevel) this.level()).sendParticles(ParticleTypes.SNEEZE, this.getX(), this.getY(), this.getZ(), 6, 0.15, 0.15, 0.15, 0.01);
+            this.remove(RemovalReason.DISCARDED);
         }
 
     }

@@ -424,6 +424,45 @@ public class IafBossTests {
 		});
 	}
 
+	/**
+	 * A player: phantom swords thrown at a tamed pixie or a dragon's body came back and hurt them. Swords that hit
+	 * what takes no hit fade there, and none ever hurts the one who threw it.
+	 */
+	@GameTest(maxTicks = 120, environment = "iceandfire_fabric:normal")
+	public void phantomSwordsNeverComeBack(GameTestHelper helper) {
+		ServerPlayer player = survivalPlayer(helper);
+		var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5));
+		player.snapTo(at.x, at.y, at.z, 0, 0);
+		com.iafabric.entity.EntityPixie pixie = helper.spawn(IafEntityRegistry.PIXIE, new BlockPos(1, 2, 4), EntitySpawnReason.COMMAND);
+		pixie.setColor(0);
+		pixie.tame(player);
+		pixie.setNoAi(true);
+		com.iafabric.entity.EntityDragonBase dragon = helper.spawn(IafEntityRegistry.FIRE_DRAGON, new BlockPos(5, 2, 5), EntitySpawnReason.COMMAND);
+		dragon.setAgeInDays(40);
+		dragon.setModelDead(true);
+		dragon.setNoAi(true);
+		float health = player.getHealth();
+		var level = helper.getLevel();
+		java.util.List<com.iafabric.entity.EntityGhostSword> swords = new java.util.ArrayList<>();
+		for (var target : new net.minecraft.world.entity.Entity[]{pixie, dragon}) {
+			for (int i = 0; i < 3; i++) {
+				var sword = new com.iafabric.entity.EntityGhostSword(IafEntityRegistry.GHOST_SWORD, level, player, 9);
+				sword.setPos(player.getX(), player.getEyeY() - 0.2, player.getZ());
+				var to = target.getBoundingBox().getCenter().subtract(sword.position()).normalize().scale(1.5);
+				sword.setDeltaMovement(to);
+				level.addFreshEntity(sword);
+				swords.add(sword);
+			}
+		}
+		helper.runAfterDelay(100, () -> {
+			helper.assertTrue(player.getHealth() >= health, "a phantom sword hurt its own thrower: " + health + " -> " + player.getHealth());
+			long left = swords.stream().filter(s -> !s.isRemoved()).count();
+			helper.assertTrue(left == 0, left + " swords still about (they should fade on what takes no hit)");
+			helper.assertTrue(pixie.isAlive(), "the tamed pixie died");
+			helper.succeed();
+		});
+	}
+
 	/** A pixie at its last level takes no more dust (the slot keeps it). */
 	@GameTest(maxTicks = 40, environment = "iceandfire_fabric:normal")
 	public void pixieDustAtMax(GameTestHelper helper) {
