@@ -50,6 +50,56 @@ public class IafGameTests implements FabricGameTest {
 	 * A right click on any of a grown dragon's parts (its body, head, neck, a wing, its tail) reaches the dragon as the
 	 * server takes a click (interactAt, then interact when that did nothing): its owner gets on through each of them.
 	 */
+	/**
+	 * A player could enchant the mod's tools and armor only in creative on 26.x (its enchantments go by item tags). On
+	 * 1.20.1 they go by the item's kind: every tool, weapon, piece of armor, the dragonbone bow and the tide trident of
+	 * the mod is of the game's kind, takes its enchantments and is for the enchanting table.
+	 */
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void toolsAndArmorEnchant(GameTestHelper helper) {
+		List<String> wrong = new ArrayList<>();
+		int seen = 0;
+		for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
+			var id = BuiltInRegistries.ITEM.getKey(item);
+			if (!IafMod.MOD_ID.equals(id.getNamespace())) {
+				continue;
+			}
+			List<net.minecraft.world.item.enchantment.Enchantment> tries;
+			if (item instanceof net.minecraft.world.item.SwordItem) {
+				tries = List.of(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING, net.minecraft.world.item.enchantment.Enchantments.UNBREAKING);
+			} else if (item instanceof net.minecraft.world.item.DiggerItem) {
+				tries = List.of(net.minecraft.world.item.enchantment.Enchantments.BLOCK_EFFICIENCY, net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH, net.minecraft.world.item.enchantment.Enchantments.MENDING);
+			} else if (item instanceof net.minecraft.world.item.ArmorItem armor) {
+				tries = new ArrayList<>(List.of(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, net.minecraft.world.item.enchantment.Enchantments.UNBREAKING));
+				if (armor.getType() == net.minecraft.world.item.ArmorItem.Type.HELMET) {
+					tries.add(net.minecraft.world.item.enchantment.Enchantments.RESPIRATION);
+				} else if (armor.getType() == net.minecraft.world.item.ArmorItem.Type.BOOTS) {
+					tries.add(net.minecraft.world.item.enchantment.Enchantments.FALL_PROTECTION);
+				}
+			} else if (item instanceof net.minecraft.world.item.BowItem) {
+				tries = List.of(net.minecraft.world.item.enchantment.Enchantments.POWER_ARROWS);
+			} else if (item instanceof net.minecraft.world.item.TridentItem) {
+				tries = List.of(net.minecraft.world.item.enchantment.Enchantments.LOYALTY);
+			} else {
+				continue;
+			}
+			seen++;
+			var stack = new net.minecraft.world.item.ItemStack(item);
+			if (!stack.isEnchantable() || item.getEnchantmentValue() <= 0) {
+				wrong.add(id.getPath() + " (not for the enchanting table)");
+			}
+			for (var enchantment : tries) {
+				if (!enchantment.canEnchant(stack)) {
+					wrong.add(id.getPath() + " refuses " + BuiltInRegistries.ENCHANTMENT.getKey(enchantment).getPath());
+				}
+			}
+		}
+		IafMod.LOGGER.info("[iaf-test] toolsAndArmorEnchant: {} items, wrong {}", seen, wrong);
+		helper.assertTrue(seen > 100, "only " + seen + " tools and armor found");
+		helper.assertTrue(wrong.isEmpty(), wrong.size() + " not enchantable as they should: " + wrong);
+		helper.succeed();
+	}
+
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void rideThroughParts(GameTestHelper helper) {
 		var level = helper.getLevel();
@@ -344,6 +394,48 @@ public class IafGameTests implements FabricGameTest {
 		}
 		log("saved and loaded " + tried + " entity types, failed " + failed);
 		helper.assertTrue(failed.isEmpty(), "entities that do not save or load: " + failed);
+		helper.succeed();
+	}
+
+	/**
+	 * Scribes (the villagers of the mod's lectern) with trades of every level drawn many times are saved and loaded back as
+	 * their chunk does, trades and all (a player saw scribes gone when they came back to their world).
+	 */
+	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 100)
+	public void scribesSaveAndLoad(GameTestHelper helper) {
+		List<String> failed = new ArrayList<>();
+		int trades = 0;
+		try {
+			java.lang.reflect.Method update = net.minecraft.world.entity.npc.Villager.class.getDeclaredMethod("updateTrades");
+			update.setAccessible(true);
+			for (int n = 0; n < 40; n++) {
+				var villager = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 1));
+				villager.setVillagerData(villager.getVillagerData().setProfession(com.iafabric.entity.IafVillagerRegistry.SCRIBE));
+				villager.getOffers();
+				for (int level = 2; level <= 5; level++) {
+					villager.setVillagerData(villager.getVillagerData().setLevel(level));
+					update.invoke(villager);
+				}
+				trades += villager.getOffers().size();
+				try {
+					var output = villager.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+					var copy = EntityType.VILLAGER.create(helper.getLevel());
+					copy.load(output);
+					if (copy.getOffers().size() != villager.getOffers().size()) {
+						failed.add("scribe " + n + ": " + villager.getOffers().size() + " trades saved, " + copy.getOffers().size() + " loaded");
+					}
+				} catch (Throwable t) {
+					List<String> sold = new ArrayList<>();
+					villager.getOffers().forEach(offer -> sold.add(offer.getResult().getCount() + " " + offer.getResult().getItem()));
+					failed.add("scribe " + n + ": " + t + " (sells " + sold + ")");
+				}
+				villager.discard();
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+		log("saved and loaded 40 scribes with " + trades + " trades, failed " + failed);
+		helper.assertTrue(failed.isEmpty(), "scribes that do not save or load: " + failed);
 		helper.succeed();
 	}
 
@@ -1373,4 +1465,46 @@ public class IafGameTests implements FabricGameTest {
 		helper.assertTrue(failed.isEmpty(), "features threw: " + failed);
 		helper.succeed();
 	}
+
+    /** Every crafting recipe of the mod is made on a crafting table by the first item of each of its ingredients (a player:
+     * JEI showed the dragon armor and the lectern, and the table gave nothing). */
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void everyRecipeCrafts(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var recipes = level.getServer().getRecipeManager();
+        List<String> failed = new ArrayList<>();
+        int checked = 0;
+        var menu = new net.minecraft.world.inventory.AbstractContainerMenu(null, 0) {
+            @Override public net.minecraft.world.item.ItemStack quickMoveStack(net.minecraft.world.entity.player.Player p, int i) { return net.minecraft.world.item.ItemStack.EMPTY; }
+            @Override public boolean stillValid(net.minecraft.world.entity.player.Player p) { return true; }
+        };
+        for (var recipe : recipes.getRecipes()) {
+            if (!recipe.getId().getNamespace().equals(IafMod.MOD_ID)) {
+                continue;
+            }
+            int width;
+            int height;
+            if (recipe instanceof net.minecraft.world.item.crafting.ShapedRecipe shaped) {
+                width = shaped.getWidth();
+                height = shaped.getHeight();
+            } else if (recipe instanceof net.minecraft.world.item.crafting.ShapelessRecipe) {
+                width = 3;
+                height = (recipe.getIngredients().size() + 2) / 3;
+            } else {
+                continue;
+            }
+            var grid = new net.minecraft.world.inventory.TransientCraftingContainer(menu, width, height);
+            int slot = 0;
+            for (var ingredient : recipe.getIngredients()) {
+                grid.setItem(slot++, ingredient.isEmpty() ? net.minecraft.world.item.ItemStack.EMPTY : ingredient.getItems()[0].copy());
+            }
+            checked++;
+            if (recipes.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, grid, level).isEmpty()) {
+                failed.add(recipe.getId() + " " + grid.getItems());
+            }
+        }
+        log("crafting recipes of the mod made on a table: " + (checked - failed.size()) + " of " + checked);
+        helper.assertTrue(failed.isEmpty(), failed.size() + " recipes give nothing on a table: " + failed);
+        helper.succeed();
+    }
 }

@@ -125,7 +125,8 @@ public class BasicModelPart implements IRotatablePart {
 	}
 
 	public void translateRotate(PoseStack poseStack) {
-		poseStack.translate(this.offsetX, this.offsetY, this.offsetZ);
+		// (the offsets are not drawn, as in Citadel: Ice and Fire sets some that were never seen, and drawn they put a baby
+		// dragon on its owner's shoulder 12 blocks away and a baby amphithere's snout off its head)
 		poseStack.translate(this.rotationPointX / 16.0F, this.rotationPointY / 16.0F, this.rotationPointZ / 16.0F);
 		if (this.rotateAngleZ != 0.0F) {
 			poseStack.mulPose(Axis.ZP.rotation(this.rotateAngleZ));

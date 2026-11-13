@@ -23,6 +23,7 @@ public class IafClient implements ClientModInitializer {
 		IafEntityRenderers.init();
 		com.iafabric.client.gui.IafGuiRegistry.register();
 		com.iafabric.client.render.IafArmorRenderer.init();
+		BetterCombatCompat.init();
 		com.iafabric.client.render.RealmEffects.init();
 		com.iafabric.gamita.GamitaCollection.init(com.iafabric.IafMod.MOD_ID);
 		IafKeybinds.init();

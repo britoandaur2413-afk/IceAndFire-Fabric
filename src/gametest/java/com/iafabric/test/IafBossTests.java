@@ -392,6 +392,84 @@ public class IafBossTests implements FabricGameTest {
 			.thenSucceed();
 	}
 
+	/**
+	 * A player: in a 2x2 tunnel the red bonded pixie came out in the roof and hurt them without end. Out next to them in
+	 * a tunnel, and even pushed into the stone, it hurts its player not once.
+	 */
+	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 140)
+	public void bondedPixieInTunnel(GameTestHelper helper) {
+		for (int x = 0; x <= 7; x++) {
+			for (int y = 1; y <= 4; y++) {
+				for (int z = 0; z <= 7; z++) {
+					boolean hole = x >= 3 && x <= 4 && y >= 2 && y <= 3;
+					helper.setBlock(x, y, z, hole ? net.minecraft.world.level.block.Blocks.AIR : net.minecraft.world.level.block.Blocks.STONE);
+				}
+			}
+		}
+		ServerPlayer player = survivalPlayer(helper);
+		var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(3.5, 2, 3.5));
+		player.moveTo(at.x, at.y, at.z, 0, 0);
+		com.iafabric.entity.EntityPixie wild = helper.spawn(IafEntityRegistry.PIXIE, new BlockPos(4, 2, 4));
+		wild.setColor(0);
+		wild.tame(player);
+		helper.assertTrue(com.iafabric.pixie.PixieBonding.bond(player, 0), "the pixie could not be bonded");
+		wild.discard();
+		helper.assertTrue(com.iafabric.pixie.PixieBonding.summon(player, 0), "the pixie did not come out");
+		float health = player.getHealth();
+		helper.runAfterDelay(5, () -> {
+			var pixie = com.iafabric.pixie.PixieBonding.activePixie(player);
+			helper.assertTrue(pixie != null, "no pixie out");
+			helper.assertTrue(helper.getLevel().noCollision(pixie), "the pixie came out inside the stone at " + pixie.position());
+			// pushed into the roof
+			pixie.moveTo(pixie.getX(), at.y + 1.6, pixie.getZ(), 0, 0);
+		});
+		helper.runAfterDelay(120, () -> {
+			helper.assertTrue(player.getHealth() >= health, "the player was hurt in the tunnel: " + health + " -> " + player.getHealth());
+			var pixie = com.iafabric.pixie.PixieBonding.activePixie(player);
+			helper.assertTrue(pixie != null && !pixie.isInWall(), "the pixie stayed in the stone");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A player: phantom swords thrown at a tamed pixie or a dragon's body came back and hurt them. Swords that hit
+	 * what takes no hit fade there, and none ever hurts the one who threw it.
+	 */
+	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 120)
+	public void phantomSwordsNeverComeBack(GameTestHelper helper) {
+		ServerPlayer player = survivalPlayer(helper);
+		var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5));
+		player.moveTo(at.x, at.y, at.z, 0, 0);
+		com.iafabric.entity.EntityPixie pixie = helper.spawn(IafEntityRegistry.PIXIE, new BlockPos(1, 2, 4));
+		pixie.setColor(0);
+		pixie.tame(player);
+		pixie.setNoAi(true);
+		com.iafabric.entity.EntityDragonBase dragon = helper.spawn(IafEntityRegistry.FIRE_DRAGON, new BlockPos(5, 2, 5));
+		dragon.setAgeInDays(40);
+		dragon.setModelDead(true);
+		dragon.setNoAi(true);
+		float health = player.getHealth();
+		var level = helper.getLevel();
+		java.util.List<com.iafabric.entity.EntityGhostSword> swords = new java.util.ArrayList<>();
+		for (var target : new net.minecraft.world.entity.Entity[]{pixie, dragon}) {
+			for (int i = 0; i < 3; i++) {
+				var sword = new com.iafabric.entity.EntityGhostSword(IafEntityRegistry.GHOST_SWORD, level, player, 9);
+				sword.setPos(player.getX(), player.getEyeY() - 0.2, player.getZ());
+				var to = target.getBoundingBox().getCenter().subtract(sword.position()).normalize().scale(1.5);
+				sword.setDeltaMovement(to);
+				level.addFreshEntity(sword);
+				swords.add(sword);
+			}
+		}
+		helper.runAfterDelay(100, () -> {
+			helper.assertTrue(player.getHealth() >= health, "a phantom sword hurt its own thrower: " + health + " -> " + player.getHealth());
+			long left = swords.stream().filter(s -> !s.isRemoved()).count();
+			helper.assertTrue(left == 0, left + " swords still about (they should fade on what takes no hit)");
+			helper.assertTrue(pixie.isAlive(), "the tamed pixie died");
+			helper.succeed();
+		});
+	}
+
 	/** A pixie at its last level takes no more dust (the slot keeps it). */
 	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 40)
 	public void pixieDustAtMax(GameTestHelper helper) {

@@ -771,31 +771,51 @@ public class IafWorldTests implements FabricClientGameTest {
 				}
 			}
 			log("flowing fluid blocks in the forge hall: " + loose);
-			// no bit of a tree in the castle, its walls and towers (a crown cut by it, or grown into it from a chunk made later)
+			// no bit of a tree where the castle keeps the place open (its courtyard, its rooms, the air over its walls; one
+			// grown into it from a chunk made later), and none left hanging over it (a crown cut from its trunk: in a forest
+			// of tall trees every crown touches the next); the crowns of the trees round it may lean over its walls
 			int leaves = 0;
+			int open = 0;
 			int half = com.iafabric.world.structure.DragonHallPieces.CASTLE_HALF;
 			for (BlockPos pos : BlockPos.betweenClosed(castle.at(-half, 0, g), castle.at(half, com.iafabric.world.structure.DragonHallPieces.CASTLE_END, g + 26))) {
-				if (level.getBlockState(pos).is(net.minecraft.tags.BlockTags.LEAVES)) {
-					if (leaves++ < 5) {
-						log("leaves inside the castle at " + pos.toShortString());
-					}
+				var state = level.getBlockState(pos);
+				if (state.is(net.minecraft.tags.BlockTags.LEAVES)) {
+					leaves++;
+				}
+				if ((state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.LOGS)) && castle.openAt(level, pos) && open++ < 5) {
+					log("a tree in the castle's open space at " + pos.toShortString() + ": " + state);
 				}
 			}
-			log("leaves in the castle: " + leaves);
-			found[1] = leaves;
+			var box = castle.getBoundingBox();
+			var hung = com.iafabric.world.structure.BuiltPiece.floatingPlants(level, box.minX() - 16, box.minY(), box.minZ() - 16, box.maxX() + 16,
+				box.maxY() + 24, box.maxZ() + 16, null);
+			int hanging = 0;
+			for (BlockPos pos : hung) {
+				if (pos.getX() >= box.minX() && pos.getX() <= box.maxX() && pos.getZ() >= box.minZ() && pos.getZ() <= box.maxZ() && hanging++ < 5) {
+					log("a tree left hanging over the castle at " + pos.toShortString() + ": " + level.getBlockState(pos));
+				}
+			}
+			log("leaves over the castle: " + leaves + "; bits of trees in its open space " + open + ", left hanging over it " + hanging);
+			found[1] = open + hanging;
 		});
 		if (found[0] == 0) {
 			throw new AssertionError("no stage 5 dragon on the hoard");
 		}
-		if (found[1] > 0) {
-			throw new AssertionError(found[1] + " leaves in the castle");
-		}
 		// the castle from outside, before the gate, high up
 		look(context, world, castle, 14, -34, g + 24, -18, 28, 60);
 		context.takeScreenshot("world_dragon_hall_castle");
+		// from high up before it, the whole castle and the land round it
+		look(context, world, castle, 0, -40, g + 48, 0, 42, 40);
+		context.takeScreenshot("world_dragon_hall_above");
 		// the courtyard and the keep
 		look(context, world, castle, 0, 8, g + 5, 0, 5, 30);
 		context.takeScreenshot("world_dragon_hall_courtyard");
+		// the sky over the courtyard (nothing of a tree cut by the castle left up there)
+		look(context, world, castle, 0, 20, g + 1, 0, -65, 20);
+		context.takeScreenshot("world_dragon_hall_sky");
+		if (found[1] > 0) {
+			throw new AssertionError(found[1] + " bits of trees in the castle or left hanging over it");
+		}
 		world.getServer().runCommand("gamemode spectator @p");
 		// in the keep: the stairwell going down
 		look(context, world, castle, 0, 35, g + 7, 0, 32, 30);

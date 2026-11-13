@@ -94,6 +94,10 @@ public class RenderStoneStatue extends IafEntityRenderer<EntityStoneStatue> {
         }
         @SuppressWarnings("unchecked")
         EntityRenderer<Entity> renderer = (EntityRenderer<Entity>) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(inside);
+        if (renderer == null) {
+            // (a creature of another mod with no renderer: no statue of it can be drawn)
+            return;
+        }
         // Each part is drawn with its own texture turned to stone (transparent parts stay transparent); a troll has its stone skin.
         RenderType fallback = IafRenderType.getStoneMobRenderType(200, 200);
         java.util.function.Function<RenderType, RenderType> stone = inside instanceof EntityTroll troll

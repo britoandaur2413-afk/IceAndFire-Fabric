@@ -482,7 +482,9 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
             burningTarget = null;
             return;
         }
-        if (burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isBaby()) {
+        // (told to sit counts as awake here: the game's sitting is the same flag as sleeping for a dragon, and a dragon
+        // told to sit before a forge is meant to breathe into it)
+        if (burningTarget != null && (!this.isSleeping() || this.isOrderedToSit()) && !this.isModelDead() && !this.isBaby()) {
             float maxDist = 115 * this.getDragonStage();
             boolean flag = false;
             if (level().getBlockEntity(burningTarget) instanceof TileEntityDragonforgeInput && ((TileEntityDragonforgeInput) level().getBlockEntity(burningTarget)).isAssembled()
@@ -500,6 +502,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     protected abstract void breathFireAtPos(BlockPos burningTarget);
+
+    /** Whether a dragon forge with work to do calls it to breathe into it (it is tamed or chained, and sees its aperture). */
+    public boolean forgeCalls() {
+        return burningTarget != null && (this.isTame() || this.isChained()) && level().getBlockEntity(burningTarget) instanceof TileEntityDragonforgeInput input && input.isAssembled();
+    }
 
     protected PathingStuckHandler createStuckHandler() {
         return PathingStuckHandler.createStuckHandler();
@@ -1394,6 +1401,11 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                             player.displayClientMessage(Component.translatable("dragon.command." + commandText), true);
                             return InteractionResult.SUCCESS;
                         }
+                    }
+                    // its rider, already on it: anything else in hand is the rider's own to use (a spyglass, a bow, its
+                    // own food), not a click on the dragon in front of them
+                    if (player.getVehicle() == this) {
+                        return InteractionResult.PASS;
                     }
                     // anything else in hand (a sword, a bow...) has no use on it: its owner gets on, as with an empty hand
                     if (!player.isShiftKeyDown()) {

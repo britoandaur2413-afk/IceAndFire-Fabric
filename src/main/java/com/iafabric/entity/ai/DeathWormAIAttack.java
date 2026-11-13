@@ -114,9 +114,10 @@ public class DeathWormAIAttack extends Goal {
         Vec3 vector3d = this.worm.getDeltaMovement();
         if (vector3d.y * vector3d.y < 0.1F && this.worm.getXRot() != 0.0F) {
             this.worm.setXRot(Mth.rotLerp(this.worm.getXRot(), 0.0F, 0.2F));
-        } else {
+        } else if (vector3d.lengthSqr() > 1.0E-8D) {
+            // still (0 / 0) or a hair over 1 gave a NaN pitch
             final double d0 = vector3d.horizontalDistance();
-            final double d1 = Math.signum(-vector3d.y) * Math.acos(d0 / vector3d.length()) * (180F / (float) Math.PI);
+            final double d1 = Math.signum(-vector3d.y) * Math.acos(Math.min(d0 / vector3d.length(), 1D)) * (180F / (float) Math.PI);
             this.worm.setXRot((float) d1);
         }
         if (shouldJump())

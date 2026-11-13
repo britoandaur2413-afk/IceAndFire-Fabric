@@ -147,9 +147,16 @@ public class IafSaddleScene implements FabricClientGameTest {
 				var friend = (ServerPlayer) level.getEntity(friendId[0]);
 				dragon.interact(friend, InteractionHand.MAIN_HAND);
 				log("a friend's click before the owner is on: on it " + (friend.getVehicle() == dragon));
+				// (sitting, as a player's dragon waits for its owner: a dragon wandering turns, and its head with it)
+				KEPT_DOWN.add(dragon.getId());
+				dragon.setCommand(1);
+			});
+			context.waitTicks(20);
+			world.getServer().runOnServer(server -> {
+				var player = server.getPlayerList().getPlayers().get(0);
+				var dragon = (EntityDragonBase) server.overworld().getEntity(ridden[0]);
 				// the player before its head (its head part, as the server places it: well ahead of the dragon's own box), to
 				// get on with a right click of the mouse on it
-				KEPT_DOWN.add(dragon.getId());
 				var box = dragon.getParts().get(com.iafabric.entity.DragonBones.HEAD).getBoundingBox();
 				var c = box.getCenter();
 				var away = new Vec3(c.x - dragon.getX(), 0, c.z - dragon.getZ()).normalize();
@@ -186,6 +193,7 @@ public class IafSaddleScene implements FabricClientGameTest {
 				var dragon = (EntityDragonBase) level.getEntity(ridden[0]);
 				var friend = (ServerPlayer) level.getEntity(friendId[0]);
 				KEPT_DOWN.remove(dragon.getId());
+				dragon.setCommand(0);
 				boolean on = player.getVehicle() == dragon;
 				log("the player's right click with the mouse on " + aimed[0] + ": on it " + on);
 				if (!aimed[0].startsWith("its part")) {

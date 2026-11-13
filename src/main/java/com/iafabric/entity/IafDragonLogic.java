@@ -54,7 +54,8 @@ public class IafDragonLogic {
         if (dragon.lookingForRoostAIFlag && dragon.getLastHurtByMob() != null || dragon.isSleeping()) {
             dragon.lookingForRoostAIFlag = false;
         }
-        if (IafConfig.doDragonsSleep && !dragon.isSleeping() && !dragon.isTimeToWake() && dragon.getPassengers().isEmpty() && this.dragon.getCommand() != 2) {
+        // (a forge with work that calls it keeps it awake, day or night: a lightning dragon sleeps by day)
+        if (IafConfig.doDragonsSleep && !dragon.isSleeping() && !dragon.isTimeToWake() && dragon.getPassengers().isEmpty() && this.dragon.getCommand() != 2 && !dragon.forgeCalls()) {
             if (dragon.hasHomePosition
                 && dragon.getRestrictCenter() != null
                 && DragonUtils.isInHomeDimension(dragon)
@@ -70,7 +71,8 @@ public class IafDragonLogic {
         } else {
             dragon.lookingForRoostAIFlag = false;
         }
-        if (dragon.isSleeping() && (dragon.isFlying() || dragon.isHovering() || dragon.isInWater() || (dragon.level().canSeeSkyFromBelowWater(dragon.blockPosition()) && dragon.isTimeToWake() && !dragon.isTame() || dragon.isTimeToWake() && dragon.isTame()) || dragon.getTarget() != null || !dragon.getPassengers().isEmpty())) {
+        if (dragon.isSleeping() && (dragon.isFlying() || dragon.isHovering() || dragon.isInWater() || (dragon.level().canSeeSkyFromBelowWater(dragon.blockPosition()) && dragon.isTimeToWake() && !dragon.isTame() || dragon.isTimeToWake() && dragon.isTame()) || dragon.getTarget() != null || !dragon.getPassengers().isEmpty()
+            || dragon.forgeCalls() && !dragon.isOrderedToSit())) {
             dragon.setInSittingPose(false);
         }
         if (dragon.isOrderedToSit() && dragon.getControllingPassenger() != null) {
