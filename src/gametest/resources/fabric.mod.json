@@ -29,7 +29,10 @@
    "com.iafabric.test.IafFairyCompleteTests",
    "com.iafabric.test.IafFrostFightTests",
    "com.iafabric.test.IafCryonaFightTests",
-   "com.iafabric.test.IafSaddleScene"
+   "com.iafabric.test.IafSaddleScene",
+   "com.iafabric.test.IafBetterCombatScene",
+   "com.iafabric.test.IafArmorStandScene",
+   "com.iafabric.test.IafPlayerReportsScene"
   ]
  },
  "depends": {

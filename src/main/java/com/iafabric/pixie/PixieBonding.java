@@ -12,6 +12,7 @@ import com.iafabric.util.EntityUtil;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -77,7 +78,8 @@ public final class PixieBonding {
 				}
 			}
 		});
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> rest(handler.player, true));
+		// on the server thread, before the player is saved (a connection closes on the network thread)
+		ServerPlayerEvents.LEAVE.register(player -> rest(player, true));
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			PixieBonds bonds = get(handler.player);
 			if (bonds.active >= 0) {
@@ -185,6 +187,10 @@ public final class PixieBonding {
 		// behind their head: it flies into sight, it does not appear in their face
 		double yaw = Math.toRadians(player.getYRot());
 		pixie.moveTo(player.getX() + Math.sin(yaw) * 1.4, player.getEyeY() + 0.5, player.getZ() - Math.cos(yaw) * 1.4, player.getYRot(), 0);
+		// no room there (a narrow tunnel): by their side, inside the space they stand in
+		if (!level.noCollision(pixie)) {
+			pixie.moveTo(player.getX(), player.getY() + 1.1, player.getZ(), player.getYRot(), 0);
+		}
 		level.addFreshEntity(pixie);
 		bonds.active = color;
 		bonds.activeId = pixie.getUUID();

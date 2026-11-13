@@ -23,6 +23,7 @@ public class IafClient implements ClientModInitializer {
 		IafEntityRenderers.init();
 		com.iafabric.client.gui.IafGuiRegistry.register();
 		com.iafabric.client.render.IafArmorRenderer.init();
+		BetterCombatCompat.init();
 		com.iafabric.client.render.RealmEffects.init();
 		IafKeybinds.init();
 		// her checkpoint's pin, under her lines

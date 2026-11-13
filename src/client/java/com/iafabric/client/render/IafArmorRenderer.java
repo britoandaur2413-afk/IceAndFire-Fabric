@@ -12,6 +12,7 @@ import com.iafabric.item.ItemTrollArmor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -122,6 +124,26 @@ public final class IafArmorRenderer implements ArmorRenderer {
 			default -> 3;
 		}];
 		contextModel.copyPropertiesTo(model);
+		// on a player, hidden where the player is hidden: a first-person animation (Better Combat's swings, drawn by a player
+		// animation library) may draw the player with all but the arms hidden; the helmet then stays off the camera. On any
+		// other wearer all of it shows, as the game's armor does (a stand without arms keeps the chestplate's shoulders)
+		boolean head = slot == EquipmentSlot.HEAD;
+		boolean chest = slot == EquipmentSlot.CHEST;
+		boolean legs = slot == EquipmentSlot.LEGS;
+		boolean feet = slot == EquipmentSlot.FEET;
+		model.head.visible = head && shown(entity, contextModel.head);
+		// (the helmet's outer layer goes with its head, not with the wearer's own hat layer, which a skin may leave off)
+		model.hat.visible = head && shown(entity, contextModel.head);
+		model.body.visible = (chest || legs) && shown(entity, contextModel.body);
+		model.rightArm.visible = chest && shown(entity, contextModel.rightArm);
+		model.leftArm.visible = chest && shown(entity, contextModel.leftArm);
+		model.rightLeg.visible = (legs || feet) && shown(entity, contextModel.rightLeg);
+		model.leftLeg.visible = (legs || feet) && shown(entity, contextModel.leftLeg);
 		ArmorRenderer.renderPart(poseStack, buffers, light, stack, model, slot == EquipmentSlot.LEGS ? legsTexture : texture);
+	}
+
+	/** A part of the armor shows where the wearer's own part does on a player, always on anything else. */
+	private static boolean shown(LivingEntity entity, ModelPart wearerPart) {
+		return !(entity instanceof Player) || wearerPart.visible;
 	}
 }

@@ -14,6 +14,7 @@ import com.iafabric.network.IafNetwork;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -127,9 +128,10 @@ public final class ExiledPixies {
 			// left the game in her glade: back where they came from
 			FairyVision.strayed(handler.player, get(handler.player));
 		});
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-			UUID id = handler.player.getUUID();
-			EntityExiledPixie pixie = living(handler.player);
+		// on the server thread, before the player is saved (a connection closes on the network thread)
+		ServerPlayerEvents.LEAVE.register(player -> {
+			UUID id = player.getUUID();
+			EntityExiledPixie pixie = living(player);
 			if (pixie != null) {
 				pixie.discard();
 			}

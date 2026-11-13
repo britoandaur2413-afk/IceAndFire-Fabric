@@ -37,6 +37,11 @@ public class IafToolItem extends TieredItem {
 
 	protected final IafToolMaterial tier;
 	protected final Kind kind;
+
+	/** What kind of tool or weapon it is (the game's tag it is in: swords, pickaxes...). */
+	public Kind kind() {
+		return kind;
+	}
 	private float customDamage = Float.NaN;
 
 	public IafToolItem(IafToolMaterial tier, Kind kind) {

@@ -274,6 +274,11 @@ public abstract class EntityMutlipartPart extends Entity {
     @Override
     public InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         Entity parent = getParent();
+        // as on the body, what is in hand too (the dragon horn, a chain, a name tag): the game uses an item only on a
+        // living entity, and a part is not one
+        if (parent instanceof LivingEntity) {
+            return player.interactOn(parent, hand);
+        }
         return parent != null ? parent.interact(player, hand) : InteractionResult.PASS;
     }
 

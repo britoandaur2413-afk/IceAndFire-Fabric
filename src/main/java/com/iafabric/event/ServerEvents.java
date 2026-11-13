@@ -39,6 +39,7 @@ import com.iafabric.pathfinding.raycoms.Pathfinding;
 import com.iafabric.pathfinding.raycoms.pathjobs.AbstractPathJob;
 import com.iafabric.util.ItemNbt;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -47,7 +48,6 @@ import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -124,8 +124,9 @@ public final class ServerEvents {
         UseEntityCallback.EVENT.register(ServerEvents::onEntityInteract);
         UseBlockCallback.EVENT.register(ServerEvents::onPlayerRightClick);
         PlayerBlockBreakEvents.BEFORE.register(ServerEvents::onBreakBlock);
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            for (Entity entity : handler.player.getPassengers()) {
+        // on the server thread, before the player is saved (a connection closes on the network thread)
+        ServerPlayerEvents.LEAVE.register(player -> {
+            for (Entity entity : player.getPassengers()) {
                 entity.stopRiding();
             }
         });

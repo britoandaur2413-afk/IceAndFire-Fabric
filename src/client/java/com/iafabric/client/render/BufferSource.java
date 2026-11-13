@@ -25,6 +25,10 @@ public final class BufferSource {
 
 	/** Draws another entity here, through its own renderer (a mob in a spawner, a rider...). */
 	public void renderEntity(Entity entity, float partialTicks, PoseStack poseStack, int light) {
+		if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity) == null) {
+			// (nothing can draw it: another mod's creature with no renderer, or the server's own copy of one)
+			return;
+		}
 		Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0.0D, 0.0D, 0.0D, entity.getYRot(), partialTicks, poseStack, buffers, light);
 	}
 

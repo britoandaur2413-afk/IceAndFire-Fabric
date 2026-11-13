@@ -3,7 +3,7 @@ package com.iafabric.entity;
 import com.iafabric.entity.props.MiscProperties;
 import com.iafabric.entity.util.IFlyingMount;
 import com.iafabric.item.IafItemRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -41,10 +41,11 @@ public final class DragonSaddle {
 
 	public static void register() {
 		// a rider who leaves the game with someone else on it is not saved with the dragon (the game keeps a vehicle
-		// with its player only when it carries one): they come back where they sat, and do not die of the fall
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-			if (handler.player.getVehicle() instanceof EntityDragonBase dragon && behind(dragon) != null) {
-				MiscProperties.setDismountedDragon(handler.player, true);
+		// with its player only when it carries one): they come back where they sat, and do not die of the fall (on the
+		// server thread, before the player is saved)
+		ServerPlayerEvents.LEAVE.register(player -> {
+			if (player.getVehicle() instanceof EntityDragonBase dragon && behind(dragon) != null) {
+				MiscProperties.setDismountedDragon(player, true);
 			}
 		});
 	}

@@ -45,23 +45,34 @@ public class RenderDragonBase extends IafMobRenderer<EntityDragonBase, TabulaMod
 
     /** The spikes of its back where a double saddle sits (the saddle is over them): not drawn while it wears one. */
     private static final String[] UNDER_SADDLE = {"spike6", "spike7", "spike8"};
+    /**
+     * The spikes of its back by the seat: on a grown dragon its rider's eyes are in them, so in first person (a spyglass,
+     * a zoom) nothing was seen past them. Not drawn for the rider who sees from the seat; everyone else sees them.
+     */
+    private static final String[] BY_THE_SEAT = {"spike5", "spike6"};
 
     @Override
     public void render(EntityDragonBase entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffers, int light) {
-        if (!DragonSaddle.worn(entity)) {
+        boolean saddle = DragonSaddle.worn(entity);
+        boolean fromTheSeat = entity.getPassengers().stream().anyMatch(DragonSeat::inOwnEyes);
+        if (!saddle && !fromTheSeat) {
             super.render(entity, entityYaw, partialTicks, poseStack, buffers, light);
             return;
         }
-        this.showUnderSaddle(false);
+        this.show(UNDER_SADDLE, !saddle);
+        if (fromTheSeat) {
+            this.show(BY_THE_SEAT, false);
+        }
         try {
             super.render(entity, entityYaw, partialTicks, poseStack, buffers, light);
         } finally {
-            this.showUnderSaddle(true);
+            this.show(UNDER_SADDLE, true);
+            this.show(BY_THE_SEAT, true);
         }
     }
 
-    private void showUnderSaddle(boolean show) {
-        for (String name : UNDER_SADDLE) {
+    private void show(String[] spikes, boolean show) {
+        for (String name : spikes) {
             var spike = this.model.getCube(name);
             if (spike != null) {
                 spike.showModel = show;
@@ -142,6 +153,10 @@ public class RenderDragonBase extends IafMobRenderer<EntityDragonBase, TabulaMod
     private void renderSeated(LivingEntity rider, boolean virtual, float partialTicks, PoseStack poseStack, MultiBufferSource buffers) {
         @SuppressWarnings("unchecked")
         EntityRenderer<LivingEntity> renderer = (EntityRenderer<LivingEntity>) this.entityRenderDispatcher.getRenderer(rider);
+        if (renderer == null) {
+            // (a rider nothing can draw, as another mod's creature with no renderer, is left out rather than crash)
+            return;
+        }
         float body = bodyRot(rider, partialTicks);
         Vec3 offset = renderer.getRenderOffset(rider, partialTicks);
         int light = this.entityRenderDispatcher.getPackedLightCoords(rider, partialTicks);

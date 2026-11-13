@@ -151,6 +151,99 @@ public class IafGameTests implements FabricGameTest {
 	 * effects, professions, creative tabs, banner patterns, advancements and the death messages.
 	 * (Texts the code and the sounds ask for: tools/check_lang.py.)
 	 */
+	/**
+	 * Every tool, weapon and piece of armor of the mod is in the game's tag for its kind (swords, pickaxes, head armor...,
+	 * bows, tridents): 26.x enchantments take only the items in their tags, so out of them nothing of the mod could be
+	 * enchanted in survival, at the table or the anvil (a player could put books on them only in creative). And the game's
+	 * enchantments take them. IAF_WRITE_TAGS=<the folder of data/minecraft/tags/item> writes the tags as they must be.
+	 */
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void toolsAndArmorEnchant(GameTestHelper helper) {
+		java.util.Map<String, List<String>> want = new java.util.TreeMap<>();
+		List<String> missing = new ArrayList<>();
+		List<String> noTable = new ArrayList<>();
+		for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
+			var id = BuiltInRegistries.ITEM.getKey(item);
+			if (!IafMod.MOD_ID.equals(id.getNamespace())) {
+				continue;
+			}
+			String tag = null;
+			if (item instanceof com.iafabric.item.IafToolItem tool) {
+				tag = switch (tool.kind()) {
+					case SWORD -> "swords";
+					case PICKAXE -> "pickaxes";
+					case AXE -> "axes";
+					case SHOVEL -> "shovels";
+					case HOE -> "hoes";
+				};
+			} else if (item instanceof com.iafabric.item.IafArmorItem armor) {
+				tag = switch (armor.getType()) {
+					case HELMET -> "head_armor";
+					case CHESTPLATE -> "chest_armor";
+					case LEGGINGS -> "leg_armor";
+					case BOOTS -> "foot_armor";
+					default -> null;
+				};
+			} else if (item instanceof net.minecraft.world.item.BowItem) {
+				tag = "enchantable/bow";
+			} else if (item instanceof net.minecraft.world.item.TridentItem) {
+				tag = "enchantable/trident";
+			}
+			if (tag == null) {
+				continue;
+			}
+			want.computeIfAbsent(tag, key -> new ArrayList<>()).add(id.toString());
+			var key = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, net.minecraft.resources.ResourceLocation.withDefaultNamespace(tag));
+			if (!new net.minecraft.world.item.ItemStack(item).is(key)) {
+				missing.add(id + " (#minecraft:" + tag + ")");
+			}
+			// the enchanting table also wants the item to say how well it takes enchantments
+			if (!new net.minecraft.world.item.ItemStack(item).isEnchantable()) {
+				noTable.add(id.getPath());
+			}
+		}
+		String out = System.getenv("IAF_WRITE_TAGS");
+		if (out != null) {
+			try {
+				for (var entry : want.entrySet()) {
+					java.nio.file.Path file = java.nio.file.Path.of(out, entry.getKey() + ".json");
+					java.nio.file.Files.createDirectories(file.getParent());
+					StringBuilder json = new StringBuilder("{\n  \"replace\": false,\n  \"values\": [\n");
+					List<String> ids = entry.getValue().stream().sorted().toList();
+					for (int i = 0; i < ids.size(); i++) {
+						json.append("    \"").append(ids.get(i)).append(i < ids.size() - 1 ? "\",\n" : "\"\n");
+					}
+					json.append("  ]\n}\n");
+					java.nio.file.Files.writeString(file, json.toString());
+				}
+			} catch (java.io.IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		var enchantments = helper.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+		List<String> refused = new ArrayList<>();
+		java.util.Map<net.minecraft.world.item.Item, List<net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment>>> tries = java.util.Map.of(
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_LIGHTNING_PICKAXE, List.of(net.minecraft.world.item.enchantment.Enchantments.EFFICIENCY,
+				net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH, net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, net.minecraft.world.item.enchantment.Enchantments.MENDING),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_FIRE_SWORD, List.of(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, net.minecraft.world.item.enchantment.Enchantments.LOOTING),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_LIGHTNING_HELMET, List.of(net.minecraft.world.item.enchantment.Enchantments.PROTECTION, net.minecraft.world.item.enchantment.Enchantments.RESPIRATION),
+			com.iafabric.item.IafItemRegistry.DRAGONSTEEL_ICE_BOOTS, List.of(net.minecraft.world.item.enchantment.Enchantments.FEATHER_FALLING),
+			com.iafabric.item.IafItemRegistry.DRAGON_BOW, List.of(net.minecraft.world.item.enchantment.Enchantments.POWER));
+		tries.forEach((item, keys) -> {
+			for (var key : keys) {
+				if (!enchantments.getOrThrow(key).value().canEnchant(new net.minecraft.world.item.ItemStack(item))) {
+					refused.add(key.location().getPath() + " on " + BuiltInRegistries.ITEM.getKey(item).getPath());
+				}
+			}
+		});
+		log("tools and armor in the game's tags: " + want.entrySet().stream().map(e -> e.getKey() + " " + e.getValue().size()).toList() + "; missing " + missing.size()
+			+ "; enchantments refused " + refused + "; not for the enchanting table " + noTable);
+		helper.assertTrue(missing.isEmpty(), "not in the game's tags (no enchantment takes them): " + missing);
+		helper.assertTrue(noTable.isEmpty(), "the enchanting table takes nothing of them: " + noTable);
+		helper.assertTrue(refused.isEmpty(), "the game's enchantments refuse: " + refused);
+		helper.succeed();
+	}
+
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void translations(GameTestHelper helper) {
 		java.util.Map<String, java.util.Map<String, String>> langs = new java.util.LinkedHashMap<>();
@@ -287,6 +380,48 @@ public class IafGameTests implements FabricGameTest {
 		}
 		log("saved and loaded " + tried + " entity types, failed " + failed);
 		helper.assertTrue(failed.isEmpty(), "entities that do not save or load: " + failed);
+		helper.succeed();
+	}
+
+	/**
+	 * Scribes (the villagers of the mod's lectern) with trades of every level drawn many times are saved and loaded back as
+	 * their chunk does, trades and all (a player saw scribes gone when they came back to their world).
+	 */
+	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 100)
+	public void scribesSaveAndLoad(GameTestHelper helper) {
+		List<String> failed = new ArrayList<>();
+		int trades = 0;
+		try {
+			java.lang.reflect.Method update = net.minecraft.world.entity.npc.Villager.class.getDeclaredMethod("updateTrades");
+			update.setAccessible(true);
+			for (int n = 0; n < 40; n++) {
+				var villager = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 1));
+				villager.setVillagerData(villager.getVillagerData().setProfession(com.iafabric.entity.IafVillagerRegistry.SCRIBE));
+				villager.getOffers();
+				for (int level = 2; level <= 5; level++) {
+					villager.setVillagerData(villager.getVillagerData().setLevel(level));
+					update.invoke(villager);
+				}
+				trades += villager.getOffers().size();
+				try {
+					var output = villager.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+					var copy = EntityType.VILLAGER.create(helper.getLevel());
+					copy.load(output);
+					if (copy.getOffers().size() != villager.getOffers().size()) {
+						failed.add("scribe " + n + ": " + villager.getOffers().size() + " trades saved, " + copy.getOffers().size() + " loaded");
+					}
+				} catch (Throwable t) {
+					List<String> sold = new ArrayList<>();
+					villager.getOffers().forEach(offer -> sold.add(offer.getResult().getCount() + " " + offer.getResult().getItem()));
+					failed.add("scribe " + n + ": " + t + " (sells " + sold + ")");
+				}
+				villager.discard();
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+		log("saved and loaded 40 scribes with " + trades + " trades, failed " + failed);
+		helper.assertTrue(failed.isEmpty(), "scribes that do not save or load: " + failed);
 		helper.succeed();
 	}
 
@@ -1218,6 +1353,66 @@ public class IafGameTests implements FabricGameTest {
      * chunk whose entities may not be ticking (what it throws there, or what looks for it there, is not seen).
      */
     @SuppressWarnings("removal")
+    /** A sea serpent given a NaN speed (one saved so, a crash with LambDynamicLights) stops and stays where it was. */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 40)
+    public void seaSerpentNeverNaN(GameTestHelper helper) {
+        var serpent = helper.spawn(IafEntityRegistry.SEA_SERPENT, new BlockPos(2, 2, 2));
+        var at = serpent.position();
+        serpent.setDeltaMovement(new net.minecraft.world.phys.Vec3(Double.NaN, Double.NaN, Double.NaN));
+        helper.runAfterDelay(10, () -> {
+            var p = serpent.position();
+            var v = serpent.getDeltaMovement();
+            helper.assertTrue(Double.isFinite(p.x + p.y + p.z) && Double.isFinite(v.x + v.y + v.z) && Float.isFinite(serpent.getXRot()), "the serpent went NaN: " + p + " " + v);
+            helper.assertTrue(p.distanceTo(at) < 3, "the serpent left its place: " + at + " -> " + p);
+            helper.succeed();
+        });
+    }
+
+    /** Graveyard soil makes ghosts at night as the world's random ticks reach it (it waited for ticks that never came), and a
+     * ghost that came from the soil, killed by a player, drops ectoplasm (one from a cursed chest drops nothing, as in the original). */
+    @GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 60, batch = "night")
+    public void graveyardSoilMakesGhosts(GameTestHelper helper) {
+        var level = helper.getLevel();
+        // midnight on normal (26.x sets it with a test environment)
+        long time = level.getDayTime();
+        var difficulty = level.getDifficulty();
+        level.setDayTime(18000);
+        level.updateSkyBrightness();
+        level.getServer().setDifficulty(net.minecraft.world.Difficulty.NORMAL, true);
+        BlockPos soil = helper.absolutePos(new BlockPos(2, 1, 2));
+        level.setBlockAndUpdate(soil, com.iafabric.block.IafBlockRegistry.GRAVEYARD_SOIL.defaultBlockState());
+        level.setBlockAndUpdate(soil.above(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        var box = new net.minecraft.world.phys.AABB(soil).inflate(20);
+        for (int i = 0; i < 300 && level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box).isEmpty(); i++) {
+            level.getBlockState(soil).randomTick(level, soil, level.getRandom());
+        }
+        var ghosts = level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box);
+        log("ghosts made by graveyard soil at midnight: " + ghosts.size());
+        helper.assertTrue(!ghosts.isEmpty(), "graveyard soil made no ghost at midnight in 300 random ticks: bright " + level.isDay() + " difficulty " + level.getDifficulty() + " above " + level.getBlockState(soil.above()) + " soil " + level.getBlockState(soil));
+        var player = mockPlayer(helper);
+        player.moveTo(soil.getX() + 0.5, soil.getY() + 1, soil.getZ() + 0.5, 0, 0);
+        int ectoplasm = 0;
+        for (int i = 0; i < 20; i++) {
+            var ghost = IafEntityRegistry.GHOST.create(level);
+            ghost.moveTo(soil.getX() + 0.5, soil.getY() + 1, soil.getZ() + 0.5, 0, 0);
+            level.addFreshEntity(ghost);
+            ghost.hurt(level.damageSources().playerAttack(player), 10000F);
+        }
+        for (var item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, box)) {
+            if (item.getItem().is(com.iafabric.item.IafItemRegistry.ECTOPLASM)) {
+                ectoplasm += item.getItem().getCount();
+            }
+            item.discard();
+        }
+        log("ectoplasm from 20 ghosts killed by a player: " + ectoplasm);
+        helper.assertTrue(ectoplasm > 0, "20 ghosts killed by a player dropped no ectoplasm");
+        level.getEntitiesOfClass(com.iafabric.entity.EntityGhost.class, box).forEach(Entity::discard);
+        level.setDayTime(time);
+        level.updateSkyBrightness();
+        level.getServer().setDifficulty(difficulty, true);
+        helper.succeed();
+    }
+
     private static net.minecraft.server.level.ServerPlayer mockPlayer(GameTestHelper helper) {
         var player = (net.minecraft.server.level.ServerPlayer) helper.makeMockServerPlayerInLevel();
         var inside = helper.absoluteVec(new net.minecraft.world.phys.Vec3(1.5, 2, 1.5));
@@ -1317,4 +1512,45 @@ public class IafGameTests implements FabricGameTest {
 		helper.assertTrue(failed.isEmpty(), "features threw: " + failed);
 		helper.succeed();
 	}
+
+    /** Every crafting recipe of the mod is made on a crafting table by the first item of each of its ingredients (a player:
+     * JEI showed the dragon armor and the lectern, and the table gave nothing). */
+    @GameTest(template = EMPTY_STRUCTURE)
+    public void everyRecipeCrafts(GameTestHelper helper) {
+        var level = helper.getLevel();
+        var recipes = level.getServer().getRecipeManager();
+        List<String> failed = new ArrayList<>();
+        int checked = 0;
+        for (var holder : recipes.getRecipes()) {
+            if (!holder.id().getNamespace().equals(IafMod.MOD_ID)) {
+                continue;
+            }
+            List<net.minecraft.world.item.ItemStack> grid = new ArrayList<>();
+            int width;
+            int height;
+            if (holder.value() instanceof net.minecraft.world.item.crafting.ShapedRecipe shaped) {
+                width = shaped.getWidth();
+                height = shaped.getHeight();
+            } else if (holder.value() instanceof net.minecraft.world.item.crafting.ShapelessRecipe) {
+                width = 3;
+                height = (holder.value().getIngredients().size() + 2) / 3;
+            } else {
+                continue;
+            }
+            for (var ingredient : holder.value().getIngredients()) {
+                grid.add(ingredient.isEmpty() ? net.minecraft.world.item.ItemStack.EMPTY : ingredient.getItems()[0].copy());
+            }
+            while (grid.size() < width * height) {
+                grid.add(net.minecraft.world.item.ItemStack.EMPTY);
+            }
+            checked++;
+            var input = net.minecraft.world.item.crafting.CraftingInput.of(width, height, grid);
+            if (recipes.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level).isEmpty()) {
+                failed.add(holder.id() + " " + grid);
+            }
+        }
+        log("crafting recipes of the mod made on a table: " + (checked - failed.size()) + " of " + checked);
+        helper.assertTrue(failed.isEmpty(), failed.size() + " recipes give nothing on a table: " + failed);
+        helper.succeed();
+    }
 }
