@@ -1684,7 +1684,8 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
     /** A dragon of the pillagers or of the dread: led by its riders, it breaks no blocks. */
     public boolean keepsBlocks() {
-        return this.pillagerMount || this.dreadMount;
+        // the sky dragons (passers-by and the wave) never break what is built: they fight the player, not the base
+        return this.pillagerMount || this.dreadMount || this.skyWanderer || this.waveDragon;
     }
 
     /** Black Frost, the Dread Queen's dragon. */
