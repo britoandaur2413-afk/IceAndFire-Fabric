@@ -59,7 +59,8 @@ public class IafMod implements ModInitializer {
 		IafNetwork.init();
 		registerTabs();
 		com.iafabric.event.ServerEvents.register();
-		com.iafabric.event.DragonSkies.register();
+		// (the sky dragons and their revenge wave are off: not in the original, and a wave broke a player's base;
+		// those already in a world still leave and break nothing)
 		com.iafabric.pixie.PixieBonding.register();
 		com.iafabric.pixie.ExiledPixies.register();
 		com.iafabric.entity.PillagerFrost.register();
