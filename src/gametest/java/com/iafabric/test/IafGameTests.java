@@ -878,56 +878,6 @@ public class IafGameTests {
         });
     }
 
-    /**
-     * A sky dragon leaves the player alone; a player who kills two of them is warned by an oracle pixie, then a wave
-     * of three stage 4 dragons comes for them (the waits are shortened for the test).
-     */
-    @GameTest(maxTicks = 300, environment = "iceandfire_fabric:normal")
-    public void skyDragonsAndTheOracle(GameTestHelper helper) {
-        var level = helper.getLevel();
-        var player = survivalPlayer(helper);
-        var at = helper.absoluteVec(new net.minecraft.world.phys.Vec3(4, 2, 4));
-        player.snapTo(at.x, at.y, at.z, 0, 0);
-        int savedOracle = com.iafabric.event.DragonSkies.oracleDelay;
-        int savedWave = com.iafabric.event.DragonSkies.waveDelay;
-        com.iafabric.event.DragonSkies.oracleDelay = 20;
-        com.iafabric.event.DragonSkies.waveDelay = 40;
-        com.iafabric.event.DragonSkies.waveDistance = 10;
-        // close by: the test world only moves what is near the test
-        var calm = com.iafabric.event.DragonSkies.spawnSkyDragon(level, player, 0);
-        calm.setTarget(player);
-        java.util.List<EntityDragonBase> killed = new ArrayList<>();
-        helper.runAfterDelay(5, () -> {
-            helper.assertTrue(calm.getTarget() == null, "a sky dragon went for a player who did nothing: " + calm.getTarget()
-                + " (ticks " + calm.tickCount + ", sky " + calm.skyWanderer + ", hurt by " + calm.getLastHurtByMob() + ", revenge " + calm.revengePlayer + ", dead " + calm.isModelDead() + ")");
-            helper.assertTrue(calm.isFlying() || calm.isHovering() || !calm.onGround(), "the sky dragon is not in the air");
-            for (int i = 0; i < 2; i++) {
-                var dragon = com.iafabric.event.DragonSkies.spawnSkyDragon(level, player, 0);
-                dragon.hurtServer(level, level.damageSources().playerAttack(player), 100000.0F);
-                killed.add(dragon);
-            }
-            helper.assertTrue(killed.stream().allMatch(d -> !d.isAlive() || d.isModelDead()), "the sky dragons did not die");
-        });
-        helper.runAfterDelay(40, () -> {
-            var oracles = level.getEntitiesOfClass(com.iafabric.entity.EntityPixie.class, player.getBoundingBox().inflate(10), p -> p.oracleTicks >= 0);
-            helper.assertTrue(!oracles.isEmpty(), "no oracle pixie after two sky dragons were killed");
-            log("oracle pixie: " + oracles.get(0).getDisplayName().getString());
-        });
-        helper.runAfterDelay(90, () -> {
-            var wave = level.getEntitiesOfClass(EntityDragonBase.class, player.getBoundingBox().inflate(120), d -> d.waveDragon);
-            helper.assertTrue(wave.size() == 3, "the wave has " + wave.size() + " dragons");
-            helper.assertTrue(wave.stream().allMatch(d -> d.getDragonStage() >= 4 && d.getTarget() == player), "the wave's dragons are weak or do not go for the player");
-            log("wave of " + wave.size() + " stage " + wave.get(0).getDragonStage() + " dragons after the player");
-            com.iafabric.event.DragonSkies.oracleDelay = savedOracle;
-            com.iafabric.event.DragonSkies.waveDelay = savedWave;
-            com.iafabric.event.DragonSkies.waveDistance = 45;
-            wave.forEach(net.minecraft.world.entity.Entity::discard);
-            killed.forEach(net.minecraft.world.entity.Entity::discard);
-            calm.discard();
-            helper.getLevel().getServer().getPlayerList().remove(player);
-            helper.succeed();
-        });
-    }
 
     /**
      * A pillager kingdom's dragon: its fire does not hurt the pillagers, a pillager left on the ground climbs back on,

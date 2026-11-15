@@ -15,6 +15,7 @@
   "fabric-client-gametest": [
    "com.iafabric.test.IafWelcomeTests",
    "com.iafabric.test.IafPixieTests",
+   "com.iafabric.test.IafLecternTests",
    "com.iafabric.test.IafWorldTests",
    "com.iafabric.test.IafRidingTests",
    "com.iafabric.test.IafClientTests",
