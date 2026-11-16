@@ -86,6 +86,26 @@ public class IafFairyGameTests {
 		woodcutter.snapTo(log.getX() + 0.5, log.getY(), log.getZ() - 2.5, 0, 0);
 		builder.snapTo(lone.getX() + 0.5, lone.getY(), lone.getZ() - 2.5, 0, 0);
 		woodcutter.gameMode.destroyBlock(log);
+		if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("treechop")) {
+			// HT's TreeChop: one chop only thins the log; she comes when the whole tree falls
+			helper.assertTrue(!ExiledPixies.get(woodcutter).met(), "with TreeChop the first chop freed her before the tree fell");
+			int chops = 1;
+			while (!ExiledPixies.get(woodcutter).met() && chops < 60) {
+				woodcutter.gameMode.destroyBlock(log);
+				chops++;
+			}
+			log("HT's TreeChop: the tree fell after " + chops + " chops, she is out: " + ExiledPixies.get(woodcutter).met());
+			// more chops and breaks on what is left: still one of her, never a second
+			for (int more = 0; more < 6; more++) {
+				woodcutter.gameMode.destroyBlock(log);
+				woodcutter.gameMode.destroyBlock(log.above());
+			}
+		}
+		var all = helper.getLevel().getEntitiesOfClass(EntityExiledPixie.class, new net.minecraft.world.phys.AABB(log).inflate(40));
+		int exiled = (int) all.stream().filter(p -> p.getOwner() == woodcutter).count();
+		log("exiled pixies of the woodcutter: " + exiled + " (of " + all.size() + " near, owners "
+			+ all.stream().map(p -> p.getOwner() == null ? "none" : p.getOwner().getName().getString()).toList() + ")");
+		helper.assertTrue(exiled == 1, exiled + " exiled pixies came out of one tree");
 		builder.gameMode.destroyBlock(lone);
 		ExiledPixieData data = ExiledPixies.get(woodcutter);
 		log("the woodcutter's pixie: stage " + data.stage + ", " + ExiledVariants.name(Math.max(0, data.variant)) + "; the builder's: stage "
@@ -93,7 +113,10 @@ public class IafFairyGameTests {
 		helper.assertTrue(data.stage == ExiledPixieData.ANGRY, "cutting the first tree did not free its pixie");
 		helper.assertTrue(data.variant >= 0 && data.variant < ExiledVariants.COUNT, "her skin is not one of the twenty: " + data.variant);
 		helper.assertTrue(!ExiledPixies.get(builder).met(), "a log put down with no leaves freed a pixie");
-		helper.assertTrue(helper.getLevel().getBlockState(log).isAir(), "the log was not cut");
+		// (with HT's TreeChop a chop takes the log a little at a time: it stays, chopped; the pixie must come all the same)
+		boolean treeChop = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("treechop");
+		log("HT's TreeChop here: " + treeChop + ", the log after the cut: " + helper.getLevel().getBlockState(log));
+		helper.assertTrue(treeChop || helper.getLevel().getBlockState(log).isAir(), "the log was not cut");
 		int variant = data.variant;
 		helper.runAfterDelay(25, () -> {
 			EntityExiledPixie pixie = ExiledPixies.living(woodcutter);

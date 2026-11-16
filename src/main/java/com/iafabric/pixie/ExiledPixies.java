@@ -121,6 +121,7 @@ public final class ExiledPixies {
 				treeCut(server, pos);
 			}
 		});
+		treeChopCompat();
 		ServerTickEvents.END_SERVER_TICK.register(ExiledPixies::tick);
 		FairyVision.register();
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -136,6 +137,7 @@ public final class ExiledPixies {
 				pixie.discard();
 			}
 			OUT.remove(id);
+			CHOPPING.remove(id);
 			QUEUE.remove(id);
 			SENT.remove(id);
 			BEAMS.remove(id);
@@ -166,6 +168,63 @@ public final class ExiledPixies {
 	// --- meeting her ---
 
 	/** A log cut: if it was the player's first tree, its pixie comes out. */
+	/** HT's TreeChop: per player, a real tree they are chopping (leaves still about it), until it falls. */
+	private static final Map<UUID, BlockPos> CHOPPING = new HashMap<>();
+
+	/**
+	 * HT's TreeChop: a chop takes a log a little at a time and never breaks the block, so the game's break event
+	 * never comes (a player: the pixie never came out). The tree is "cut" when TreeChop fells it: its chops remember
+	 * a real tree (its leaves are still there then) and its fell frees the pixie. Found by reflection: nothing of
+	 * TreeChop is needed to build or run without it.
+	 */
+	private static void treeChopCompat() {
+		if (!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("treechop")) {
+			return;
+		}
+		try {
+			Class<?> events = Class.forName("ht.treechop.api.TreeChopEvents");
+			listen(events.getField("AFTER_CHOP").get(null), Class.forName("ht.treechop.api.TreeChopEvents$AfterChop"), "afterChop", (player, pos) -> {
+				if (!get(player).met() && isTree(player.level(), pos)) {
+					CHOPPING.put(player.getUUID(), pos.immutable());
+				}
+			});
+			listen(events.getField("AFTER_FELL").get(null), Class.forName("ht.treechop.api.TreeChopEvents$AfterFell"), "afterFell", (player, pos) -> {
+				BlockPos tree = CHOPPING.remove(player.getUUID());
+				ExiledPixieData data = get(player);
+				if (tree != null && !data.met() && !player.isSpectator() && IafConfig.exiledPixie) {
+					meet(player, tree);
+				}
+			});
+			com.iafabric.IafMod.LOGGER.info("HT's TreeChop found: felling a tree wakes the exiled pixie too");
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			com.iafabric.IafMod.LOGGER.warn("HT's TreeChop found but its events could not be used", e);
+		}
+	}
+
+	/** A listener on one of TreeChop's events: (level, player, pos, ...) for a player on the server. */
+	private static void listen(Object event, Class<?> type, String name, java.util.function.BiConsumer<ServerPlayer, BlockPos> action) {
+		Object listener = java.lang.reflect.Proxy.newProxyInstance(ExiledPixies.class.getClassLoader(), new Class<?>[]{type},
+			(proxy, method, args) -> {
+				if (name.equals(method.getName())) {
+					if (args != null && args.length >= 3 && args[1] instanceof ServerPlayer player && args[2] instanceof BlockPos pos) {
+						action.accept(player, pos);
+					}
+					// (a fell listener answers true: false would stop TreeChop's own work)
+					return method.getReturnType() == boolean.class ? Boolean.TRUE : null;
+				}
+				return switch (method.getName()) {
+					case "hashCode" -> System.identityHashCode(proxy);
+					case "equals" -> proxy == args[0];
+					case "toString" -> "IceAndFire TreeChop listener";
+					default -> null;
+				};
+			});
+		// (through Fabric's own Event type: its implementation class is not open to reflection)
+		@SuppressWarnings("unchecked")
+		net.fabricmc.fabric.api.event.Event<Object> fabricEvent = (net.fabricmc.fabric.api.event.Event<Object>) event;
+		fabricEvent.register(listener);
+	}
+
 	public static void treeCut(ServerPlayer player, BlockPos pos) {
 		ExiledPixieData data = get(player);
 		if (data.met() || player.isSpectator() || !IafConfig.exiledPixie || !isTree(player.level(), pos)) {
